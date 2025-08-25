@@ -1,0 +1,33 @@
+name: QA
+
+on:
+  push:
+    paths-ignore:
+      - '.github/workflows/reward.yml'
+      - '.github/workflows/reward-merged-prs.yml'
+      - '.github/ISSUE_TEMPLATE/*'
+      - '*.md'
+    branches:
+      - main
+  pull_request:
+    paths-ignore:
+      - '.github/workflows/reward.yml'
+      - '.github/workflows/reward-merged-prs.yml'
+      - '.github/ISSUE_TEMPLATE/*'
+      - '*.md'
+    branches:
+      - main
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: the-ton-tech/toolchain/lint@v1.5.0
+
+  build:
+    name: Test & Build
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: the-ton-tech/toolchain/build@v1.5.0
