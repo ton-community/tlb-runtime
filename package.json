@@ -1,6 +1,6 @@
 {
   "name": "@ton-community/tlb-runtime",
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.0-alpha.1",
   "description": "TL-B Runtime for TON blockchain",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -33,7 +33,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ton-community/tlb-runtime.git"
+    "url": "git+https://github.com/ton-community/tlb-runtime.git"
   },
   "bugs": {
     "url": "https://github.com/ton-community/tlb-runtime/issues"

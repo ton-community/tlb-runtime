@@ -101,5 +101,5 @@ yarn lint:fix
 ## Release
 
 ```bash
-yarn install && yarn build && yarn release
+yarn install --frozen-lockfile && yarn build && npm publish --tag=alpha --try-run
 ```
