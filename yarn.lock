@@ -969,10 +969,10 @@
   dependencies:
     "@sinonjs/commons" "^3.0.0"
 
-"@ton-community/tlb-codegen@^2.0.0-beta.2":
-  version "2.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@ton-community/tlb-codegen/-/tlb-codegen-2.0.0-beta.2.tgz#97e776b7f08bba3d8b51a51dbfead5fbb76f8927"
-  integrity sha512-K439YNyPngt5Jc4ZFaxT5LC0HJMj5yv/4zPJrAtb84J5QX3zeEi/sJ/wHxxInP+orVOEZP5U0905dJxLY78L+Q==
+"@ton-community/tlb-codegen@^2.0.0-beta.3":
+  version "2.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/@ton-community/tlb-codegen/-/tlb-codegen-2.0.0-beta.3.tgz#73698fd4408ae1a2925814af9709b519619ee94e"
+  integrity sha512-DG79NL09e9xiIMPh0Fgbsw/+rr36KNilDk3lhYdMsZb0to0/sibzLHyFbjJPfqdlhu6ujRBaOh+1FQ5l5BmnKw==
   dependencies:
     "@ton-community/tlb-parser" "^0.1.5"
     "@ton/core" "^0.61.0"
