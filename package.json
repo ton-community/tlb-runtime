@@ -1,7 +1,7 @@
 {
   "name": "@ton-community/tlb-runtime",
   "version": "1.0.0-alpha.2",
-  "description": "TL-B Runtime for TON blockchain",
+  "description": "TL‑B Runtime is a library for parsing and (de)serializing data according to TL‑B schemas",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [

@@ -1,5 +1,7 @@
 # TL-B Runtime
 
+TL‑B Runtime is a library for parsing and (de)serializing data according to [TL‑B schemas](https://docs.ton.org/v3/documentation/data-formats/tlb/tl-b-language), enabling programmatic work with binary structures and [Cell & Bag of Cells (BoC)](https://docs.ton.org/v3/documentation/data-formats/tlb/cell-boc)
+
 ## Quick Start
 
 ```bash
