@@ -44,7 +44,7 @@ if (unpack.success) {
 ## TEP-74 Fungible tokens (Jettons)
 
 ```typescript
-import { parseTLB } from 'tlb-rest-server/src/tlb-runtime';
+import { parseTLB } from '@ton-community/tlb-runtime';
 
 // language=tlb
 const schema = `nothing$0 {X:Type} = Maybe X;
