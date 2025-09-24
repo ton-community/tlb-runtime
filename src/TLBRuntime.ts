@@ -166,7 +166,11 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
                 return result;
             }
         } catch (error) {
-            void error;
+            if (error instanceof Error) {
+                throw error;
+            } else {
+                throw new TLBDataError('Failed to deserialize');
+            }
         }
         for (const typeName of types.slice().reverse()) {
             if (typeName === this.lastTypeName) continue; // Already tried
@@ -834,10 +838,11 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
             }
 
             case 'TLBCellType': {
-                if (slice.remainingRefs === 0) {
-                    throw new TLBDataError('No more references available for TLBCellType');
-                }
-                return slice.loadRef();
+                // if (slice.remainingRefs === 0) {
+                //     throw new TLBDataError('No more references available for TLBCellType');
+                // }
+                // return slice.loadRef();
+                return slice.asCell();
             }
 
             case 'TLBCellInsideType': {
