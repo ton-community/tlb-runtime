@@ -31,6 +31,8 @@ export const TLBStd = {
     Bool: 'bool_false$0 = Bool; bool_true$1 = Bool;',
     Maybe: 'nothing$0 {X:Type} = Maybe X; just$1 {X:Type} value:X = Maybe X;',
     Either: 'left$0 {X:Type} {Y:Type} value:X = Either X Y; right$1 {X:Type} {Y:Type} value:Y = Either X Y;',
+    Grams: 'nanograms$_ amount:(VarUInteger 16) = Grams;',
+    Coins: '_ grams:Grams = Coins;',
     VarInteger: 'var_int$_ {n:#} len:(#< n) value:(int (len * 8)) = VarInteger n;',
     VarUInteger: 'var_uint$_ {n:#} len:(#< n) value:(uint (len * 8)) = VarUInteger n;',
     Unary: 'unary_zero$0 = Unary ~0; unary_succ$1 {n:#} x:(Unary ~n) = Unary ~(n + 1);',
@@ -648,6 +650,40 @@ export const groupCorpus: TLBCorpus = {
                         msg: { kind: 'Maybe_just', value: beginCell().storeUint(676, 10).endCell() },
                     },
                     'b5ee9c72410102010007000100010003d49018c6b738',
+                ],
+            ],
+        ],
+        [
+            `${TLBStd.Maybe} ${TLBStd.Either} ${TLBStd.Coins} ${TLBStd.Grams} ${TLBStd.VarUInteger} transfer#0f8a7ea5 query_id:uint64 amount:Coins destination:MsgAddress response_destination:MsgAddress custom_payload:(Maybe Cell) forward_ton_amount:Coins forward_payload:(Either Cell ^Cell) = JettonTransfer;`,
+            [
+                [
+                    {
+                        kind: 'JettonTransfer',
+                        amount: '0',
+                        custom_payload: {
+                            kind: 'Maybe_nothing',
+                        },
+                        destination: 'Ef9VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVbxn',
+                        forward_payload: {
+                            kind: 'Either_left',
+                            value: beginCell().endCell().toBoc().toString('base64'),
+                        },
+                        forward_ton_amount: '0',
+                        query_id: '0',
+                        response_destination: 'Ef9VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVbxn',
+                    },
+                    beginCell()
+                        .storeUint(0x0f8a7ea5, 32) // op
+                        .storeUint(0, 64) // query_id
+                        .storeCoins(0) // amount
+                        .storeAddress(Address.parse('Ef9VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVbxn')) // destination
+                        .storeAddress(Address.parse('Ef9VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVbxn')) // response_destination
+                        .storeMaybeRef(null) // custom_payload
+                        .storeCoins(0) // forward_ton_amount
+                        .storeUint(0, 1) // forward_payload either
+                        .endCell()
+                        .toBoc()
+                        .toString('hex'),
                 ],
             ],
         ],
