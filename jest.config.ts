@@ -5,6 +5,16 @@ const config: Config = {
     testEnvironment: 'node',
     testMatch: ['**/*.spec.ts'],
     preset: 'ts-jest',
+    silent: false,
+    coverageThreshold: {
+        global: {
+            statements: 55,
+            branches: 48,
+            functions: 72,
+            lines: 56,
+        },
+    },
+    coverageReporters: ['json-summary', 'text', 'lcov'],
 };
 
 export default config;

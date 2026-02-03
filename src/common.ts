@@ -1,6 +1,6 @@
 import { BitString, Cell } from '@ton/core';
 
-import { TLBDataError } from './TLBRuntime';
+import { TLBDataError } from './errors';
 import { Result } from './Result';
 
 export function stringToBits(text: string): BitString {

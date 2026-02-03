@@ -1,13 +1,13 @@
-import { Address, BitString, Cell } from '@ton/core';
+import { Address, BitString, Cell, ExternalAddress } from '@ton/core';
 
-import { ParsedCell, parseTLB } from './TLBRuntime';
+import { runtimeBy, TypedCell } from './TLBRuntime';
 
-export function parseCell(schema: string, data: Cell | string): ParsedCell {
-    return parseTLB(schema).parseCell(data);
+export function decodeCell(schema: string, data: Cell | string): TypedCell {
+    return runtimeBy(schema).decodeCell(data);
 }
 
-export function encodeCell(schema: string, data: ParsedCell | string): Cell {
-    return parseTLB(schema).encodeCell(data);
+export function encodeCell(schema: string, data: TypedCell | string): Cell {
+    return runtimeBy(schema).encodeCell(data);
 }
 
 // FIXME
@@ -16,6 +16,8 @@ export function replacer(_key: string, value: any): any {
     if (typeof value === 'bigint') {
         return value.toString();
     } else if (value instanceof Address) {
+        return value.toString();
+    } else if (value instanceof ExternalAddress) {
         return value.toString();
     } else if (value instanceof BitString) {
         return value.toString();
