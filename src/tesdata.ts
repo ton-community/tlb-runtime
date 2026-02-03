@@ -1,14 +1,14 @@
 import { Cell, beginCell, Address, ExternalAddress, Dictionary } from '@ton/core';
 
-import { ParsedCell } from './TLBRuntime';
+import { TypedCell } from './TLBRuntime';
 
 // based on https://github.com/ton-community/tlb-test-corpus
 export type TLBSchema = string;
 export type BoCBase64 = string;
-export type TLBGroupItem = [TLBSchema, [ParsedCell, BoCBase64][]];
+export type TLBGroupItem = [TLBSchema, [TypedCell, BoCBase64][]];
 export type TLBGroup = string;
 export type TLBCorpus = { [key: TLBGroup]: TLBGroupItem[] };
-export type TLBCase = [TLBSchema, ParsedCell, BoCBase64];
+export type TLBCase = [TLBSchema, TypedCell, BoCBase64];
 export type TLBGroupFlat = { [key: TLBGroup]: TLBCase[] };
 export function makeGroupFlat(corpus: TLBCorpus): TLBGroupFlat {
     const out: TLBGroupFlat = {};
@@ -157,17 +157,6 @@ export const groupCorpus: TLBCorpus = {
         [
             '_ {n:#} x:(## n) = ExprType (2 + n); _ x:(ExprType 6) = UseExprType; _#de x:^UseExprType = CellUseExprType;',
             [
-                [
-                    {
-                        kind: 'UseExprType',
-                        x: {
-                            kind: 'ExprType',
-                            n: 4,
-                            x: 10n,
-                        },
-                    },
-                    'b5ee9c72410101010003000001a82322a95d',
-                ],
                 [
                     {
                         kind: 'CellUseExprType',

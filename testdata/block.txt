@@ -1,0 +1,4129 @@
+1760 types defined, out of them 1549 built-in, 211 user-defined
+built-in type #0: `#`, arity 0; prefixes {*}; size =32
+built-in type #1: `##`, arity 1; prefixes {*}; size 0..32
+built-in type #2: `#<`, arity 1; prefixes {*}; size 0..32
+built-in type #3: `#<=`, arity 1; prefixes {*}; size 0..32
+built-in type #4: `Any`, arity 0; prefixes {*}; size 0..infty
+built-in type #5: `Cell`, arity 0; prefixes {*}; size 0..infty
+built-in type #6: `int`, arity 1; prefixes {*}; size 0..257
+built-in type #7: `uint`, arity 1; prefixes {*}; size 0..256
+built-in type #8: `bits`, arity 1; prefixes {*}; size 0..1023
+built-in type #24: `int8`, arity 0; prefixes {*}; size =8
+built-in type #25: `uint8`, arity 0; prefixes {*}; size =8
+built-in type #35: `uint13`, arity 0; prefixes {*}; size =13
+built-in type #39: `uint15`, arity 0; prefixes {*}; size =15
+built-in type #40: `int16`, arity 0; prefixes {*}; size =16
+built-in type #41: `uint16`, arity 0; prefixes {*}; size =16
+built-in type #72: `int32`, arity 0; prefixes {*}; size =32
+built-in type #73: `uint32`, arity 0; prefixes {*}; size =32
+built-in type #105: `uint48`, arity 0; prefixes {*}; size =48
+built-in type #135: `uint63`, arity 0; prefixes {*}; size =63
+built-in type #136: `int64`, arity 0; prefixes {*}; size =64
+built-in type #137: `uint64`, arity 0; prefixes {*}; size =64
+built-in type #521: `uint256`, arity 0; prefixes {*}; size =256
+built-in type #522: `int257`, arity 0; prefixes {*}; size =257
+built-in type #778: `bits256`, arity 0; prefixes {*}; size =256
+built-in type #1034: `bits512`, arity 0; prefixes {*}; size =512
+type #1549: `Unit`, arity 0, 1 constructors
+  constructor `unit`
+	unit$_ = Unit;
+	begins with {*}
+	size =0 (fixed) (any bits)
+  (UNIT)
+  (SIMPLE ENUM)
+  type size =0 (fixed) (any bits)
+  type begins with {*}
+
+type #1550: `True`, arity 0, 1 constructors
+  constructor `true`
+	true$_ = True;
+	begins with {*}
+	size =0 (fixed) (any bits)
+  (UNIT)
+  (SIMPLE ENUM)
+  type size =0 (fixed) (any bits)
+  type begins with {*}
+
+type #1551: `Bool`, arity 0, 2 constructors
+  constructor `bool_false`
+	bool_false$0 = Bool;
+	begins with {0*}
+	size =1 (fixed) (any bits)
+  constructor `bool_true`
+	bool_true$1 = Bool;
+	begins with {1*}
+	size =1 (fixed) (any bits)
+  (BOOL)
+  (SIMPLE ENUM)
+  constructor detection: PFX(1) 
+  type size =1 (fixed) (any bits)
+  type begins with {*}
+
+type #1552: `BoolFalse`, arity 0, 1 constructors
+  constructor `bool_false`
+	bool_false$0 = BoolFalse;
+	begins with {0*}
+	size =1 (fixed) (any bits)
+  (SIMPLE ENUM)
+  type size =1 (fixed)
+  type begins with {0*}
+
+type #1553: `BoolTrue`, arity 0, 1 constructors
+  constructor `bool_true`
+	bool_true$1 = BoolTrue;
+	begins with {1*}
+	size =1 (fixed) (any bits)
+  (SIMPLE ENUM)
+  type size =1 (fixed)
+  type begins with {1*}
+
+type #1554: `Maybe`, arity 1, 2 constructors
+  constructor `nothing`
+	nothing$0 {X:Type} = Maybe X;
+	begins with {0*}
+	size =1 (fixed) (any bits)
+		field `X`: Type (used=0) (is_nat_subtype=0)
+  constructor `just`
+	just$1 {X:Type} value:X = Maybe X;
+	begins with {1*}
+	size 1..infty
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `value`: _1 (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(1) 
+  type size 1..infty
+  type begins with {*}
+
+type #1555: `Either`, arity 2, 2 constructors
+  constructor `left`
+	left$0 {X:Type} {Y:Type} value:X = Either X Y;
+	begins with {0*}
+	size 1..infty
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `Y`: Type (used=0) (is_nat_subtype=0)
+		field `value`: _1 (used=0) (is_nat_subtype=0)
+  constructor `right`
+	right$1 {X:Type} {Y:Type} value:Y = Either X Y;
+	begins with {1*}
+	size 1..infty
+		field `X`: Type (used=0) (is_nat_subtype=0)
+		field `Y`: Type (used=1) (is_nat_subtype=0)
+		field `value`: _2 (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(1) 
+  type size 1..infty
+  type begins with {*}
+
+type #1556: `Both`, arity 2, 1 constructors
+  constructor `pair`
+	pair$_ {X:Type} {Y:Type} first:X second:Y = Both X Y;
+	begins with {*}
+	size 0..infty
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `Y`: Type (used=1) (is_nat_subtype=0)
+		field `first`: _1 (used=0) (is_nat_subtype=0)
+		field `second`: _2 (used=0) (is_nat_subtype=0)
+  type size 0..infty
+  type begins with {*}
+
+type #1557: `Bit`, arity 0, 1 constructors
+  constructor `bit`
+	bit$_ (## 1) = Bit;
+	begins with {*}
+	size =1 (fixed) (any bits)
+		field `_`: ## 1 (used=0) (is_nat_subtype=1)
+  (BOOL)
+  type size =1 (fixed) (any bits)
+  type begins with {*}
+
+type #1558: `HmLabel`, arity 2, 3 constructors
+  constructor `hml_short`
+	hml_short$0 {m:#} {n:#} len:(Unary ~n) {<= n m} s:(n * Bit) = HmLabel ~n m;
+	begins with {0*}
+	size 2..2047
+		field `m`: # (used=1) (is_nat_subtype=1)
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `len`: Unary ~_2 (used=0) (is_nat_subtype=0)
+		field `_`: <= _2 _1 (used=0) (is_nat_subtype=0)
+		field `s`: _2 * Bit (used=0) (is_nat_subtype=0)
+  constructor `hml_long`
+	hml_long$10 {m:#} n:(#<= m) s:(n * Bit) = HmLabel ~n m;
+	begins with {10*}
+	size 2..2047
+		field `m`: # (used=1) (is_nat_subtype=1)
+		field `n`: #<= _1 (used=1) (is_nat_subtype=1)
+		field `s`: _2 * Bit (used=0) (is_nat_subtype=0)
+  constructor `hml_same`
+	hml_same$11 {m:#} v:Bit n:(#<= m) = HmLabel ~n m;
+	begins with {11*}
+	size 3..35
+		field `m`: # (used=1) (is_nat_subtype=1)
+		field `v`: Bit (used=0) (is_nat_subtype=0)
+		field `n`: #<= _1 (used=1) (is_nat_subtype=1)
+  constructor detection: PFX(2) 
+  type size 2..2047
+  type begins with {*}
+
+type #1559: `HashmapNode`, arity 2, 2 constructors
+  constructor `hmn_leaf`
+	hmn_leaf$_ {X:Type} value:X = HashmapNode 0 X;
+	begins with {*}
+	admissibility [1000]
+	size 0..infty
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `value`: _1 (used=0) (is_nat_subtype=0)
+  constructor `hmn_fork`
+	hmn_fork$_ {n:#} {X:Type} left:^(Hashmap n X) right:^(Hashmap n X) = HashmapNode (n + 1) X;
+	begins with {*}
+	admissibility [0111]
+	size =0+2R (fixed) (any bits)
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `left`: ^(Hashmap _1 _2) (used=0) (is_nat_subtype=0)
+		field `right`: ^(Hashmap _1 _2) (used=0) (is_nat_subtype=0)
+  constructor detection: PARAM 
+  type size 0..infty
+  type begins with {*}
+  type admissibility [1111]
+
+type #1560: `Hashmap`, arity 2, 1 constructors
+  constructor `hm_edge`
+	hm_edge$_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n) {= n (~m + l)} node:(HashmapNode m X) = Hashmap n X;
+	begins with {*}
+	size 2..infty
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `l`: # (used=1) (is_nat_subtype=1)
+		field `m`: # (used=1) (is_nat_subtype=1)
+		field `label`: HmLabel ~_3 _1 (used=0) (is_nat_subtype=0)
+		field `_`: = _1 (~_4 + _3) (used=0) (is_nat_subtype=0)
+		field `node`: HashmapNode _4 _2 (used=0) (is_nat_subtype=0)
+  type size 2..infty
+  type begins with {*}
+
+type #1561: `Unary`, arity 1, 2 constructors
+  constructor `unary_zero`
+	unary_zero$0 = Unary 0;
+	begins with {0*}
+	size =1 (fixed) (any bits)
+  constructor `unary_succ`
+	unary_succ$1 {n:#} x:(Unary ~n) = Unary (~n + 1);
+	begins with {1*}
+	size 2..2047
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `x`: Unary ~_1 (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(1) 
+  type size 1..2047
+  type begins with {*}
+
+type #1562: `HashmapE`, arity 2, 2 constructors
+  constructor `hme_empty`
+	hme_empty$0 {n:#} {X:Type} = HashmapE n X;
+	begins with {0*}
+	size =1 (fixed) (any bits)
+		field `n`: # (used=0) (is_nat_subtype=1)
+		field `X`: Type (used=0) (is_nat_subtype=0)
+  constructor `hme_root`
+	hme_root$1 {n:#} {X:Type} root:^(Hashmap n X) = HashmapE n X;
+	begins with {1*}
+	size =1+1R (fixed) (any bits)
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `root`: ^(Hashmap _1 _2) (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(1) 
+  type size 1..1+1R (any bits)
+  type begins with {*}
+
+type #1563: `BitstringSet`, arity 1, 1 constructors
+  constructor `_`
+	_$_ {n:#} (Hashmap n True) = BitstringSet n;
+	begins with {*}
+	size 2..infty
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `_`: Hashmap _1 True (used=0) (is_nat_subtype=0)
+  type size 2..infty
+  type begins with {*}
+
+type #1564: `HashmapAugNode`, arity 3, 2 constructors
+  constructor `ahmn_leaf`
+	ahmn_leaf$_ {X:Type} {Y:Type} extra:Y value:X = HashmapAugNode 0 X Y;
+	begins with {*}
+	admissibility [1000]
+	size 0..infty
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `Y`: Type (used=1) (is_nat_subtype=0)
+		field `extra`: _2 (used=0) (is_nat_subtype=0)
+		field `value`: _1 (used=0) (is_nat_subtype=0)
+  constructor `ahmn_fork`
+	ahmn_fork$_ {n:#} {X:Type} {Y:Type} left:^(HashmapAug n X Y) right:^(HashmapAug n X Y) extra:Y = HashmapAugNode (n + 1) X Y;
+	begins with {*}
+	admissibility [0111]
+	size 0+2R..infty
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `Y`: Type (used=1) (is_nat_subtype=0)
+		field `left`: ^(HashmapAug _1 _2 _3) (used=0) (is_nat_subtype=0)
+		field `right`: ^(HashmapAug _1 _2 _3) (used=0) (is_nat_subtype=0)
+		field `extra`: _3 (used=0) (is_nat_subtype=0)
+  constructor detection: PARAM 
+  type size 0..infty
+  type begins with {*}
+  type admissibility [1111]
+
+type #1565: `HashmapAug`, arity 3, 1 constructors
+  constructor `ahm_edge`
+	ahm_edge$_ {n:#} {X:Type} {Y:Type} {l:#} {m:#} label:(HmLabel ~l n) {= n (~m + l)} node:(HashmapAugNode m X Y) = HashmapAug n X Y;
+	begins with {*}
+	size 2..infty
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `Y`: Type (used=1) (is_nat_subtype=0)
+		field `l`: # (used=1) (is_nat_subtype=1)
+		field `m`: # (used=1) (is_nat_subtype=1)
+		field `label`: HmLabel ~_4 _1 (used=0) (is_nat_subtype=0)
+		field `_`: = _1 (~_5 + _4) (used=0) (is_nat_subtype=0)
+		field `node`: HashmapAugNode _5 _2 _3 (used=0) (is_nat_subtype=0)
+  type size 2..infty
+  type begins with {*}
+
+type #1566: `HashmapAugE`, arity 3, 2 constructors
+  constructor `ahme_empty`
+	ahme_empty$0 {n:#} {X:Type} {Y:Type} extra:Y = HashmapAugE n X Y;
+	begins with {0*}
+	size 1..infty
+		field `n`: # (used=0) (is_nat_subtype=1)
+		field `X`: Type (used=0) (is_nat_subtype=0)
+		field `Y`: Type (used=1) (is_nat_subtype=0)
+		field `extra`: _3 (used=0) (is_nat_subtype=0)
+  constructor `ahme_root`
+	ahme_root$1 {n:#} {X:Type} {Y:Type} root:^(HashmapAug n X Y) extra:Y = HashmapAugE n X Y;
+	begins with {1*}
+	size 1+1R..infty
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `Y`: Type (used=1) (is_nat_subtype=0)
+		field `root`: ^(HashmapAug _1 _2 _3) (used=0) (is_nat_subtype=0)
+		field `extra`: _3 (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(1) 
+  type size 1..infty
+  type begins with {*}
+
+type #1567: `VarHashmapNode`, arity 2, 3 constructors
+  constructor `vhmn_leaf`
+	vhmn_leaf$00 {n:#} {X:Type} value:X = VarHashmapNode n X;
+	begins with {00*}
+	size 2..infty
+		field `n`: # (used=0) (is_nat_subtype=1)
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `value`: _2 (used=0) (is_nat_subtype=0)
+  constructor `vhmn_fork`
+	vhmn_fork$01 {n:#} {X:Type} left:^(VarHashmap n X) right:^(VarHashmap n X) value:(Maybe X) = VarHashmapNode (n + 1) X;
+	begins with {01*}
+	admissibility [0111]
+	size 3+2R..infty
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `left`: ^(VarHashmap _1 _2) (used=0) (is_nat_subtype=0)
+		field `right`: ^(VarHashmap _1 _2) (used=0) (is_nat_subtype=0)
+		field `value`: Maybe _2 (used=0) (is_nat_subtype=0)
+  constructor `vhmn_cont`
+	vhmn_cont$1 {n:#} {X:Type} branch:Bit child:^(VarHashmap n X) value:X = VarHashmapNode (n + 1) X;
+	begins with {1*}
+	admissibility [0111]
+	size 2+1R..infty
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `branch`: Bit (used=0) (is_nat_subtype=0)
+		field `child`: ^(VarHashmap _1 _2) (used=0) (is_nat_subtype=0)
+		field `value`: _2 (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(2) 
+  type size 2..infty
+  type begins with {*}
+  type admissibility [1111]
+
+type #1568: `VarHashmap`, arity 2, 1 constructors
+  constructor `vhm_edge`
+	vhm_edge$_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n) {= n (~m + l)} node:(VarHashmapNode m X) = VarHashmap n X;
+	begins with {*}
+	size 4..infty
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `l`: # (used=1) (is_nat_subtype=1)
+		field `m`: # (used=1) (is_nat_subtype=1)
+		field `label`: HmLabel ~_3 _1 (used=0) (is_nat_subtype=0)
+		field `_`: = _1 (~_4 + _3) (used=0) (is_nat_subtype=0)
+		field `node`: VarHashmapNode _4 _2 (used=0) (is_nat_subtype=0)
+  type size 4..infty
+  type begins with {*}
+
+type #1569: `VarHashmapE`, arity 2, 2 constructors
+  constructor `vhme_empty`
+	vhme_empty$0 {n:#} {X:Type} = VarHashmapE n X;
+	begins with {0*}
+	size =1 (fixed) (any bits)
+		field `n`: # (used=0) (is_nat_subtype=1)
+		field `X`: Type (used=0) (is_nat_subtype=0)
+  constructor `vhme_root`
+	vhme_root$1 {n:#} {X:Type} root:^(VarHashmap n X) = VarHashmapE n X;
+	begins with {1*}
+	size =1+1R (fixed) (any bits)
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `root`: ^(VarHashmap _1 _2) (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(1) 
+  type size 1..1+1R (any bits)
+  type begins with {*}
+
+type #1570: `PfxHashmapNode`, arity 2, 2 constructors
+  constructor `phmn_leaf`
+	phmn_leaf$0 {n:#} {X:Type} value:X = PfxHashmapNode n X;
+	begins with {0*}
+	size 1..infty
+		field `n`: # (used=0) (is_nat_subtype=1)
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `value`: _2 (used=0) (is_nat_subtype=0)
+  constructor `phmn_fork`
+	phmn_fork$1 {n:#} {X:Type} left:^(PfxHashmap n X) right:^(PfxHashmap n X) = PfxHashmapNode (n + 1) X;
+	begins with {1*}
+	admissibility [0111]
+	size =1+2R (fixed) (any bits)
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `left`: ^(PfxHashmap _1 _2) (used=0) (is_nat_subtype=0)
+		field `right`: ^(PfxHashmap _1 _2) (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(1) 
+  type size 1..infty
+  type begins with {*}
+  type admissibility [1111]
+
+type #1571: `PfxHashmap`, arity 2, 1 constructors
+  constructor `phm_edge`
+	phm_edge$_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n) {= n (~m + l)} node:(PfxHashmapNode m X) = PfxHashmap n X;
+	begins with {*}
+	size 3..infty
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `l`: # (used=1) (is_nat_subtype=1)
+		field `m`: # (used=1) (is_nat_subtype=1)
+		field `label`: HmLabel ~_3 _1 (used=0) (is_nat_subtype=0)
+		field `_`: = _1 (~_4 + _3) (used=0) (is_nat_subtype=0)
+		field `node`: PfxHashmapNode _4 _2 (used=0) (is_nat_subtype=0)
+  type size 3..infty
+  type begins with {*}
+
+type #1572: `PfxHashmapE`, arity 2, 2 constructors
+  constructor `phme_empty`
+	phme_empty$0 {n:#} {X:Type} = PfxHashmapE n X;
+	begins with {0*}
+	size =1 (fixed) (any bits)
+		field `n`: # (used=0) (is_nat_subtype=1)
+		field `X`: Type (used=0) (is_nat_subtype=0)
+  constructor `phme_root`
+	phme_root$1 {n:#} {X:Type} root:^(PfxHashmap n X) = PfxHashmapE n X;
+	begins with {1*}
+	size =1+1R (fixed) (any bits)
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `root`: ^(PfxHashmap _1 _2) (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(1) 
+  type size 1..1+1R (any bits)
+  type begins with {*}
+
+type #1573: `MsgAddressExt`, arity 0, 2 constructors
+  constructor `addr_none`
+	addr_none$00 = MsgAddressExt;
+	begins with {00*}
+	size =2 (fixed) (any bits)
+  constructor `addr_extern`
+	addr_extern$01 len:(## 9) external_address:(bits len) = MsgAddressExt;
+	begins with {01*}
+	size 11..1034 (any bits)
+		field `len`: ## 9 (used=1) (is_nat_subtype=1)
+		field `external_address`: bits _1 (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(2) 
+  type size 2..1034
+  type begins with {0*}
+
+type #1574: `Anycast`, arity 0, 1 constructors
+  constructor `anycast_info`
+	anycast_info$_ depth:(#<= 30) {<= 1 depth} rewrite_pfx:(bits depth) = Anycast;
+	begins with {*}
+	size 5..1028
+		field `depth`: #<= 30 (used=1) (is_nat_subtype=1)
+		field `_`: <= 1 _1 (used=0) (is_nat_subtype=0)
+		field `rewrite_pfx`: bits _1 (used=0) (is_nat_subtype=0)
+  type size 5..1028
+  type begins with {*}
+
+type #1575: `MsgAddressInt`, arity 0, 2 constructors
+  constructor `addr_std`
+	addr_std$10 anycast:(Maybe Anycast) workchain_id:int8 address:bits256 = MsgAddressInt;
+	begins with {10*}
+	size 267..infty
+		field `anycast`: Maybe Anycast (used=0) (is_nat_subtype=0)
+		field `workchain_id`: int8 (used=0) (is_nat_subtype=0)
+		field `address`: bits256 (used=0) (is_nat_subtype=0)
+  constructor `addr_var`
+	addr_var$11 anycast:(Maybe Anycast) addr_len:(## 9) workchain_id:int32 address:(bits addr_len) = MsgAddressInt;
+	begins with {11*}
+	size 44..infty
+		field `anycast`: Maybe Anycast (used=0) (is_nat_subtype=0)
+		field `addr_len`: ## 9 (used=1) (is_nat_subtype=1)
+		field `workchain_id`: int32 (used=0) (is_nat_subtype=0)
+		field `address`: bits _2 (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(2) 
+  type size 44..infty
+  type begins with {1*}
+
+type #1576: `MsgAddress`, arity 0, 2 constructors
+  constructor `_` (simple forwarder)
+	_$_ MsgAddressInt = MsgAddress;
+	begins with {1*}
+	size 44..infty
+		field `_`: MsgAddressInt (used=0) (is_nat_subtype=0)
+  constructor `_` (simple forwarder)
+	_$_ MsgAddressExt = MsgAddress;
+	begins with {0*}
+	size 2..1034
+		field `_`: MsgAddressExt (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(1) 
+  type size 2..infty
+  type begins with {*}
+
+type #1577: `VarUInteger`, arity 1, 1 constructors
+  constructor `var_uint`
+	var_uint$_ {n:#} len:(#< n) value:(uint (8 * len)) = VarUInteger n;
+	begins with {*}
+	size 0..288
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `len`: #< _1 (used=1) (is_nat_subtype=1)
+		field `value`: uint (8 * _2) (used=0) (is_nat_subtype=0)
+  type size 0..288
+  type begins with {*}
+
+type #1578: `VarInteger`, arity 1, 1 constructors
+  constructor `var_int`
+	var_int$_ {n:#} len:(#< n) value:(int (8 * len)) = VarInteger n;
+	begins with {*}
+	size 0..289
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `len`: #< _1 (used=1) (is_nat_subtype=1)
+		field `value`: int (8 * _2) (used=0) (is_nat_subtype=0)
+  type size 0..289
+  type begins with {*}
+
+type #1579: `Grams`, arity 0, 1 constructors
+  constructor `nanograms`
+	nanograms$_ amount:(VarUInteger 16) = Grams;
+	begins with {*}
+	size 0..288
+		field `amount`: VarUInteger 16 (used=0) (is_nat_subtype=0)
+  type size 0..288
+  type begins with {*}
+
+type #1580: `Coins`, arity 0, 1 constructors
+  constructor `_` (simple forwarder)
+	_$_ grams:Grams = Coins;
+	begins with {*}
+	size 0..288
+		field `grams`: Grams (used=0) (is_nat_subtype=0)
+  type size 0..288
+  type begins with {*}
+
+type #1581: `ExtraCurrencyCollection`, arity 0, 1 constructors
+  constructor `extra_currencies`
+	extra_currencies$_ dict:(HashmapE 32 (VarUInteger 32)) = ExtraCurrencyCollection;
+	begins with {*}
+	size 1..1+1R (any bits)
+		field `dict`: HashmapE 32 (VarUInteger 32) (used=0) (is_nat_subtype=0)
+  type size 1..1+1R (any bits)
+  type begins with {*}
+
+type #1582: `CurrencyCollection`, arity 0, 1 constructors
+  constructor `currencies`
+	currencies$_ grams:Grams other:ExtraCurrencyCollection = CurrencyCollection;
+	begins with {*}
+	size 1..289+1R
+		field `grams`: Grams (used=0) (is_nat_subtype=0)
+		field `other`: ExtraCurrencyCollection (used=0) (is_nat_subtype=0)
+  type size 1..289+1R
+  type begins with {*}
+
+type #1583: `CommonMsgInfo`, arity 0, 3 constructors
+  constructor `int_msg_info`
+	int_msg_info$0 ihr_disabled:Bool bounce:Bool bounced:Bool src:MsgAddressInt dest:MsgAddressInt value:CurrencyCollection extra_flags:(VarUInteger 16) fwd_fee:Grams created_lt:uint64 created_at:uint32 = CommonMsgInfo;
+	begins with {0*}
+	size 189..infty
+		field `ihr_disabled`: Bool (used=0) (is_nat_subtype=0)
+		field `bounce`: Bool (used=0) (is_nat_subtype=0)
+		field `bounced`: Bool (used=0) (is_nat_subtype=0)
+		field `src`: MsgAddressInt (used=0) (is_nat_subtype=0)
+		field `dest`: MsgAddressInt (used=0) (is_nat_subtype=0)
+		field `value`: CurrencyCollection (used=0) (is_nat_subtype=0)
+		field `extra_flags`: VarUInteger 16 (used=0) (is_nat_subtype=0)
+		field `fwd_fee`: Grams (used=0) (is_nat_subtype=0)
+		field `created_lt`: uint64 (used=0) (is_nat_subtype=0)
+		field `created_at`: uint32 (used=0) (is_nat_subtype=0)
+  constructor `ext_in_msg_info`
+	ext_in_msg_info$10 src:MsgAddressExt dest:MsgAddressInt import_fee:Grams = CommonMsgInfo;
+	begins with {100*}
+	size 48..infty
+		field `src`: MsgAddressExt (used=0) (is_nat_subtype=0)
+		field `dest`: MsgAddressInt (used=0) (is_nat_subtype=0)
+		field `import_fee`: Grams (used=0) (is_nat_subtype=0)
+  constructor `ext_out_msg_info`
+	ext_out_msg_info$11 src:MsgAddressInt dest:MsgAddressExt created_lt:uint64 created_at:uint32 = CommonMsgInfo;
+	begins with {111*}
+	size 144..infty
+		field `src`: MsgAddressInt (used=0) (is_nat_subtype=0)
+		field `dest`: MsgAddressExt (used=0) (is_nat_subtype=0)
+		field `created_lt`: uint64 (used=0) (is_nat_subtype=0)
+		field `created_at`: uint32 (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(2) 
+  type size 48..infty
+  type begins with {0*,100*,111*}
+
+type #1584: `CommonMsgInfoRelaxed`, arity 0, 2 constructors
+  constructor `int_msg_info`
+	int_msg_info$0 ihr_disabled:Bool bounce:Bool bounced:Bool src:MsgAddress dest:MsgAddressInt value:CurrencyCollection extra_flags:(VarUInteger 16) fwd_fee:Grams created_lt:uint64 created_at:uint32 = CommonMsgInfoRelaxed;
+	begins with {0*}
+	size 147..infty
+		field `ihr_disabled`: Bool (used=0) (is_nat_subtype=0)
+		field `bounce`: Bool (used=0) (is_nat_subtype=0)
+		field `bounced`: Bool (used=0) (is_nat_subtype=0)
+		field `src`: MsgAddress (used=0) (is_nat_subtype=0)
+		field `dest`: MsgAddressInt (used=0) (is_nat_subtype=0)
+		field `value`: CurrencyCollection (used=0) (is_nat_subtype=0)
+		field `extra_flags`: VarUInteger 16 (used=0) (is_nat_subtype=0)
+		field `fwd_fee`: Grams (used=0) (is_nat_subtype=0)
+		field `created_lt`: uint64 (used=0) (is_nat_subtype=0)
+		field `created_at`: uint32 (used=0) (is_nat_subtype=0)
+  constructor `ext_out_msg_info`
+	ext_out_msg_info$11 src:MsgAddress dest:MsgAddressExt created_lt:uint64 created_at:uint32 = CommonMsgInfoRelaxed;
+	begins with {11*}
+	size 102..infty
+		field `src`: MsgAddress (used=0) (is_nat_subtype=0)
+		field `dest`: MsgAddressExt (used=0) (is_nat_subtype=0)
+		field `created_lt`: uint64 (used=0) (is_nat_subtype=0)
+		field `created_at`: uint32 (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(1) 
+  type size 102..infty
+  type begins with {0*,11*}
+
+type #1585: `TickTock`, arity 0, 1 constructors
+  constructor `tick_tock`
+	tick_tock$_ tick:Bool tock:Bool = TickTock;
+	begins with {*}
+	size =2 (fixed) (any bits)
+		field `tick`: Bool (used=0) (is_nat_subtype=0)
+		field `tock`: Bool (used=0) (is_nat_subtype=0)
+  type size =2 (fixed) (any bits)
+  type begins with {*}
+
+type #1586: `StateInit`, arity 0, 1 constructors
+  constructor `_`
+	_$_ fixed_prefix_length:(Maybe (## 5)) special:(Maybe TickTock) code:(Maybe ^Cell) data:(Maybe ^Cell) library:(Maybe ^Cell) = StateInit;
+	begins with {*}
+	size 5..infty
+		field `fixed_prefix_length`: Maybe (## 5) (used=0) (is_nat_subtype=0)
+		field `special`: Maybe TickTock (used=0) (is_nat_subtype=0)
+		field `code`: Maybe ^Cell (used=0) (is_nat_subtype=0)
+		field `data`: Maybe ^Cell (used=0) (is_nat_subtype=0)
+		field `library`: Maybe ^Cell (used=0) (is_nat_subtype=0)
+  type size 5..infty
+  type begins with {*}
+
+type #1587: `SimpleLib`, arity 0, 1 constructors
+  constructor `simple_lib`
+	simple_lib$_ public:Bool root:^Cell = SimpleLib;
+	begins with {*}
+	size =1+1R (fixed) (any bits)
+		field `public`: Bool (used=0) (is_nat_subtype=0)
+		field `root`: ^Cell (used=0) (is_nat_subtype=0)
+  type size =1+1R (fixed) (any bits)
+  type begins with {*}
+
+type #1588: `StateInitWithLibs`, arity 0, 1 constructors
+  constructor `_`
+	_$_ fixed_prefix_length:(Maybe (## 5)) special:(Maybe TickTock) code:(Maybe ^Cell) data:(Maybe ^Cell) library:(HashmapE 256 SimpleLib) = StateInitWithLibs;
+	begins with {*}
+	size 5..infty
+		field `fixed_prefix_length`: Maybe (## 5) (used=0) (is_nat_subtype=0)
+		field `special`: Maybe TickTock (used=0) (is_nat_subtype=0)
+		field `code`: Maybe ^Cell (used=0) (is_nat_subtype=0)
+		field `data`: Maybe ^Cell (used=0) (is_nat_subtype=0)
+		field `library`: HashmapE 256 SimpleLib (used=0) (is_nat_subtype=0)
+  type size 5..infty
+  type begins with {*}
+
+type #1589: `Message`, arity 1, 1 constructors
+  constructor `message`
+	message$_ {X:Type} info:CommonMsgInfo init:(Maybe (Either StateInit ^StateInit)) body:(Either X ^X) = Message X;
+	begins with {0*,100*,111*}
+	size 50..infty
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `info`: CommonMsgInfo (used=0) (is_nat_subtype=0)
+		field `init`: Maybe (Either StateInit ^StateInit) (used=0) (is_nat_subtype=0)
+		field `body`: Either _1 ^_1 (used=0) (is_nat_subtype=0)
+  type size 50..infty
+  type begins with {0*,100*,111*}
+
+type #1590: `MessageRelaxed`, arity 1, 1 constructors
+  constructor `message`
+	message$_ {X:Type} info:CommonMsgInfoRelaxed init:(Maybe (Either StateInit ^StateInit)) body:(Either X ^X) = MessageRelaxed X;
+	begins with {0*,11*}
+	size 104..infty
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `info`: CommonMsgInfoRelaxed (used=0) (is_nat_subtype=0)
+		field `init`: Maybe (Either StateInit ^StateInit) (used=0) (is_nat_subtype=0)
+		field `body`: Either _1 ^_1 (used=0) (is_nat_subtype=0)
+  type size 104..infty
+  type begins with {0*,11*}
+
+type #1591: `MessageAny`, arity 0, 1 constructors
+  constructor `_` (simple forwarder)
+	_$_ (Message Any) = MessageAny;
+	begins with {0*,100*,111*}
+	size 50..infty
+		field `_`: Message Any (used=0) (is_nat_subtype=0)
+  type size 50..infty
+  type begins with {0*,100*,111*}
+
+type #1592: `NewBounceOriginalInfo`, arity 0, 1 constructors
+  constructor `_`
+	_$_ value:CurrencyCollection created_lt:uint64 created_at:uint32 = NewBounceOriginalInfo;
+	begins with {*}
+	size 97..385+1R
+		field `value`: CurrencyCollection (used=0) (is_nat_subtype=0)
+		field `created_lt`: uint64 (used=0) (is_nat_subtype=0)
+		field `created_at`: uint32 (used=0) (is_nat_subtype=0)
+  type size 97..385+1R
+  type begins with {*}
+
+type #1593: `NewBounceComputePhaseInfo`, arity 0, 1 constructors
+  constructor `_`
+	_$_ gas_used:uint32 vm_steps:uint32 = NewBounceComputePhaseInfo;
+	begins with {*}
+	size =64 (fixed) (any bits)
+		field `gas_used`: uint32 (used=0) (is_nat_subtype=0)
+		field `vm_steps`: uint32 (used=0) (is_nat_subtype=0)
+  type size =64 (fixed) (any bits)
+  type begins with {*}
+
+type #1594: `NewBounceBody`, arity 0, 1 constructors
+  constructor `new_bounce_body`
+	new_bounce_body#fffffffe original_body:^Cell original_info:^NewBounceOriginalInfo bounced_by_phase:uint8 exit_code:int32 compute_phase:(Maybe NewBounceComputePhaseInfo) = NewBounceBody;
+	begins with {11111111111111111111111111111110*}
+	size 73+2R..infty
+		field `original_body`: ^Cell (used=0) (is_nat_subtype=0)
+		field `original_info`: ^NewBounceOriginalInfo (used=0) (is_nat_subtype=0)
+		field `bounced_by_phase`: uint8 (used=0) (is_nat_subtype=0)
+		field `exit_code`: int32 (used=0) (is_nat_subtype=0)
+		field `compute_phase`: Maybe NewBounceComputePhaseInfo (used=0) (is_nat_subtype=0)
+  type size 73+2R..infty
+  type begins with {11111111111111111111111111111110*}
+
+type #1595: `IntermediateAddress`, arity 0, 3 constructors
+  constructor `interm_addr_regular`
+	interm_addr_regular$0 use_dest_bits:(#<= 96) = IntermediateAddress;
+	begins with {0*}
+	size =8 (fixed)
+		field `use_dest_bits`: #<= 96 (used=0) (is_nat_subtype=1)
+  constructor `interm_addr_simple`
+	interm_addr_simple$10 workchain_id:int8 addr_pfx:uint64 = IntermediateAddress;
+	begins with {10*}
+	size =74 (fixed) (any bits)
+		field `workchain_id`: int8 (used=0) (is_nat_subtype=0)
+		field `addr_pfx`: uint64 (used=0) (is_nat_subtype=0)
+  constructor `interm_addr_ext`
+	interm_addr_ext$11 workchain_id:int32 addr_pfx:uint64 = IntermediateAddress;
+	begins with {11*}
+	size =98 (fixed) (any bits)
+		field `workchain_id`: int32 (used=0) (is_nat_subtype=0)
+		field `addr_pfx`: uint64 (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(2) 
+  type size 8..98
+  type begins with {*}
+
+type #1596: `MsgEnvelope`, arity 0, 2 constructors
+  constructor `msg_envelope`
+	msg_envelope$0100 cur_addr:IntermediateAddress next_addr:IntermediateAddress fwd_fee_remaining:Grams msg:^(Message Any) = MsgEnvelope;
+	begins with {0100*}
+	size 20+1R..488+1R
+		field `cur_addr`: IntermediateAddress (used=0) (is_nat_subtype=0)
+		field `next_addr`: IntermediateAddress (used=0) (is_nat_subtype=0)
+		field `fwd_fee_remaining`: Grams (used=0) (is_nat_subtype=0)
+		field `msg`: ^(Message Any) (used=0) (is_nat_subtype=0)
+  constructor `msg_envelope_v2`
+	msg_envelope_v2$0101 cur_addr:IntermediateAddress next_addr:IntermediateAddress fwd_fee_remaining:Grams msg:^(Message Any) emitted_lt:(Maybe uint64) metadata:(Maybe MsgMetadata) = MsgEnvelope;
+	begins with {0101*}
+	size 22+1R..infty
+		field `cur_addr`: IntermediateAddress (used=0) (is_nat_subtype=0)
+		field `next_addr`: IntermediateAddress (used=0) (is_nat_subtype=0)
+		field `fwd_fee_remaining`: Grams (used=0) (is_nat_subtype=0)
+		field `msg`: ^(Message Any) (used=0) (is_nat_subtype=0)
+		field `emitted_lt`: Maybe uint64 (used=0) (is_nat_subtype=0)
+		field `metadata`: Maybe MsgMetadata (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(4) 
+  type size 20+1R..infty
+  type begins with {010*}
+
+type #1597: `MsgMetadata`, arity 0, 1 constructors
+  constructor `msg_metadata`
+	msg_metadata$0000 depth:uint32 initiator_addr:MsgAddressInt initiator_lt:uint64 = MsgMetadata;
+	begins with {0000*}
+	size 144..infty
+		field `depth`: uint32 (used=0) (is_nat_subtype=0)
+		field `initiator_addr`: MsgAddressInt (used=0) (is_nat_subtype=0)
+		field `initiator_lt`: uint64 (used=0) (is_nat_subtype=0)
+  type size 144..infty
+  type begins with {0000*}
+
+type #1598: `Transaction`, arity 0, 1 constructors
+  constructor `transaction`
+	transaction$0111 account_addr:bits256 lt:uint64 prev_trans_hash:bits256 prev_trans_lt:uint64 now:uint32 outmsg_cnt:uint15 orig_status:AccountStatus end_status:AccountStatus ^[$_ in_msg:(Maybe ^(Message Any)) out_msgs:(HashmapE 15 ^(Message Any)) ] total_fees:CurrencyCollection state_update:^(HASH_UPDATE Account) description:^TransactionDescr = Transaction;
+	begins with {0111*}
+	size 696+3R..984+4R
+		field `account_addr`: bits256 (used=0) (is_nat_subtype=0)
+		field `lt`: uint64 (used=0) (is_nat_subtype=0)
+		field `prev_trans_hash`: bits256 (used=0) (is_nat_subtype=0)
+		field `prev_trans_lt`: uint64 (used=0) (is_nat_subtype=0)
+		field `now`: uint32 (used=0) (is_nat_subtype=0)
+		field `outmsg_cnt`: uint15 (used=0) (is_nat_subtype=0)
+		field `orig_status`: AccountStatus (used=0) (is_nat_subtype=0)
+		field `end_status`: AccountStatus (used=0) (is_nat_subtype=0)
+		field `_`: ^[$_ in_msg:(Maybe ^(Message Any)) out_msgs:(HashmapE 15 ^(Message Any)) ] (used=0) (is_nat_subtype=0)
+		field `total_fees`: CurrencyCollection (used=0) (is_nat_subtype=0)
+		field `state_update`: ^(HASH_UPDATE Account) (used=0) (is_nat_subtype=0)
+		field `description`: ^TransactionDescr (used=0) (is_nat_subtype=0)
+  type size 696+3R..984+4R
+  type begins with {0111*}
+
+type #1599: `InMsg`, arity 0, 9 constructors
+  constructor `msg_import_ext`
+	msg_import_ext$000 msg:^(Message Any) transaction:^Transaction = InMsg;
+	begins with {000*}
+	size =3+2R (fixed) (any bits)
+		field `msg`: ^(Message Any) (used=0) (is_nat_subtype=0)
+		field `transaction`: ^Transaction (used=0) (is_nat_subtype=0)
+  constructor `msg_import_ihr`
+	msg_import_ihr$010 msg:^(Message Any) transaction:^Transaction ihr_fee:Grams proof_created:^Cell = InMsg;
+	begins with {010*}
+	size 3+3R..291+3R
+		field `msg`: ^(Message Any) (used=0) (is_nat_subtype=0)
+		field `transaction`: ^Transaction (used=0) (is_nat_subtype=0)
+		field `ihr_fee`: Grams (used=0) (is_nat_subtype=0)
+		field `proof_created`: ^Cell (used=0) (is_nat_subtype=0)
+  constructor `msg_import_imm`
+	msg_import_imm$011 in_msg:^MsgEnvelope transaction:^Transaction fwd_fee:Grams = InMsg;
+	begins with {011*}
+	size 3+2R..291+2R
+		field `in_msg`: ^MsgEnvelope (used=0) (is_nat_subtype=0)
+		field `transaction`: ^Transaction (used=0) (is_nat_subtype=0)
+		field `fwd_fee`: Grams (used=0) (is_nat_subtype=0)
+  constructor `msg_import_fin`
+	msg_import_fin$100 in_msg:^MsgEnvelope transaction:^Transaction fwd_fee:Grams = InMsg;
+	begins with {100*}
+	size 3+2R..291+2R
+		field `in_msg`: ^MsgEnvelope (used=0) (is_nat_subtype=0)
+		field `transaction`: ^Transaction (used=0) (is_nat_subtype=0)
+		field `fwd_fee`: Grams (used=0) (is_nat_subtype=0)
+  constructor `msg_import_tr`
+	msg_import_tr$101 in_msg:^MsgEnvelope out_msg:^MsgEnvelope transit_fee:Grams = InMsg;
+	begins with {101*}
+	size 3+2R..291+2R
+		field `in_msg`: ^MsgEnvelope (used=0) (is_nat_subtype=0)
+		field `out_msg`: ^MsgEnvelope (used=0) (is_nat_subtype=0)
+		field `transit_fee`: Grams (used=0) (is_nat_subtype=0)
+  constructor `msg_discard_fin`
+	msg_discard_fin$110 in_msg:^MsgEnvelope transaction_id:uint64 fwd_fee:Grams = InMsg;
+	begins with {110*}
+	size 67+1R..355+1R
+		field `in_msg`: ^MsgEnvelope (used=0) (is_nat_subtype=0)
+		field `transaction_id`: uint64 (used=0) (is_nat_subtype=0)
+		field `fwd_fee`: Grams (used=0) (is_nat_subtype=0)
+  constructor `msg_discard_tr`
+	msg_discard_tr$111 in_msg:^MsgEnvelope transaction_id:uint64 fwd_fee:Grams proof_delivered:^Cell = InMsg;
+	begins with {111*}
+	size 67+2R..355+2R
+		field `in_msg`: ^MsgEnvelope (used=0) (is_nat_subtype=0)
+		field `transaction_id`: uint64 (used=0) (is_nat_subtype=0)
+		field `fwd_fee`: Grams (used=0) (is_nat_subtype=0)
+		field `proof_delivered`: ^Cell (used=0) (is_nat_subtype=0)
+  constructor `msg_import_deferred_fin`
+	msg_import_deferred_fin#24_ in_msg:^MsgEnvelope transaction:^Transaction fwd_fee:Grams = InMsg;
+	begins with {00100*}
+	size 5+2R..293+2R
+		field `in_msg`: ^MsgEnvelope (used=0) (is_nat_subtype=0)
+		field `transaction`: ^Transaction (used=0) (is_nat_subtype=0)
+		field `fwd_fee`: Grams (used=0) (is_nat_subtype=0)
+  constructor `msg_import_deferred_tr`
+	msg_import_deferred_tr#2c_ in_msg:^MsgEnvelope out_msg:^MsgEnvelope = InMsg;
+	begins with {00101*}
+	size =5+2R (fixed) (any bits)
+		field `in_msg`: ^MsgEnvelope (used=0) (is_nat_subtype=0)
+		field `out_msg`: ^MsgEnvelope (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(5) 
+  type size 3+1R..355+3R
+  type begins with {000*,0010*,01*,1*}
+
+type #1600: `ImportFees`, arity 0, 1 constructors
+  constructor `import_fees`
+	import_fees$_ fees_collected:Grams value_imported:CurrencyCollection = ImportFees;
+	begins with {*}
+	size 1..577+1R
+		field `fees_collected`: Grams (used=0) (is_nat_subtype=0)
+		field `value_imported`: CurrencyCollection (used=0) (is_nat_subtype=0)
+  type size 1..577+1R
+  type begins with {*}
+
+type #1601: `InMsgDescr`, arity 0, 1 constructors
+  constructor `_` (simple forwarder)
+	_$_ (HashmapAugE 256 InMsg ImportFees) = InMsgDescr;
+	begins with {*}
+	size 1..infty
+		field `_`: HashmapAugE 256 InMsg ImportFees (used=0) (is_nat_subtype=0)
+  type size 1..infty
+  type begins with {*}
+
+type #1602: `OutMsg`, arity 0, 10 constructors
+  constructor `msg_export_ext`
+	msg_export_ext$000 msg:^(Message Any) transaction:^Transaction = OutMsg;
+	begins with {000*}
+	size =3+2R (fixed) (any bits)
+		field `msg`: ^(Message Any) (used=0) (is_nat_subtype=0)
+		field `transaction`: ^Transaction (used=0) (is_nat_subtype=0)
+  constructor `msg_export_imm`
+	msg_export_imm$010 out_msg:^MsgEnvelope transaction:^Transaction reimport:^InMsg = OutMsg;
+	begins with {010*}
+	size =3+3R (fixed) (any bits)
+		field `out_msg`: ^MsgEnvelope (used=0) (is_nat_subtype=0)
+		field `transaction`: ^Transaction (used=0) (is_nat_subtype=0)
+		field `reimport`: ^InMsg (used=0) (is_nat_subtype=0)
+  constructor `msg_export_new`
+	msg_export_new$001 out_msg:^MsgEnvelope transaction:^Transaction = OutMsg;
+	begins with {001*}
+	size =3+2R (fixed) (any bits)
+		field `out_msg`: ^MsgEnvelope (used=0) (is_nat_subtype=0)
+		field `transaction`: ^Transaction (used=0) (is_nat_subtype=0)
+  constructor `msg_export_tr`
+	msg_export_tr$011 out_msg:^MsgEnvelope imported:^InMsg = OutMsg;
+	begins with {011*}
+	size =3+2R (fixed) (any bits)
+		field `out_msg`: ^MsgEnvelope (used=0) (is_nat_subtype=0)
+		field `imported`: ^InMsg (used=0) (is_nat_subtype=0)
+  constructor `msg_export_deq`
+	msg_export_deq$1100 out_msg:^MsgEnvelope import_block_lt:uint63 = OutMsg;
+	begins with {1100*}
+	size =67+1R (fixed) (any bits)
+		field `out_msg`: ^MsgEnvelope (used=0) (is_nat_subtype=0)
+		field `import_block_lt`: uint63 (used=0) (is_nat_subtype=0)
+  constructor `msg_export_deq_short`
+	msg_export_deq_short$1101 msg_env_hash:bits256 next_workchain:int32 next_addr_pfx:uint64 import_block_lt:uint64 = OutMsg;
+	begins with {1101*}
+	size =420 (fixed) (any bits)
+		field `msg_env_hash`: bits256 (used=0) (is_nat_subtype=0)
+		field `next_workchain`: int32 (used=0) (is_nat_subtype=0)
+		field `next_addr_pfx`: uint64 (used=0) (is_nat_subtype=0)
+		field `import_block_lt`: uint64 (used=0) (is_nat_subtype=0)
+  constructor `msg_export_tr_req`
+	msg_export_tr_req$111 out_msg:^MsgEnvelope imported:^InMsg = OutMsg;
+	begins with {111*}
+	size =3+2R (fixed) (any bits)
+		field `out_msg`: ^MsgEnvelope (used=0) (is_nat_subtype=0)
+		field `imported`: ^InMsg (used=0) (is_nat_subtype=0)
+  constructor `msg_export_deq_imm`
+	msg_export_deq_imm$100 out_msg:^MsgEnvelope reimport:^InMsg = OutMsg;
+	begins with {100*}
+	size =3+2R (fixed) (any bits)
+		field `out_msg`: ^MsgEnvelope (used=0) (is_nat_subtype=0)
+		field `reimport`: ^InMsg (used=0) (is_nat_subtype=0)
+  constructor `msg_export_new_defer`
+	msg_export_new_defer#a4_ out_msg:^MsgEnvelope transaction:^Transaction = OutMsg;
+	begins with {10100*}
+	size =5+2R (fixed) (any bits)
+		field `out_msg`: ^MsgEnvelope (used=0) (is_nat_subtype=0)
+		field `transaction`: ^Transaction (used=0) (is_nat_subtype=0)
+  constructor `msg_export_deferred_tr`
+	msg_export_deferred_tr#ac_ out_msg:^MsgEnvelope imported:^InMsg = OutMsg;
+	begins with {10101*}
+	size =5+2R (fixed) (any bits)
+		field `out_msg`: ^MsgEnvelope (used=0) (is_nat_subtype=0)
+		field `imported`: ^InMsg (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(5) 
+  type size 3..420+3R
+  type begins with {0*,100*,1010*,11*}
+
+type #1603: `EnqueuedMsg`, arity 0, 1 constructors
+  constructor `_`
+	_$_ enqueued_lt:uint64 out_msg:^MsgEnvelope = EnqueuedMsg;
+	begins with {*}
+	size =64+1R (fixed) (any bits)
+		field `enqueued_lt`: uint64 (used=0) (is_nat_subtype=0)
+		field `out_msg`: ^MsgEnvelope (used=0) (is_nat_subtype=0)
+  type size =64+1R (fixed) (any bits)
+  type begins with {*}
+
+type #1604: `OutMsgDescr`, arity 0, 1 constructors
+  constructor `_` (simple forwarder)
+	_$_ (HashmapAugE 256 OutMsg CurrencyCollection) = OutMsgDescr;
+	begins with {*}
+	size 1..infty
+		field `_`: HashmapAugE 256 OutMsg CurrencyCollection (used=0) (is_nat_subtype=0)
+  type size 1..infty
+  type begins with {*}
+
+type #1605: `OutMsgQueue`, arity 0, 1 constructors
+  constructor `_` (simple forwarder)
+	_$_ (HashmapAugE 352 EnqueuedMsg uint64) = OutMsgQueue;
+	begins with {*}
+	size 1..infty
+		field `_`: HashmapAugE 352 EnqueuedMsg uint64 (used=0) (is_nat_subtype=0)
+  type size 1..infty
+  type begins with {*}
+
+type #1606: `ProcessedUpto`, arity 0, 1 constructors
+  constructor `processed_upto`
+	processed_upto$_ last_msg_lt:uint64 last_msg_hash:bits256 = ProcessedUpto;
+	begins with {*}
+	size =320 (fixed) (any bits)
+		field `last_msg_lt`: uint64 (used=0) (is_nat_subtype=0)
+		field `last_msg_hash`: bits256 (used=0) (is_nat_subtype=0)
+  type size =320 (fixed) (any bits)
+  type begins with {*}
+
+type #1607: `ProcessedInfo`, arity 0, 1 constructors
+  constructor `_` (simple forwarder)
+	_$_ (HashmapE 96 ProcessedUpto) = ProcessedInfo;
+	begins with {*}
+	size 1..1+1R (any bits)
+		field `_`: HashmapE 96 ProcessedUpto (used=0) (is_nat_subtype=0)
+  type size 1..1+1R (any bits)
+  type begins with {*}
+
+type #1608: `IhrPendingSince`, arity 0, 1 constructors
+  constructor `ihr_pending`
+	ihr_pending$_ import_lt:uint64 = IhrPendingSince;
+	begins with {*}
+	size =64 (fixed) (any bits)
+		field `import_lt`: uint64 (used=0) (is_nat_subtype=0)
+  type size =64 (fixed) (any bits)
+  type begins with {*}
+
+type #1609: `IhrPendingInfo`, arity 0, 1 constructors
+  constructor `_` (simple forwarder)
+	_$_ (HashmapE 320 IhrPendingSince) = IhrPendingInfo;
+	begins with {*}
+	size 1..1+1R (any bits)
+		field `_`: HashmapE 320 IhrPendingSince (used=0) (is_nat_subtype=0)
+  type size 1..1+1R (any bits)
+  type begins with {*}
+
+type #1610: `AccountDispatchQueue`, arity 0, 1 constructors
+  constructor `_`
+	_$_ messages:(HashmapE 64 EnqueuedMsg) count:uint48 = AccountDispatchQueue;
+	begins with {*}
+	size 49..49+1R (any bits)
+		field `messages`: HashmapE 64 EnqueuedMsg (used=0) (is_nat_subtype=0)
+		field `count`: uint48 (used=0) (is_nat_subtype=0)
+  type size 49..49+1R (any bits)
+  type begins with {*}
+
+type #1611: `DispatchQueue`, arity 0, 1 constructors
+  constructor `_` (simple forwarder)
+	_$_ (HashmapAugE 256 AccountDispatchQueue uint64) = DispatchQueue;
+	begins with {*}
+	size 1..infty
+		field `_`: HashmapAugE 256 AccountDispatchQueue uint64 (used=0) (is_nat_subtype=0)
+  type size 1..infty
+  type begins with {*}
+
+type #1612: `OutMsgQueueExtra`, arity 0, 1 constructors
+  constructor `out_msg_queue_extra`
+	out_msg_queue_extra$0000 dispatch_queue:DispatchQueue out_queue_size:(Maybe uint48) = OutMsgQueueExtra;
+	begins with {0000*}
+	size 6..infty
+		field `dispatch_queue`: DispatchQueue (used=0) (is_nat_subtype=0)
+		field `out_queue_size`: Maybe uint48 (used=0) (is_nat_subtype=0)
+  type size 6..infty
+  type begins with {0000*}
+
+type #1613: `OutMsgQueueInfo`, arity 0, 1 constructors
+  constructor `_`
+	_$_ out_queue:OutMsgQueue proc_info:ProcessedInfo extra:(Maybe OutMsgQueueExtra) = OutMsgQueueInfo;
+	begins with {*}
+	size 3..infty
+		field `out_queue`: OutMsgQueue (used=0) (is_nat_subtype=0)
+		field `proc_info`: ProcessedInfo (used=0) (is_nat_subtype=0)
+		field `extra`: Maybe OutMsgQueueExtra (used=0) (is_nat_subtype=0)
+  type size 3..infty
+  type begins with {*}
+
+type #1614: `StorageExtraInfo`, arity 0, 2 constructors
+  constructor `storage_extra_none`
+	storage_extra_none$000 = StorageExtraInfo;
+	begins with {000*}
+	size =3 (fixed) (any bits)
+  constructor `storage_extra_info`
+	storage_extra_info$001 dict_hash:uint256 = StorageExtraInfo;
+	begins with {001*}
+	size =259 (fixed) (any bits)
+		field `dict_hash`: uint256 (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(3) 
+  type size 3..259
+  type begins with {00*}
+
+type #1615: `StorageUsed`, arity 0, 1 constructors
+  constructor `storage_used`
+	storage_used$_ cells:(VarUInteger 7) bits:(VarUInteger 7) = StorageUsed;
+	begins with {*}
+	size 0..576
+		field `cells`: VarUInteger 7 (used=0) (is_nat_subtype=0)
+		field `bits`: VarUInteger 7 (used=0) (is_nat_subtype=0)
+  type size 0..576
+  type begins with {*}
+
+type #1616: `StorageInfo`, arity 0, 1 constructors
+  constructor `storage_info`
+	storage_info$_ used:StorageUsed storage_extra:StorageExtraInfo last_paid:uint32 due_payment:(Maybe Grams) = StorageInfo;
+	begins with {*}
+	size 36..infty
+		field `used`: StorageUsed (used=0) (is_nat_subtype=0)
+		field `storage_extra`: StorageExtraInfo (used=0) (is_nat_subtype=0)
+		field `last_paid`: uint32 (used=0) (is_nat_subtype=0)
+		field `due_payment`: Maybe Grams (used=0) (is_nat_subtype=0)
+  type size 36..infty
+  type begins with {*}
+
+type #1617: `Account`, arity 0, 2 constructors
+  constructor `account_none`
+	account_none$0 = Account;
+	begins with {0*}
+	size =1 (fixed) (any bits)
+  constructor `account`
+	account$1 addr:MsgAddressInt storage_stat:StorageInfo storage:AccountStorage = Account;
+	begins with {11*}
+	size 148..infty
+		field `addr`: MsgAddressInt (used=0) (is_nat_subtype=0)
+		field `storage_stat`: StorageInfo (used=0) (is_nat_subtype=0)
+		field `storage`: AccountStorage (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(1) 
+  type size 1..infty
+  type begins with {0*,11*}
+
+type #1618: `AccountStorage`, arity 0, 1 constructors
+  constructor `account_storage`
+	account_storage$_ last_trans_lt:uint64 balance:CurrencyCollection state:AccountState = AccountStorage;
+	begins with {*}
+	size 67..infty
+		field `last_trans_lt`: uint64 (used=0) (is_nat_subtype=0)
+		field `balance`: CurrencyCollection (used=0) (is_nat_subtype=0)
+		field `state`: AccountState (used=0) (is_nat_subtype=0)
+  type size 67..infty
+  type begins with {*}
+
+type #1619: `AccountState`, arity 0, 3 constructors
+  constructor `account_uninit`
+	account_uninit$00 = AccountState;
+	begins with {00*}
+	size =2 (fixed) (any bits)
+  constructor `account_active`
+	account_active$1 StateInit = AccountState;
+	begins with {1*}
+	size 6..infty
+		field `_`: StateInit (used=0) (is_nat_subtype=0)
+  constructor `account_frozen`
+	account_frozen$01 state_hash:bits256 = AccountState;
+	begins with {01*}
+	size =258 (fixed) (any bits)
+		field `state_hash`: bits256 (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(2) 
+  type size 2..infty
+  type begins with {*}
+
+type #1620: `AccountStatus`, arity 0, 4 constructors
+  constructor `acc_state_uninit`
+	acc_state_uninit$00 = AccountStatus;
+	begins with {00*}
+	size =2 (fixed) (any bits)
+  constructor `acc_state_frozen`
+	acc_state_frozen$01 = AccountStatus;
+	begins with {01*}
+	size =2 (fixed) (any bits)
+  constructor `acc_state_active`
+	acc_state_active$10 = AccountStatus;
+	begins with {10*}
+	size =2 (fixed) (any bits)
+  constructor `acc_state_nonexist`
+	acc_state_nonexist$11 = AccountStatus;
+	begins with {11*}
+	size =2 (fixed) (any bits)
+  (SIMPLE ENUM)
+  constructor detection: PFX(2) 
+  type size =2 (fixed) (any bits)
+  type begins with {*}
+
+type #1621: `ShardAccount`, arity 0, 1 constructors
+  constructor `account_descr`
+	account_descr$_ account:^Account last_trans_hash:bits256 last_trans_lt:uint64 = ShardAccount;
+	begins with {*}
+	size =320+1R (fixed) (any bits)
+		field `account`: ^Account (used=0) (is_nat_subtype=0)
+		field `last_trans_hash`: bits256 (used=0) (is_nat_subtype=0)
+		field `last_trans_lt`: uint64 (used=0) (is_nat_subtype=0)
+  type size =320+1R (fixed) (any bits)
+  type begins with {*}
+
+type #1622: `DepthBalanceInfo`, arity 0, 1 constructors
+  constructor `depth_balance`
+	depth_balance$_ split_depth:(#<= 30) balance:CurrencyCollection = DepthBalanceInfo;
+	begins with {*}
+	size 6..294+1R
+		field `split_depth`: #<= 30 (used=0) (is_nat_subtype=1)
+		field `balance`: CurrencyCollection (used=0) (is_nat_subtype=0)
+  type size 6..294+1R
+  type begins with {*}
+
+type #1623: `ShardAccounts`, arity 0, 1 constructors
+  constructor `_` (simple forwarder)
+	_$_ (HashmapAugE 256 ShardAccount DepthBalanceInfo) = ShardAccounts;
+	begins with {*}
+	size 1..infty
+		field `_`: HashmapAugE 256 ShardAccount DepthBalanceInfo (used=0) (is_nat_subtype=0)
+  type size 1..infty
+  type begins with {*}
+
+type #1624: `TYPE_1624`, arity 0, 1 constructors
+  constructor `_`
+	_$_ in_msg:(Maybe ^(Message Any)) out_msgs:(HashmapE 15 ^(Message Any)) = TYPE_1624;
+	begins with {*}
+	size 2..infty
+		field `in_msg`: Maybe ^(Message Any) (used=0) (is_nat_subtype=0)
+		field `out_msgs`: HashmapE 15 ^(Message Any) (used=0) (is_nat_subtype=0)
+  type size 2..infty
+  type begins with {*}
+
+type #1625: `HASH_UPDATE`, arity 1, 1 constructors
+  constructor `update_hashes`
+	update_hashes#72 {X:Type} old_hash:bits256 new_hash:bits256 = HASH_UPDATE X;
+	begins with {01110010*}
+	size =520 (fixed) (any bits)
+		field `X`: Type (used=0) (is_nat_subtype=0)
+		field `old_hash`: bits256 (used=0) (is_nat_subtype=0)
+		field `new_hash`: bits256 (used=0) (is_nat_subtype=0)
+  type size =520 (fixed)
+  type begins with {01110010*}
+
+type #1626: `TransactionDescr`, arity 0, 7 constructors
+  constructor `trans_ord`
+	trans_ord$0000 credit_first:Bool storage_ph:(Maybe TrStoragePhase) credit_ph:(Maybe TrCreditPhase) compute_ph:TrComputePhase action:(Maybe ^TrActionPhase) aborted:Bool bounce:(Maybe TrBouncePhase) destroyed:Bool = TransactionDescr;
+	begins with {0000*}
+	size 14..infty
+		field `credit_first`: Bool (used=0) (is_nat_subtype=0)
+		field `storage_ph`: Maybe TrStoragePhase (used=0) (is_nat_subtype=0)
+		field `credit_ph`: Maybe TrCreditPhase (used=0) (is_nat_subtype=0)
+		field `compute_ph`: TrComputePhase (used=0) (is_nat_subtype=0)
+		field `action`: Maybe ^TrActionPhase (used=0) (is_nat_subtype=0)
+		field `aborted`: Bool (used=0) (is_nat_subtype=0)
+		field `bounce`: Maybe TrBouncePhase (used=0) (is_nat_subtype=0)
+		field `destroyed`: Bool (used=0) (is_nat_subtype=0)
+  constructor `trans_storage`
+	trans_storage$0001 storage_ph:TrStoragePhase = TransactionDescr;
+	begins with {0001*}
+	size 6..infty
+		field `storage_ph`: TrStoragePhase (used=0) (is_nat_subtype=0)
+  constructor `trans_tick_tock`
+	trans_tick_tock$001 is_tock:Bool storage_ph:TrStoragePhase compute_ph:TrComputePhase action:(Maybe ^TrActionPhase) aborted:Bool destroyed:Bool = TransactionDescr;
+	begins with {001*}
+	size 12..infty
+		field `is_tock`: Bool (used=0) (is_nat_subtype=0)
+		field `storage_ph`: TrStoragePhase (used=0) (is_nat_subtype=0)
+		field `compute_ph`: TrComputePhase (used=0) (is_nat_subtype=0)
+		field `action`: Maybe ^TrActionPhase (used=0) (is_nat_subtype=0)
+		field `aborted`: Bool (used=0) (is_nat_subtype=0)
+		field `destroyed`: Bool (used=0) (is_nat_subtype=0)
+  constructor `trans_split_prepare`
+	trans_split_prepare$0100 split_info:SplitMergeInfo storage_ph:(Maybe TrStoragePhase) compute_ph:TrComputePhase action:(Maybe ^TrActionPhase) aborted:Bool destroyed:Bool = TransactionDescr;
+	begins with {0100*}
+	size 535..infty
+		field `split_info`: SplitMergeInfo (used=0) (is_nat_subtype=0)
+		field `storage_ph`: Maybe TrStoragePhase (used=0) (is_nat_subtype=0)
+		field `compute_ph`: TrComputePhase (used=0) (is_nat_subtype=0)
+		field `action`: Maybe ^TrActionPhase (used=0) (is_nat_subtype=0)
+		field `aborted`: Bool (used=0) (is_nat_subtype=0)
+		field `destroyed`: Bool (used=0) (is_nat_subtype=0)
+  constructor `trans_split_install`
+	trans_split_install$0101 split_info:SplitMergeInfo prepare_transaction:^Transaction installed:Bool = TransactionDescr;
+	begins with {0101*}
+	size =529+1R (fixed) (any bits)
+		field `split_info`: SplitMergeInfo (used=0) (is_nat_subtype=0)
+		field `prepare_transaction`: ^Transaction (used=0) (is_nat_subtype=0)
+		field `installed`: Bool (used=0) (is_nat_subtype=0)
+  constructor `trans_merge_prepare`
+	trans_merge_prepare$0110 split_info:SplitMergeInfo storage_ph:TrStoragePhase aborted:Bool = TransactionDescr;
+	begins with {0110*}
+	size 531..infty
+		field `split_info`: SplitMergeInfo (used=0) (is_nat_subtype=0)
+		field `storage_ph`: TrStoragePhase (used=0) (is_nat_subtype=0)
+		field `aborted`: Bool (used=0) (is_nat_subtype=0)
+  constructor `trans_merge_install`
+	trans_merge_install$0111 split_info:SplitMergeInfo prepare_transaction:^Transaction storage_ph:(Maybe TrStoragePhase) credit_ph:(Maybe TrCreditPhase) compute_ph:TrComputePhase action:(Maybe ^TrActionPhase) aborted:Bool destroyed:Bool = TransactionDescr;
+	begins with {0111*}
+	size 536+1R..infty
+		field `split_info`: SplitMergeInfo (used=0) (is_nat_subtype=0)
+		field `prepare_transaction`: ^Transaction (used=0) (is_nat_subtype=0)
+		field `storage_ph`: Maybe TrStoragePhase (used=0) (is_nat_subtype=0)
+		field `credit_ph`: Maybe TrCreditPhase (used=0) (is_nat_subtype=0)
+		field `compute_ph`: TrComputePhase (used=0) (is_nat_subtype=0)
+		field `action`: Maybe ^TrActionPhase (used=0) (is_nat_subtype=0)
+		field `aborted`: Bool (used=0) (is_nat_subtype=0)
+		field `destroyed`: Bool (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(4) 
+  type size 6..infty
+  type begins with {0*}
+
+type #1627: `MERKLE_UPDATE`, arity 1, 1 constructors
+  constructor `!merkle_update`
+	!merkle_update#04 {X:Type} old_hash:bits256 new_hash:bits256 old_depth:uint16 new_depth:uint16 old:^X new:^X = MERKLE_UPDATE X;
+	begins with {00000100*}
+	size =552+2R (fixed) (any bits)
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `old_hash`: bits256 (used=0) (is_nat_subtype=0)
+		field `new_hash`: bits256 (used=0) (is_nat_subtype=0)
+		field `old_depth`: uint16 (used=0) (is_nat_subtype=0)
+		field `new_depth`: uint16 (used=0) (is_nat_subtype=0)
+		field `old`: ^_1 (used=0) (is_nat_subtype=0)
+		field `new`: ^_1 (used=0) (is_nat_subtype=0)
+  type size =552+2R (fixed)
+  type begins with {00000100*}
+
+type #1628: `MERKLE_PROOF`, arity 1, 1 constructors
+  constructor `!merkle_proof`
+	!merkle_proof#03 {X:Type} virtual_hash:bits256 depth:uint16 virtual_root:^X = MERKLE_PROOF X;
+	begins with {00000011*}
+	size =280+1R (fixed) (any bits)
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `virtual_hash`: bits256 (used=0) (is_nat_subtype=0)
+		field `depth`: uint16 (used=0) (is_nat_subtype=0)
+		field `virtual_root`: ^_1 (used=0) (is_nat_subtype=0)
+  type size =280+1R (fixed)
+  type begins with {00000011*}
+
+type #1629: `AccountBlock`, arity 0, 1 constructors
+  constructor `acc_trans`
+	acc_trans$0101 account_addr:bits256 transactions:(HashmapAug 64 ^Transaction CurrencyCollection) state_update:^(HASH_UPDATE Account) = AccountBlock;
+	begins with {0101*}
+	size 262+1R..infty
+		field `account_addr`: bits256 (used=0) (is_nat_subtype=0)
+		field `transactions`: HashmapAug 64 ^Transaction CurrencyCollection (used=0) (is_nat_subtype=0)
+		field `state_update`: ^(HASH_UPDATE Account) (used=0) (is_nat_subtype=0)
+  type size 262+1R..infty
+  type begins with {0101*}
+
+type #1630: `ShardAccountBlocks`, arity 0, 1 constructors
+  constructor `_` (simple forwarder)
+	_$_ (HashmapAugE 256 AccountBlock CurrencyCollection) = ShardAccountBlocks;
+	begins with {*}
+	size 1..infty
+		field `_`: HashmapAugE 256 AccountBlock CurrencyCollection (used=0) (is_nat_subtype=0)
+  type size 1..infty
+  type begins with {*}
+
+type #1631: `AccStatusChange`, arity 0, 3 constructors
+  constructor `acst_unchanged`
+	acst_unchanged$0 = AccStatusChange;
+	begins with {0*}
+	size =1 (fixed) (any bits)
+  constructor `acst_frozen`
+	acst_frozen$10 = AccStatusChange;
+	begins with {10*}
+	size =2 (fixed) (any bits)
+  constructor `acst_deleted`
+	acst_deleted$11 = AccStatusChange;
+	begins with {11*}
+	size =2 (fixed) (any bits)
+  (SIMPLE ENUM)
+  constructor detection: PFX(2) 
+  type size 1..2 (any bits)
+  type begins with {*}
+
+type #1632: `TrStoragePhase`, arity 0, 1 constructors
+  constructor `tr_phase_storage`
+	tr_phase_storage$_ storage_fees_collected:Grams storage_fees_due:(Maybe Grams) status_change:AccStatusChange = TrStoragePhase;
+	begins with {*}
+	size 2..infty
+		field `storage_fees_collected`: Grams (used=0) (is_nat_subtype=0)
+		field `storage_fees_due`: Maybe Grams (used=0) (is_nat_subtype=0)
+		field `status_change`: AccStatusChange (used=0) (is_nat_subtype=0)
+  type size 2..infty
+  type begins with {*}
+
+type #1633: `TrCreditPhase`, arity 0, 1 constructors
+  constructor `tr_phase_credit`
+	tr_phase_credit$_ due_fees_collected:(Maybe Grams) credit:CurrencyCollection = TrCreditPhase;
+	begins with {*}
+	size 2..infty
+		field `due_fees_collected`: Maybe Grams (used=0) (is_nat_subtype=0)
+		field `credit`: CurrencyCollection (used=0) (is_nat_subtype=0)
+  type size 2..infty
+  type begins with {*}
+
+type #1634: `ComputeSkipReason`, arity 0, 4 constructors
+  constructor `cskip_no_state`
+	cskip_no_state$00 = ComputeSkipReason;
+	begins with {00*}
+	size =2 (fixed) (any bits)
+  constructor `cskip_bad_state`
+	cskip_bad_state$01 = ComputeSkipReason;
+	begins with {01*}
+	size =2 (fixed) (any bits)
+  constructor `cskip_no_gas`
+	cskip_no_gas$10 = ComputeSkipReason;
+	begins with {10*}
+	size =2 (fixed) (any bits)
+  constructor `cskip_suspended`
+	cskip_suspended$110 = ComputeSkipReason;
+	begins with {110*}
+	size =3 (fixed) (any bits)
+  (SIMPLE ENUM)
+  constructor detection: PFX(2) 
+  type size 2..3
+  type begins with {0*,10*,110*}
+
+type #1635: `TrComputePhase`, arity 0, 2 constructors
+  constructor `tr_phase_compute_skipped`
+	tr_phase_compute_skipped$0 reason:ComputeSkipReason = TrComputePhase;
+	begins with {00*,010*,0110*}
+	size 3..4
+		field `reason`: ComputeSkipReason (used=0) (is_nat_subtype=0)
+  constructor `tr_phase_compute_vm`
+	tr_phase_compute_vm$1 success:Bool msg_state_used:Bool account_activated:Bool gas_fees:Grams ^[$_ gas_used:(VarUInteger 7) gas_limit:(VarUInteger 7) gas_credit:(Maybe (VarUInteger 3)) mode:int8 exit_code:int32 exit_arg:(Maybe int32) vm_steps:uint32 vm_init_state_hash:bits256 vm_final_state_hash:bits256 ] = TrComputePhase;
+	begins with {1*}
+	size 4+1R..292+1R
+		field `success`: Bool (used=0) (is_nat_subtype=0)
+		field `msg_state_used`: Bool (used=0) (is_nat_subtype=0)
+		field `account_activated`: Bool (used=0) (is_nat_subtype=0)
+		field `gas_fees`: Grams (used=0) (is_nat_subtype=0)
+		field `_`: ^[$_ gas_used:(VarUInteger 7) gas_limit:(VarUInteger 7) gas_credit:(Maybe (VarUInteger 3)) mode:int8 exit_code:int32 exit_arg:(Maybe int32) vm_steps:uint32 vm_init_state_hash:bits256 vm_final_state_hash:bits256 ] (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(1) 
+  type size 3..292+1R
+  type begins with {00*,010*,0110*,1*}
+
+type #1636: `TYPE_1636`, arity 0, 1 constructors
+  constructor `_`
+	_$_ gas_used:(VarUInteger 7) gas_limit:(VarUInteger 7) gas_credit:(Maybe (VarUInteger 3)) mode:int8 exit_code:int32 exit_arg:(Maybe int32) vm_steps:uint32 vm_init_state_hash:bits256 vm_final_state_hash:bits256 = TYPE_1636;
+	begins with {*}
+	size 586..infty
+		field `gas_used`: VarUInteger 7 (used=0) (is_nat_subtype=0)
+		field `gas_limit`: VarUInteger 7 (used=0) (is_nat_subtype=0)
+		field `gas_credit`: Maybe (VarUInteger 3) (used=0) (is_nat_subtype=0)
+		field `mode`: int8 (used=0) (is_nat_subtype=0)
+		field `exit_code`: int32 (used=0) (is_nat_subtype=0)
+		field `exit_arg`: Maybe int32 (used=0) (is_nat_subtype=0)
+		field `vm_steps`: uint32 (used=0) (is_nat_subtype=0)
+		field `vm_init_state_hash`: bits256 (used=0) (is_nat_subtype=0)
+		field `vm_final_state_hash`: bits256 (used=0) (is_nat_subtype=0)
+  type size 586..infty
+  type begins with {*}
+
+type #1637: `TrActionPhase`, arity 0, 1 constructors
+  constructor `tr_phase_action`
+	tr_phase_action$_ success:Bool valid:Bool no_funds:Bool status_change:AccStatusChange total_fwd_fees:(Maybe Grams) total_action_fees:(Maybe Grams) result_code:int32 result_arg:(Maybe int32) tot_actions:uint16 spec_actions:uint16 skipped_actions:uint16 msgs_created:uint16 action_list_hash:bits256 tot_msg_size:StorageUsed = TrActionPhase;
+	begins with {*}
+	size 359..infty
+		field `success`: Bool (used=0) (is_nat_subtype=0)
+		field `valid`: Bool (used=0) (is_nat_subtype=0)
+		field `no_funds`: Bool (used=0) (is_nat_subtype=0)
+		field `status_change`: AccStatusChange (used=0) (is_nat_subtype=0)
+		field `total_fwd_fees`: Maybe Grams (used=0) (is_nat_subtype=0)
+		field `total_action_fees`: Maybe Grams (used=0) (is_nat_subtype=0)
+		field `result_code`: int32 (used=0) (is_nat_subtype=0)
+		field `result_arg`: Maybe int32 (used=0) (is_nat_subtype=0)
+		field `tot_actions`: uint16 (used=0) (is_nat_subtype=0)
+		field `spec_actions`: uint16 (used=0) (is_nat_subtype=0)
+		field `skipped_actions`: uint16 (used=0) (is_nat_subtype=0)
+		field `msgs_created`: uint16 (used=0) (is_nat_subtype=0)
+		field `action_list_hash`: bits256 (used=0) (is_nat_subtype=0)
+		field `tot_msg_size`: StorageUsed (used=0) (is_nat_subtype=0)
+  type size 359..infty
+  type begins with {*}
+
+type #1638: `TrBouncePhase`, arity 0, 3 constructors
+  constructor `tr_phase_bounce_negfunds`
+	tr_phase_bounce_negfunds$00 = TrBouncePhase;
+	begins with {00*}
+	size =2 (fixed) (any bits)
+  constructor `tr_phase_bounce_nofunds`
+	tr_phase_bounce_nofunds$01 msg_size:StorageUsed req_fwd_fees:Grams = TrBouncePhase;
+	begins with {01*}
+	size 2..866
+		field `msg_size`: StorageUsed (used=0) (is_nat_subtype=0)
+		field `req_fwd_fees`: Grams (used=0) (is_nat_subtype=0)
+  constructor `tr_phase_bounce_ok`
+	tr_phase_bounce_ok$1 msg_size:StorageUsed msg_fees:Grams fwd_fees:Grams = TrBouncePhase;
+	begins with {1*}
+	size 1..1153
+		field `msg_size`: StorageUsed (used=0) (is_nat_subtype=0)
+		field `msg_fees`: Grams (used=0) (is_nat_subtype=0)
+		field `fwd_fees`: Grams (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(2) 
+  type size 1..1153
+  type begins with {*}
+
+type #1639: `SplitMergeInfo`, arity 0, 1 constructors
+  constructor `split_merge_info`
+	split_merge_info$_ cur_shard_pfx_len:(## 6) acc_split_depth:(## 6) this_addr:bits256 sibling_addr:bits256 = SplitMergeInfo;
+	begins with {*}
+	size =524 (fixed) (any bits)
+		field `cur_shard_pfx_len`: ## 6 (used=0) (is_nat_subtype=1)
+		field `acc_split_depth`: ## 6 (used=0) (is_nat_subtype=1)
+		field `this_addr`: bits256 (used=0) (is_nat_subtype=0)
+		field `sibling_addr`: bits256 (used=0) (is_nat_subtype=0)
+  type size =524 (fixed) (any bits)
+  type begins with {*}
+
+type #1640: `SmartContractInfo`, arity 0, 1 constructors
+  constructor `smc_info`
+	smc_info#076ef1ea actions:uint16 msgs_sent:uint16 unixtime:uint32 block_lt:uint64 trans_lt:uint64 rand_seed:bits256 balance_remaining:CurrencyCollection myself:MsgAddressInt global_config:(Maybe Cell) = SmartContractInfo;
+	begins with {00000111011011101111000111101010*}
+	size 526..infty
+		field `actions`: uint16 (used=0) (is_nat_subtype=0)
+		field `msgs_sent`: uint16 (used=0) (is_nat_subtype=0)
+		field `unixtime`: uint32 (used=0) (is_nat_subtype=0)
+		field `block_lt`: uint64 (used=0) (is_nat_subtype=0)
+		field `trans_lt`: uint64 (used=0) (is_nat_subtype=0)
+		field `rand_seed`: bits256 (used=0) (is_nat_subtype=0)
+		field `balance_remaining`: CurrencyCollection (used=0) (is_nat_subtype=0)
+		field `myself`: MsgAddressInt (used=0) (is_nat_subtype=0)
+		field `global_config`: Maybe Cell (used=0) (is_nat_subtype=0)
+  type size 526..infty
+  type begins with {00000111011011101111000111101010*}
+
+type #1641: `OutList`, arity 1, 2 constructors
+  constructor `out_list_empty`
+	out_list_empty$_ = OutList 0;
+	begins with {*}
+	admissibility [1000]
+	size =0 (fixed) (any bits)
+  constructor `out_list`
+	out_list$_ {n:#} prev:^(OutList n) action:OutAction = OutList (n + 1);
+	begins with {00001110110000111100100001101101*,00100110111110100001110111010100*,00110110111001101011100000001001*,10101101010011011110000010001110*}
+	admissibility [0111]
+	size 32+1R..329+2R
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `prev`: ^(OutList _1) (used=0) (is_nat_subtype=0)
+		field `action`: OutAction (used=0) (is_nat_subtype=0)
+  constructor detection: PARAM 
+  type size 0..329+2R
+  type begins with {*}
+  type admissibility [1111]
+
+type #1642: `OutAction`, arity 0, 4 constructors
+  constructor `action_send_msg`
+	action_send_msg#0ec3c86d mode:(## 8) out_msg:^(MessageRelaxed Any) = OutAction;
+	begins with {00001110110000111100100001101101*}
+	size =40+1R (fixed) (any bits)
+		field `mode`: ## 8 (used=0) (is_nat_subtype=1)
+		field `out_msg`: ^(MessageRelaxed Any) (used=0) (is_nat_subtype=0)
+  constructor `action_set_code`
+	action_set_code#ad4de08e new_code:^Cell = OutAction;
+	begins with {10101101010011011110000010001110*}
+	size =32+1R (fixed) (any bits)
+		field `new_code`: ^Cell (used=0) (is_nat_subtype=0)
+  constructor `action_reserve_currency`
+	action_reserve_currency#36e6b809 mode:(## 8) currency:CurrencyCollection = OutAction;
+	begins with {00110110111001101011100000001001*}
+	size 41..329+1R
+		field `mode`: ## 8 (used=0) (is_nat_subtype=1)
+		field `currency`: CurrencyCollection (used=0) (is_nat_subtype=0)
+  constructor `action_change_library`
+	action_change_library#26fa1dd4 mode:(## 7) libref:LibRef = OutAction;
+	begins with {00100110111110100001110111010100*}
+	size 40..296+1R (any bits)
+		field `mode`: ## 7 (used=0) (is_nat_subtype=1)
+		field `libref`: LibRef (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(4) 
+  type size 32..329+1R
+  type begins with {00001110110000111100100001101101*,00100110111110100001110111010100*,00110110111001101011100000001001*,10101101010011011110000010001110*}
+
+type #1643: `LibRef`, arity 0, 2 constructors
+  constructor `libref_hash`
+	libref_hash$0 lib_hash:bits256 = LibRef;
+	begins with {0*}
+	size =257 (fixed) (any bits)
+		field `lib_hash`: bits256 (used=0) (is_nat_subtype=0)
+  constructor `libref_ref`
+	libref_ref$1 library:^Cell = LibRef;
+	begins with {1*}
+	size =1+1R (fixed) (any bits)
+		field `library`: ^Cell (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(1) 
+  type size 1..257+1R (any bits)
+  type begins with {*}
+
+type #1644: `OutListNode`, arity 0, 1 constructors
+  constructor `out_list_node`
+	out_list_node$_ prev:^Cell action:OutAction = OutListNode;
+	begins with {00001110110000111100100001101101*,00100110111110100001110111010100*,00110110111001101011100000001001*,10101101010011011110000010001110*}
+	size 32+1R..329+2R
+		field `prev`: ^Cell (used=0) (is_nat_subtype=0)
+		field `action`: OutAction (used=0) (is_nat_subtype=0)
+  type size 32+1R..329+2R
+  type begins with {00001110110000111100100001101101*,00100110111110100001110111010100*,00110110111001101011100000001001*,10101101010011011110000010001110*}
+
+type #1645: `ShardIdent`, arity 0, 1 constructors
+  constructor `shard_ident`
+	shard_ident$00 shard_pfx_bits:(#<= 60) workchain_id:int32 shard_prefix:uint64 = ShardIdent;
+	begins with {00*}
+	size =104 (fixed)
+		field `shard_pfx_bits`: #<= 60 (used=0) (is_nat_subtype=1)
+		field `workchain_id`: int32 (used=0) (is_nat_subtype=0)
+		field `shard_prefix`: uint64 (used=0) (is_nat_subtype=0)
+  type size =104 (fixed)
+  type begins with {00*}
+
+type #1646: `ExtBlkRef`, arity 0, 1 constructors
+  constructor `ext_blk_ref`
+	ext_blk_ref$_ end_lt:uint64 seq_no:uint32 root_hash:bits256 file_hash:bits256 = ExtBlkRef;
+	begins with {*}
+	size =608 (fixed) (any bits)
+		field `end_lt`: uint64 (used=0) (is_nat_subtype=0)
+		field `seq_no`: uint32 (used=0) (is_nat_subtype=0)
+		field `root_hash`: bits256 (used=0) (is_nat_subtype=0)
+		field `file_hash`: bits256 (used=0) (is_nat_subtype=0)
+  type size =608 (fixed) (any bits)
+  type begins with {*}
+
+type #1647: `BlockIdExt`, arity 0, 1 constructors
+  constructor `block_id_ext`
+	block_id_ext$_ shard_id:ShardIdent seq_no:uint32 root_hash:bits256 file_hash:bits256 = BlockIdExt;
+	begins with {00*}
+	size =648 (fixed)
+		field `shard_id`: ShardIdent (used=0) (is_nat_subtype=0)
+		field `seq_no`: uint32 (used=0) (is_nat_subtype=0)
+		field `root_hash`: bits256 (used=0) (is_nat_subtype=0)
+		field `file_hash`: bits256 (used=0) (is_nat_subtype=0)
+  type size =648 (fixed)
+  type begins with {00*}
+
+type #1648: `BlkMasterInfo`, arity 0, 1 constructors
+  constructor `master_info`
+	master_info$_ master:ExtBlkRef = BlkMasterInfo;
+	begins with {*}
+	size =608 (fixed) (any bits)
+		field `master`: ExtBlkRef (used=0) (is_nat_subtype=0)
+  type size =608 (fixed) (any bits)
+  type begins with {*}
+
+type #1649: `LibDescr`, arity 0, 1 constructors
+  constructor `shared_lib_descr`
+	shared_lib_descr$00 lib:^Cell publishers:(Hashmap 256 True) = LibDescr;
+	begins with {00*}
+	size 4+1R..infty
+		field `lib`: ^Cell (used=0) (is_nat_subtype=0)
+		field `publishers`: Hashmap 256 True (used=0) (is_nat_subtype=0)
+  type size 4+1R..infty
+  type begins with {00*}
+
+type #1650: `TYPE_1650`, arity 0, 1 constructors
+  constructor `_`
+	_$_ overload_history:uint64 underload_history:uint64 total_balance:CurrencyCollection total_validator_fees:CurrencyCollection libraries:(HashmapE 256 LibDescr) master_ref:(Maybe BlkMasterInfo) = TYPE_1650;
+	begins with {*}
+	size 132..infty
+		field `overload_history`: uint64 (used=0) (is_nat_subtype=0)
+		field `underload_history`: uint64 (used=0) (is_nat_subtype=0)
+		field `total_balance`: CurrencyCollection (used=0) (is_nat_subtype=0)
+		field `total_validator_fees`: CurrencyCollection (used=0) (is_nat_subtype=0)
+		field `libraries`: HashmapE 256 LibDescr (used=0) (is_nat_subtype=0)
+		field `master_ref`: Maybe BlkMasterInfo (used=0) (is_nat_subtype=0)
+  type size 132..infty
+  type begins with {*}
+
+type #1651: `McStateExtra`, arity 0, 1 constructors
+  constructor `masterchain_state_extra`
+	masterchain_state_extra#cc26 shard_hashes:ShardHashes config:ConfigParams ^[$_ flags:(## 16) {<= flags 1} validator_info:ValidatorInfo prev_blocks:OldMcBlocksInfo after_key_block:Bool last_key_block:(Maybe ExtBlkRef) block_create_stats:flags.0?BlockCreateStats ] global_balance:CurrencyCollection = McStateExtra;
+	begins with {1100110000100110*}
+	size 274+2R..562+4R
+		field `shard_hashes`: ShardHashes (used=0) (is_nat_subtype=0)
+		field `config`: ConfigParams (used=0) (is_nat_subtype=0)
+		field `_`: ^[$_ flags:(## 16) {<= flags 1} validator_info:ValidatorInfo prev_blocks:OldMcBlocksInfo after_key_block:Bool last_key_block:(Maybe ExtBlkRef) block_create_stats:flags.0?BlockCreateStats ] (used=0) (is_nat_subtype=0)
+		field `global_balance`: CurrencyCollection (used=0) (is_nat_subtype=0)
+  type size 274+2R..562+4R
+  type begins with {1100110000100110*}
+
+type #1652: `ShardStateUnsplit`, arity 0, 1 constructors
+  constructor `shard_state`
+	shard_state#9023afe2 global_id:int32 shard_id:ShardIdent seq_no:uint32 vert_seq_no:# gen_utime:uint32 gen_lt:uint64 min_ref_mc_seqno:uint32 out_msg_queue_info:^OutMsgQueueInfo before_split:(## 1) accounts:^ShardAccounts ^[$_ overload_history:uint64 underload_history:uint64 total_balance:CurrencyCollection total_validator_fees:CurrencyCollection libraries:(HashmapE 256 LibDescr) master_ref:(Maybe BlkMasterInfo) ] custom:(Maybe ^McStateExtra) = ShardStateUnsplit;
+	begins with {10010000001000111010111111100010*}
+	size 362+3R..infty
+		field `global_id`: int32 (used=0) (is_nat_subtype=0)
+		field `shard_id`: ShardIdent (used=0) (is_nat_subtype=0)
+		field `seq_no`: uint32 (used=0) (is_nat_subtype=0)
+		field `vert_seq_no`: # (used=0) (is_nat_subtype=1)
+		field `gen_utime`: uint32 (used=0) (is_nat_subtype=0)
+		field `gen_lt`: uint64 (used=0) (is_nat_subtype=0)
+		field `min_ref_mc_seqno`: uint32 (used=0) (is_nat_subtype=0)
+		field `out_msg_queue_info`: ^OutMsgQueueInfo (used=0) (is_nat_subtype=0)
+		field `before_split`: ## 1 (used=0) (is_nat_subtype=1)
+		field `accounts`: ^ShardAccounts (used=0) (is_nat_subtype=0)
+		field `_`: ^[$_ overload_history:uint64 underload_history:uint64 total_balance:CurrencyCollection total_validator_fees:CurrencyCollection libraries:(HashmapE 256 LibDescr) master_ref:(Maybe BlkMasterInfo) ] (used=0) (is_nat_subtype=0)
+		field `custom`: Maybe ^McStateExtra (used=0) (is_nat_subtype=0)
+  type size 362+3R..infty
+  type begins with {10010000001000111010111111100010*}
+
+type #1653: `ShardState`, arity 0, 2 constructors
+  constructor `_` (simple forwarder)
+	_$_ ShardStateUnsplit = ShardState;
+	begins with {10010000001000111010111111100010*}
+	size 362+3R..infty
+		field `_`: ShardStateUnsplit (used=0) (is_nat_subtype=0)
+  constructor `split_state`
+	split_state#5f327da5 left:^ShardStateUnsplit right:^ShardStateUnsplit = ShardState;
+	begins with {01011111001100100111110110100101*}
+	size =32+2R (fixed) (any bits)
+		field `left`: ^ShardStateUnsplit (used=0) (is_nat_subtype=0)
+		field `right`: ^ShardStateUnsplit (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(1) 
+  type size 32+2R..infty
+  type begins with {01011111001100100111110110100101*,10010000001000111010111111100010*}
+
+type #1654: `GlobalVersion`, arity 0, 1 constructors
+  constructor `capabilities`
+	capabilities#c4 version:uint32 capabilities:uint64 = GlobalVersion;
+	begins with {11000100*}
+	size =104 (fixed) (any bits)
+		field `version`: uint32 (used=0) (is_nat_subtype=0)
+		field `capabilities`: uint64 (used=0) (is_nat_subtype=0)
+  type size =104 (fixed)
+  type begins with {11000100*}
+
+type #1655: `BlkPrevInfo`, arity 1, 2 constructors
+  constant parameters: const
+  constructor `prev_blk_info`
+	prev_blk_info$_ prev:ExtBlkRef = BlkPrevInfo 0;
+	begins with {*}
+	admissibility [1000]
+	constant parameter #1 = 0
+	size =608 (fixed) (any bits)
+		field `prev`: ExtBlkRef (used=0) (is_nat_subtype=0)
+  constructor `prev_blks_info`
+	prev_blks_info$_ prev1:^ExtBlkRef prev2:^ExtBlkRef = BlkPrevInfo 1;
+	begins with {*}
+	admissibility [0100]
+	constant parameter #1 = 1
+	size =0+2R (fixed) (any bits)
+		field `prev1`: ^ExtBlkRef (used=0) (is_nat_subtype=0)
+		field `prev2`: ^ExtBlkRef (used=0) (is_nat_subtype=0)
+  constructor detection: PARAM CONST_PARAM 
+  type size 0..608+2R (any bits)
+  type begins with {*}
+  type admissibility [1100]
+
+type #1656: `BlockInfo`, arity 0, 1 constructors
+  constructor `block_info`
+	block_info#9bc7a987 version:uint32 not_master:(## 1) after_merge:(## 1) before_split:(## 1) after_split:(## 1) want_split:Bool want_merge:Bool key_block:Bool vert_seqno_incr:(## 1) flags:(## 8) {<= flags 1} seq_no:# vert_seq_no:# {<= vert_seqno_incr vert_seq_no} {prev_seq_no:#} {= (~prev_seq_no + 1) seq_no} shard:ShardIdent gen_utime:uint32 start_lt:uint64 end_lt:uint64 gen_validator_list_hash_short:uint32 gen_catchain_seqno:uint32 min_ref_mc_seqno:uint32 prev_key_block_seqno:uint32 gen_software:flags.0?GlobalVersion master_ref:not_master?^BlkMasterInfo prev_ref:^(BlkPrevInfo after_merge) prev_vert_ref:vert_seqno_incr?^(BlkPrevInfo 0) = BlockInfo;
+	begins with {10011011110001111010100110000111*}
+	size 536+1R..640+3R
+		field `version`: uint32 (used=0) (is_nat_subtype=0)
+		field `not_master`: ## 1 (used=1) (is_nat_subtype=1)
+		field `after_merge`: ## 1 (used=1) (is_nat_subtype=1)
+		field `before_split`: ## 1 (used=0) (is_nat_subtype=1)
+		field `after_split`: ## 1 (used=0) (is_nat_subtype=1)
+		field `want_split`: Bool (used=0) (is_nat_subtype=0)
+		field `want_merge`: Bool (used=0) (is_nat_subtype=0)
+		field `key_block`: Bool (used=0) (is_nat_subtype=0)
+		field `vert_seqno_incr`: ## 1 (used=1) (is_nat_subtype=1)
+		field `flags`: ## 8 (used=1) (is_nat_subtype=1)
+		field `_`: <= _10 1 (used=0) (is_nat_subtype=0)
+		field `seq_no`: # (used=1) (is_nat_subtype=1)
+		field `vert_seq_no`: # (used=1) (is_nat_subtype=1)
+		field `_`: <= _9 _13 (used=0) (is_nat_subtype=0)
+		field `prev_seq_no`: # (used=0) (is_nat_subtype=1)
+		field `_`: = (~_15 + 1) _12 (used=0) (is_nat_subtype=0)
+		field `shard`: ShardIdent (used=0) (is_nat_subtype=0)
+		field `gen_utime`: uint32 (used=0) (is_nat_subtype=0)
+		field `start_lt`: uint64 (used=0) (is_nat_subtype=0)
+		field `end_lt`: uint64 (used=0) (is_nat_subtype=0)
+		field `gen_validator_list_hash_short`: uint32 (used=0) (is_nat_subtype=0)
+		field `gen_catchain_seqno`: uint32 (used=0) (is_nat_subtype=0)
+		field `min_ref_mc_seqno`: uint32 (used=0) (is_nat_subtype=0)
+		field `prev_key_block_seqno`: uint32 (used=0) (is_nat_subtype=0)
+		field `gen_software`: _10.0?GlobalVersion (used=0) (is_nat_subtype=0)
+		field `master_ref`: _2?^BlkMasterInfo (used=0) (is_nat_subtype=0)
+		field `prev_ref`: ^(BlkPrevInfo _3) (used=0) (is_nat_subtype=0)
+		field `prev_vert_ref`: _9?^(BlkPrevInfo 0) (used=0) (is_nat_subtype=0)
+  type size 536+1R..640+3R
+  type begins with {10011011110001111010100110000111*}
+
+type #1657: `ValueFlow`, arity 0, 2 constructors
+  constructor `value_flow`
+	value_flow#b8e48dfb ^[$_ from_prev_blk:CurrencyCollection to_next_blk:CurrencyCollection imported:CurrencyCollection exported:CurrencyCollection ] fees_collected:CurrencyCollection ^[$_ fees_imported:CurrencyCollection recovered:CurrencyCollection created:CurrencyCollection minted:CurrencyCollection ] = ValueFlow;
+	begins with {10111000111001001000110111111011*}
+	size 33+2R..321+3R
+		field `_`: ^[$_ from_prev_blk:CurrencyCollection to_next_blk:CurrencyCollection imported:CurrencyCollection exported:CurrencyCollection ] (used=0) (is_nat_subtype=0)
+		field `fees_collected`: CurrencyCollection (used=0) (is_nat_subtype=0)
+		field `_`: ^[$_ fees_imported:CurrencyCollection recovered:CurrencyCollection created:CurrencyCollection minted:CurrencyCollection ] (used=0) (is_nat_subtype=0)
+  constructor `value_flow_v2`
+	value_flow_v2#3ebf98b7 ^[$_ from_prev_blk:CurrencyCollection to_next_blk:CurrencyCollection imported:CurrencyCollection exported:CurrencyCollection ] fees_collected:CurrencyCollection burned:CurrencyCollection ^[$_ fees_imported:CurrencyCollection recovered:CurrencyCollection created:CurrencyCollection minted:CurrencyCollection ] = ValueFlow;
+	begins with {00111110101111111001100010110111*}
+	size 34+2R..610+4R
+		field `_`: ^[$_ from_prev_blk:CurrencyCollection to_next_blk:CurrencyCollection imported:CurrencyCollection exported:CurrencyCollection ] (used=0) (is_nat_subtype=0)
+		field `fees_collected`: CurrencyCollection (used=0) (is_nat_subtype=0)
+		field `burned`: CurrencyCollection (used=0) (is_nat_subtype=0)
+		field `_`: ^[$_ fees_imported:CurrencyCollection recovered:CurrencyCollection created:CurrencyCollection minted:CurrencyCollection ] (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(1) 
+  type size 33+2R..610+4R
+  type begins with {00111110101111111001100010110111*,10111000111001001000110111111011*}
+
+type #1658: `BlockExtra`, arity 0, 1 constructors
+  constructor `block_extra`
+	block_extra#4a33f6fd in_msg_descr:^InMsgDescr out_msg_descr:^OutMsgDescr account_blocks:^ShardAccountBlocks rand_seed:bits256 created_by:bits256 custom:(Maybe ^McBlockExtra) = BlockExtra;
+	begins with {01001010001100111111011011111101*}
+	size 545+3R..infty
+		field `in_msg_descr`: ^InMsgDescr (used=0) (is_nat_subtype=0)
+		field `out_msg_descr`: ^OutMsgDescr (used=0) (is_nat_subtype=0)
+		field `account_blocks`: ^ShardAccountBlocks (used=0) (is_nat_subtype=0)
+		field `rand_seed`: bits256 (used=0) (is_nat_subtype=0)
+		field `created_by`: bits256 (used=0) (is_nat_subtype=0)
+		field `custom`: Maybe ^McBlockExtra (used=0) (is_nat_subtype=0)
+  type size 545+3R..infty
+  type begins with {01001010001100111111011011111101*}
+
+type #1659: `Block`, arity 0, 1 constructors
+  constructor `block`
+	block#11ef55aa global_id:int32 info:^BlockInfo value_flow:^ValueFlow state_update:^(MERKLE_UPDATE ShardState) extra:^BlockExtra = Block;
+	begins with {00010001111011110101010110101010*}
+	size =64+4R (fixed) (any bits)
+		field `global_id`: int32 (used=0) (is_nat_subtype=0)
+		field `info`: ^BlockInfo (used=0) (is_nat_subtype=0)
+		field `value_flow`: ^ValueFlow (used=0) (is_nat_subtype=0)
+		field `state_update`: ^(MERKLE_UPDATE ShardState) (used=0) (is_nat_subtype=0)
+		field `extra`: ^BlockExtra (used=0) (is_nat_subtype=0)
+  type size =64+4R (fixed)
+  type begins with {00010001111011110101010110101010*}
+
+type #1660: `McBlockExtra`, arity 0, 1 constructors
+  constructor `masterchain_block_extra`
+	masterchain_block_extra#cca5 key_block:(## 1) shard_hashes:ShardHashes shard_fees:ShardFees ^[$_ prev_blk_signatures:(HashmapE 16 CryptoSignaturePair) recover_create_msg:(Maybe ^InMsg) mint_msg:(Maybe ^InMsg) ] config:key_block?ConfigParams = McBlockExtra;
+	begins with {1100110010100101*}
+	size 19+1R..infty
+		field `key_block`: ## 1 (used=1) (is_nat_subtype=1)
+		field `shard_hashes`: ShardHashes (used=0) (is_nat_subtype=0)
+		field `shard_fees`: ShardFees (used=0) (is_nat_subtype=0)
+		field `_`: ^[$_ prev_blk_signatures:(HashmapE 16 CryptoSignaturePair) recover_create_msg:(Maybe ^InMsg) mint_msg:(Maybe ^InMsg) ] (used=0) (is_nat_subtype=0)
+		field `config`: _1?ConfigParams (used=0) (is_nat_subtype=0)
+  type size 19+1R..infty
+  type begins with {1100110010100101*}
+
+type #1661: `TYPE_1661`, arity 0, 1 constructors
+  constructor `_`
+	_$_ from_prev_blk:CurrencyCollection to_next_blk:CurrencyCollection imported:CurrencyCollection exported:CurrencyCollection = TYPE_1661;
+	begins with {*}
+	size 4..1156+4R
+		field `from_prev_blk`: CurrencyCollection (used=0) (is_nat_subtype=0)
+		field `to_next_blk`: CurrencyCollection (used=0) (is_nat_subtype=0)
+		field `imported`: CurrencyCollection (used=0) (is_nat_subtype=0)
+		field `exported`: CurrencyCollection (used=0) (is_nat_subtype=0)
+  type size 4..1156+4R
+  type begins with {*}
+
+type #1662: `TYPE_1662`, arity 0, 1 constructors
+  constructor `_`
+	_$_ fees_imported:CurrencyCollection recovered:CurrencyCollection created:CurrencyCollection minted:CurrencyCollection = TYPE_1662;
+	begins with {*}
+	size 4..1156+4R
+		field `fees_imported`: CurrencyCollection (used=0) (is_nat_subtype=0)
+		field `recovered`: CurrencyCollection (used=0) (is_nat_subtype=0)
+		field `created`: CurrencyCollection (used=0) (is_nat_subtype=0)
+		field `minted`: CurrencyCollection (used=0) (is_nat_subtype=0)
+  type size 4..1156+4R
+  type begins with {*}
+
+type #1663: `BinTree`, arity 1, 2 constructors
+  constructor `bt_leaf`
+	bt_leaf$0 {X:Type} leaf:X = BinTree X;
+	begins with {0*}
+	size 1..infty
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `leaf`: _1 (used=0) (is_nat_subtype=0)
+  constructor `bt_fork`
+	bt_fork$1 {X:Type} left:^(BinTree X) right:^(BinTree X) = BinTree X;
+	begins with {1*}
+	size =1+2R (fixed) (any bits)
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `left`: ^(BinTree _1) (used=0) (is_nat_subtype=0)
+		field `right`: ^(BinTree _1) (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(1) 
+  type size 1..infty
+  type begins with {*}
+
+type #1664: `FutureSplitMerge`, arity 0, 3 constructors
+  constructor `fsm_none`
+	fsm_none$0 = FutureSplitMerge;
+	begins with {0*}
+	size =1 (fixed) (any bits)
+  constructor `fsm_split`
+	fsm_split$10 split_utime:uint32 interval:uint32 = FutureSplitMerge;
+	begins with {10*}
+	size =66 (fixed) (any bits)
+		field `split_utime`: uint32 (used=0) (is_nat_subtype=0)
+		field `interval`: uint32 (used=0) (is_nat_subtype=0)
+  constructor `fsm_merge`
+	fsm_merge$11 merge_utime:uint32 interval:uint32 = FutureSplitMerge;
+	begins with {11*}
+	size =66 (fixed) (any bits)
+		field `merge_utime`: uint32 (used=0) (is_nat_subtype=0)
+		field `interval`: uint32 (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(2) 
+  type size 1..66 (any bits)
+  type begins with {*}
+
+type #1665: `ShardDescr`, arity 0, 2 constructors
+  constructor `shard_descr`
+	shard_descr$1011 seq_no:uint32 reg_mc_seqno:uint32 start_lt:uint64 end_lt:uint64 root_hash:bits256 file_hash:bits256 before_split:Bool before_merge:Bool want_split:Bool want_merge:Bool nx_cc_updated:Bool flags:(## 3) {= flags 0} next_catchain_seqno:uint32 next_validator_shard:uint64 min_ref_mc_seqno:uint32 gen_utime:uint32 split_merge_at:FutureSplitMerge fees_collected:CurrencyCollection funds_created:CurrencyCollection = ShardDescr;
+	begins with {1011*}
+	size 879..1520+2R
+		field `seq_no`: uint32 (used=0) (is_nat_subtype=0)
+		field `reg_mc_seqno`: uint32 (used=0) (is_nat_subtype=0)
+		field `start_lt`: uint64 (used=0) (is_nat_subtype=0)
+		field `end_lt`: uint64 (used=0) (is_nat_subtype=0)
+		field `root_hash`: bits256 (used=0) (is_nat_subtype=0)
+		field `file_hash`: bits256 (used=0) (is_nat_subtype=0)
+		field `before_split`: Bool (used=0) (is_nat_subtype=0)
+		field `before_merge`: Bool (used=0) (is_nat_subtype=0)
+		field `want_split`: Bool (used=0) (is_nat_subtype=0)
+		field `want_merge`: Bool (used=0) (is_nat_subtype=0)
+		field `nx_cc_updated`: Bool (used=0) (is_nat_subtype=0)
+		field `flags`: ## 3 (used=1) (is_nat_subtype=1)
+		field `_`: = _12 0 (used=0) (is_nat_subtype=0)
+		field `next_catchain_seqno`: uint32 (used=0) (is_nat_subtype=0)
+		field `next_validator_shard`: uint64 (used=0) (is_nat_subtype=0)
+		field `min_ref_mc_seqno`: uint32 (used=0) (is_nat_subtype=0)
+		field `gen_utime`: uint32 (used=0) (is_nat_subtype=0)
+		field `split_merge_at`: FutureSplitMerge (used=0) (is_nat_subtype=0)
+		field `fees_collected`: CurrencyCollection (used=0) (is_nat_subtype=0)
+		field `funds_created`: CurrencyCollection (used=0) (is_nat_subtype=0)
+  constructor `shard_descr_new`
+	shard_descr_new$1010 seq_no:uint32 reg_mc_seqno:uint32 start_lt:uint64 end_lt:uint64 root_hash:bits256 file_hash:bits256 before_split:Bool before_merge:Bool want_split:Bool want_merge:Bool nx_cc_updated:Bool flags:(## 3) {= flags 0} next_catchain_seqno:uint32 next_validator_shard:uint64 min_ref_mc_seqno:uint32 gen_utime:uint32 split_merge_at:FutureSplitMerge ^[$_ fees_collected:CurrencyCollection funds_created:CurrencyCollection ] = ShardDescr;
+	begins with {1010*}
+	size 877+1R..942+1R (any bits)
+		field `seq_no`: uint32 (used=0) (is_nat_subtype=0)
+		field `reg_mc_seqno`: uint32 (used=0) (is_nat_subtype=0)
+		field `start_lt`: uint64 (used=0) (is_nat_subtype=0)
+		field `end_lt`: uint64 (used=0) (is_nat_subtype=0)
+		field `root_hash`: bits256 (used=0) (is_nat_subtype=0)
+		field `file_hash`: bits256 (used=0) (is_nat_subtype=0)
+		field `before_split`: Bool (used=0) (is_nat_subtype=0)
+		field `before_merge`: Bool (used=0) (is_nat_subtype=0)
+		field `want_split`: Bool (used=0) (is_nat_subtype=0)
+		field `want_merge`: Bool (used=0) (is_nat_subtype=0)
+		field `nx_cc_updated`: Bool (used=0) (is_nat_subtype=0)
+		field `flags`: ## 3 (used=1) (is_nat_subtype=1)
+		field `_`: = _12 0 (used=0) (is_nat_subtype=0)
+		field `next_catchain_seqno`: uint32 (used=0) (is_nat_subtype=0)
+		field `next_validator_shard`: uint64 (used=0) (is_nat_subtype=0)
+		field `min_ref_mc_seqno`: uint32 (used=0) (is_nat_subtype=0)
+		field `gen_utime`: uint32 (used=0) (is_nat_subtype=0)
+		field `split_merge_at`: FutureSplitMerge (used=0) (is_nat_subtype=0)
+		field `_`: ^[$_ fees_collected:CurrencyCollection funds_created:CurrencyCollection ] (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(4) 
+  type size 877..1520+2R
+  type begins with {101*}
+
+type #1666: `TYPE_1666`, arity 0, 1 constructors
+  constructor `_`
+	_$_ fees_collected:CurrencyCollection funds_created:CurrencyCollection = TYPE_1666;
+	begins with {*}
+	size 2..578+2R
+		field `fees_collected`: CurrencyCollection (used=0) (is_nat_subtype=0)
+		field `funds_created`: CurrencyCollection (used=0) (is_nat_subtype=0)
+  type size 2..578+2R
+  type begins with {*}
+
+type #1667: `ShardHashes`, arity 0, 1 constructors
+  constructor `_` (simple forwarder)
+	_$_ (HashmapE 32 ^(BinTree ShardDescr)) = ShardHashes;
+	begins with {*}
+	size 1..1+1R (any bits)
+		field `_`: HashmapE 32 ^(BinTree ShardDescr) (used=0) (is_nat_subtype=0)
+  type size 1..1+1R (any bits)
+  type begins with {*}
+
+type #1668: `BinTreeAug`, arity 2, 2 constructors
+  constructor `bta_leaf`
+	bta_leaf$0 {X:Type} {Y:Type} extra:Y leaf:X = BinTreeAug X Y;
+	begins with {0*}
+	size 1..infty
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `Y`: Type (used=1) (is_nat_subtype=0)
+		field `extra`: _2 (used=0) (is_nat_subtype=0)
+		field `leaf`: _1 (used=0) (is_nat_subtype=0)
+  constructor `bta_fork`
+	bta_fork$1 {X:Type} {Y:Type} left:^(BinTreeAug X Y) right:^(BinTreeAug X Y) extra:Y = BinTreeAug X Y;
+	begins with {1*}
+	size 1+2R..infty
+		field `X`: Type (used=1) (is_nat_subtype=0)
+		field `Y`: Type (used=1) (is_nat_subtype=0)
+		field `left`: ^(BinTreeAug _1 _2) (used=0) (is_nat_subtype=0)
+		field `right`: ^(BinTreeAug _1 _2) (used=0) (is_nat_subtype=0)
+		field `extra`: _2 (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(1) 
+  type size 1..infty
+  type begins with {*}
+
+type #1669: `ShardFeeCreated`, arity 0, 1 constructors
+  constructor `_`
+	_$_ fees:CurrencyCollection create:CurrencyCollection = ShardFeeCreated;
+	begins with {*}
+	size 2..578+2R
+		field `fees`: CurrencyCollection (used=0) (is_nat_subtype=0)
+		field `create`: CurrencyCollection (used=0) (is_nat_subtype=0)
+  type size 2..578+2R
+  type begins with {*}
+
+type #1670: `ShardFees`, arity 0, 1 constructors
+  constructor `_` (simple forwarder)
+	_$_ (HashmapAugE 96 ShardFeeCreated ShardFeeCreated) = ShardFees;
+	begins with {*}
+	size 1..infty
+		field `_`: HashmapAugE 96 ShardFeeCreated ShardFeeCreated (used=0) (is_nat_subtype=0)
+  type size 1..infty
+  type begins with {*}
+
+type #1671: `ConfigParams`, arity 0, 1 constructors
+  constructor `_`
+	_$_ config_addr:bits256 config:^(Hashmap 32 ^Cell) = ConfigParams;
+	begins with {*}
+	size =256+1R (fixed) (any bits)
+		field `config_addr`: bits256 (used=0) (is_nat_subtype=0)
+		field `config`: ^(Hashmap 32 ^Cell) (used=0) (is_nat_subtype=0)
+  type size =256+1R (fixed) (any bits)
+  type begins with {*}
+
+type #1672: `ValidatorInfo`, arity 0, 1 constructors
+  constructor `validator_info`
+	validator_info$_ validator_list_hash_short:uint32 catchain_seqno:uint32 nx_cc_updated:Bool = ValidatorInfo;
+	begins with {*}
+	size =65 (fixed) (any bits)
+		field `validator_list_hash_short`: uint32 (used=0) (is_nat_subtype=0)
+		field `catchain_seqno`: uint32 (used=0) (is_nat_subtype=0)
+		field `nx_cc_updated`: Bool (used=0) (is_nat_subtype=0)
+  type size =65 (fixed) (any bits)
+  type begins with {*}
+
+type #1673: `ValidatorBaseInfo`, arity 0, 1 constructors
+  constructor `validator_base_info`
+	validator_base_info$_ validator_list_hash_short:uint32 catchain_seqno:uint32 = ValidatorBaseInfo;
+	begins with {*}
+	size =64 (fixed) (any bits)
+		field `validator_list_hash_short`: uint32 (used=0) (is_nat_subtype=0)
+		field `catchain_seqno`: uint32 (used=0) (is_nat_subtype=0)
+  type size =64 (fixed) (any bits)
+  type begins with {*}
+
+type #1674: `KeyMaxLt`, arity 0, 1 constructors
+  constructor `_`
+	_$_ key:Bool max_end_lt:uint64 = KeyMaxLt;
+	begins with {*}
+	size =65 (fixed) (any bits)
+		field `key`: Bool (used=0) (is_nat_subtype=0)
+		field `max_end_lt`: uint64 (used=0) (is_nat_subtype=0)
+  type size =65 (fixed) (any bits)
+  type begins with {*}
+
+type #1675: `KeyExtBlkRef`, arity 0, 1 constructors
+  constructor `_`
+	_$_ key:Bool blk_ref:ExtBlkRef = KeyExtBlkRef;
+	begins with {*}
+	size =609 (fixed) (any bits)
+		field `key`: Bool (used=0) (is_nat_subtype=0)
+		field `blk_ref`: ExtBlkRef (used=0) (is_nat_subtype=0)
+  type size =609 (fixed) (any bits)
+  type begins with {*}
+
+type #1676: `OldMcBlocksInfo`, arity 0, 1 constructors
+  constructor `_` (simple forwarder)
+	_$_ (HashmapAugE 32 KeyExtBlkRef KeyMaxLt) = OldMcBlocksInfo;
+	begins with {*}
+	size 1..infty
+		field `_`: HashmapAugE 32 KeyExtBlkRef KeyMaxLt (used=0) (is_nat_subtype=0)
+  type size 1..infty
+  type begins with {*}
+
+type #1677: `Counters`, arity 0, 1 constructors
+  constructor `counters`
+	counters$_ last_updated:uint32 total:uint64 cnt2048:uint64 cnt65536:uint64 = Counters;
+	begins with {*}
+	size =224 (fixed) (any bits)
+		field `last_updated`: uint32 (used=0) (is_nat_subtype=0)
+		field `total`: uint64 (used=0) (is_nat_subtype=0)
+		field `cnt2048`: uint64 (used=0) (is_nat_subtype=0)
+		field `cnt65536`: uint64 (used=0) (is_nat_subtype=0)
+  type size =224 (fixed) (any bits)
+  type begins with {*}
+
+type #1678: `CreatorStats`, arity 0, 1 constructors
+  constructor `creator_info`
+	creator_info$0100 mc_blocks:Counters shard_blocks:Counters = CreatorStats;
+	begins with {0100*}
+	size =452 (fixed) (any bits)
+		field `mc_blocks`: Counters (used=0) (is_nat_subtype=0)
+		field `shard_blocks`: Counters (used=0) (is_nat_subtype=0)
+  type size =452 (fixed)
+  type begins with {0100*}
+
+type #1679: `BlockCreateStats`, arity 0, 2 constructors
+  constructor `block_create_stats`
+	block_create_stats#17 counters:(HashmapE 256 CreatorStats) = BlockCreateStats;
+	begins with {00010111*}
+	size 9..9+1R (any bits)
+		field `counters`: HashmapE 256 CreatorStats (used=0) (is_nat_subtype=0)
+  constructor `block_create_stats_ext`
+	block_create_stats_ext#34 counters:(HashmapAugE 256 CreatorStats uint32) = BlockCreateStats;
+	begins with {00110100*}
+	size 9..infty
+		field `counters`: HashmapAugE 256 CreatorStats uint32 (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(3) 
+  type size 9..infty
+  type begins with {00010111*,00110100*}
+
+type #1680: `TYPE_1680`, arity 0, 1 constructors
+  constructor `_`
+	_$_ flags:(## 16) {<= flags 1} validator_info:ValidatorInfo prev_blocks:OldMcBlocksInfo after_key_block:Bool last_key_block:(Maybe ExtBlkRef) block_create_stats:flags.0?BlockCreateStats = TYPE_1680;
+	begins with {*}
+	size 84..infty
+		field `flags`: ## 16 (used=1) (is_nat_subtype=1)
+		field `_`: <= _1 1 (used=0) (is_nat_subtype=0)
+		field `validator_info`: ValidatorInfo (used=0) (is_nat_subtype=0)
+		field `prev_blocks`: OldMcBlocksInfo (used=0) (is_nat_subtype=0)
+		field `after_key_block`: Bool (used=0) (is_nat_subtype=0)
+		field `last_key_block`: Maybe ExtBlkRef (used=0) (is_nat_subtype=0)
+		field `block_create_stats`: _1.0?BlockCreateStats (used=0) (is_nat_subtype=0)
+  type size 84..infty
+  type begins with {*}
+
+type #1681: `SigPubKey`, arity 0, 1 constructors
+  constructor `ed25519_pubkey`
+	ed25519_pubkey#8e81278a pubkey:bits256 = SigPubKey;
+	begins with {10001110100000010010011110001010*}
+	size =288 (fixed) (any bits)
+		field `pubkey`: bits256 (used=0) (is_nat_subtype=0)
+  type size =288 (fixed)
+  type begins with {10001110100000010010011110001010*}
+
+type #1682: `CryptoSignatureSimple`, arity 0, 1 constructors
+  constructor `ed25519_signature`
+	ed25519_signature$0101 R:bits256 s:bits256 = CryptoSignatureSimple;
+	begins with {0101*}
+	size =516 (fixed) (any bits)
+		field `R`: bits256 (used=0) (is_nat_subtype=0)
+		field `s`: bits256 (used=0) (is_nat_subtype=0)
+  type size =516 (fixed)
+  type begins with {0101*}
+
+type #1683: `CryptoSignature`, arity 0, 2 constructors
+  constructor `_` (simple forwarder)
+	_$_ CryptoSignatureSimple = CryptoSignature;
+	begins with {0101*}
+	size =516 (fixed)
+		field `_`: CryptoSignatureSimple (used=0) (is_nat_subtype=0)
+  constructor `chained_signature`
+	chained_signature$1111 signed_cert:^SignedCertificate temp_key_signature:CryptoSignatureSimple = CryptoSignature;
+	begins with {11110101*}
+	size =520+1R (fixed)
+		field `signed_cert`: ^SignedCertificate (used=0) (is_nat_subtype=0)
+		field `temp_key_signature`: CryptoSignatureSimple (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(1) 
+  type size 516..520+1R
+  type begins with {0101*,11110101*}
+
+type #1684: `CryptoSignaturePair`, arity 0, 1 constructors
+  constructor `sig_pair`
+	sig_pair$_ node_id_short:bits256 sign:CryptoSignature = CryptoSignaturePair;
+	begins with {*}
+	size 772..776+1R
+		field `node_id_short`: bits256 (used=0) (is_nat_subtype=0)
+		field `sign`: CryptoSignature (used=0) (is_nat_subtype=0)
+  type size 772..776+1R
+  type begins with {*}
+
+type #1685: `Certificate`, arity 0, 1 constructors
+  constructor `certificate`
+	certificate$0100 temp_key:SigPubKey valid_since:uint32 valid_until:uint32 = Certificate;
+	begins with {010010001110100000010010011110001010*}
+	size =356 (fixed)
+		field `temp_key`: SigPubKey (used=0) (is_nat_subtype=0)
+		field `valid_since`: uint32 (used=0) (is_nat_subtype=0)
+		field `valid_until`: uint32 (used=0) (is_nat_subtype=0)
+  type size =356 (fixed)
+  type begins with {010010001110100000010010011110001010*}
+
+type #1686: `CertificateEnv`, arity 0, 1 constructors
+  constructor `certificate_env`
+	certificate_env#a419b7d certificate:Certificate = CertificateEnv;
+	begins with {101001000001100110110111110101001000111010000001001001111000101*}
+	size =384 (fixed)
+		field `certificate`: Certificate (used=0) (is_nat_subtype=0)
+  type size =384 (fixed)
+  type begins with {101001000001100110110111110101001000111010000001001001111000101*}
+
+type #1687: `SignedCertificate`, arity 0, 1 constructors
+  constructor `signed_certificate`
+	signed_certificate$_ certificate:Certificate certificate_signature:CryptoSignature = SignedCertificate;
+	begins with {010010001110100000010010011110001010*}
+	size 872..876+1R
+		field `certificate`: Certificate (used=0) (is_nat_subtype=0)
+		field `certificate_signature`: CryptoSignature (used=0) (is_nat_subtype=0)
+  type size 872..876+1R
+  type begins with {010010001110100000010010011110001010*}
+
+type #1688: `TYPE_1688`, arity 0, 1 constructors
+  constructor `_`
+	_$_ prev_blk_signatures:(HashmapE 16 CryptoSignaturePair) recover_create_msg:(Maybe ^InMsg) mint_msg:(Maybe ^InMsg) = TYPE_1688;
+	begins with {*}
+	size 3..infty
+		field `prev_blk_signatures`: HashmapE 16 CryptoSignaturePair (used=0) (is_nat_subtype=0)
+		field `recover_create_msg`: Maybe ^InMsg (used=0) (is_nat_subtype=0)
+		field `mint_msg`: Maybe ^InMsg (used=0) (is_nat_subtype=0)
+  type size 3..infty
+  type begins with {*}
+
+type #1689: `ValidatorDescr`, arity 0, 2 constructors
+  constructor `validator`
+	validator#53 public_key:SigPubKey weight:uint64 = ValidatorDescr;
+	begins with {0101001110001110100000010010011110001010*}
+	size =360 (fixed)
+		field `public_key`: SigPubKey (used=0) (is_nat_subtype=0)
+		field `weight`: uint64 (used=0) (is_nat_subtype=0)
+  constructor `validator_addr`
+	validator_addr#73 public_key:SigPubKey weight:uint64 adnl_addr:bits256 = ValidatorDescr;
+	begins with {0111001110001110100000010010011110001010*}
+	size =616 (fixed)
+		field `public_key`: SigPubKey (used=0) (is_nat_subtype=0)
+		field `weight`: uint64 (used=0) (is_nat_subtype=0)
+		field `adnl_addr`: bits256 (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(3) 
+  type size 360..616
+  type begins with {0101001110001110100000010010011110001010*,0111001110001110100000010010011110001010*}
+
+type #1690: `ValidatorSet`, arity 0, 2 constructors
+  constructor `validators`
+	validators#11 utime_since:uint32 utime_until:uint32 total:(## 16) main:(## 16) {<= main total} {<= 1 main} list:(Hashmap 16 ValidatorDescr) = ValidatorSet;
+	begins with {00010001*}
+	size 106..infty
+		field `utime_since`: uint32 (used=0) (is_nat_subtype=0)
+		field `utime_until`: uint32 (used=0) (is_nat_subtype=0)
+		field `total`: ## 16 (used=1) (is_nat_subtype=1)
+		field `main`: ## 16 (used=1) (is_nat_subtype=1)
+		field `_`: <= _4 _3 (used=0) (is_nat_subtype=0)
+		field `_`: <= 1 _4 (used=0) (is_nat_subtype=0)
+		field `list`: Hashmap 16 ValidatorDescr (used=0) (is_nat_subtype=0)
+  constructor `validators_ext`
+	validators_ext#12 utime_since:uint32 utime_until:uint32 total:(## 16) main:(## 16) {<= main total} {<= 1 main} total_weight:uint64 list:(HashmapE 16 ValidatorDescr) = ValidatorSet;
+	begins with {00010010*}
+	size 169..169+1R (any bits)
+		field `utime_since`: uint32 (used=0) (is_nat_subtype=0)
+		field `utime_until`: uint32 (used=0) (is_nat_subtype=0)
+		field `total`: ## 16 (used=1) (is_nat_subtype=1)
+		field `main`: ## 16 (used=1) (is_nat_subtype=1)
+		field `_`: <= _4 _3 (used=0) (is_nat_subtype=0)
+		field `_`: <= 1 _4 (used=0) (is_nat_subtype=0)
+		field `total_weight`: uint64 (used=0) (is_nat_subtype=0)
+		field `list`: HashmapE 16 ValidatorDescr (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(7) 
+  type size 106..infty
+  type begins with {00010001*,00010010*}
+
+type #1691: `ConfigParam`, arity 1, 46 constructors
+  constant parameters: const
+  constructor `_`
+	_$_ config_addr:bits256 = ConfigParam 0;
+	begins with {*}
+	admissibility [1000]
+	constant parameter #1 = 0
+	size =256 (fixed) (any bits)
+		field `config_addr`: bits256 (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ elector_addr:bits256 = ConfigParam 1;
+	begins with {*}
+	admissibility [0100]
+	constant parameter #1 = 1
+	size =256 (fixed) (any bits)
+		field `elector_addr`: bits256 (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ minter_addr:bits256 = ConfigParam 2;
+	begins with {*}
+	admissibility [0010]
+	constant parameter #1 = 2
+	size =256 (fixed) (any bits)
+		field `minter_addr`: bits256 (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ fee_collector_addr:bits256 = ConfigParam 3;
+	begins with {*}
+	admissibility [0001]
+	constant parameter #1 = 3
+	size =256 (fixed) (any bits)
+		field `fee_collector_addr`: bits256 (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ dns_root_addr:bits256 = ConfigParam 4;
+	begins with {*}
+	admissibility [0010]
+	constant parameter #1 = 4
+	size =256 (fixed) (any bits)
+		field `dns_root_addr`: bits256 (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ BurningConfig = ConfigParam 5;
+	begins with {00000001*}
+	admissibility [0001]
+	constant parameter #1 = 5
+	size 73..infty
+		field `_`: BurningConfig (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ mint_new_price:Grams mint_add_price:Grams = ConfigParam 6;
+	begins with {*}
+	admissibility [0010]
+	constant parameter #1 = 6
+	size 0..576
+		field `mint_new_price`: Grams (used=0) (is_nat_subtype=0)
+		field `mint_add_price`: Grams (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ to_mint:ExtraCurrencyCollection = ConfigParam 7;
+	begins with {*}
+	admissibility [0001]
+	constant parameter #1 = 7
+	size 1..1+1R (any bits)
+		field `to_mint`: ExtraCurrencyCollection (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ GlobalVersion = ConfigParam 8;
+	begins with {11000100*}
+	admissibility [0010]
+	constant parameter #1 = 8
+	size =104 (fixed)
+		field `_`: GlobalVersion (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ mandatory_params:(Hashmap 32 True) = ConfigParam 9;
+	begins with {*}
+	admissibility [0001]
+	constant parameter #1 = 9
+	size 2..infty
+		field `mandatory_params`: Hashmap 32 True (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ critical_params:(Hashmap 32 True) = ConfigParam 10;
+	begins with {*}
+	admissibility [0010]
+	constant parameter #1 = 10
+	size 2..infty
+		field `critical_params`: Hashmap 32 True (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ ConfigVotingSetup = ConfigParam 11;
+	begins with {10010001*}
+	admissibility [0001]
+	constant parameter #1 = 11
+	size =8+2R (fixed)
+		field `_`: ConfigVotingSetup (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ workchains:(HashmapE 32 WorkchainDescr) = ConfigParam 12;
+	begins with {*}
+	admissibility [0010]
+	constant parameter #1 = 12
+	size 1..1+1R (any bits)
+		field `workchains`: HashmapE 32 WorkchainDescr (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ ComplaintPricing = ConfigParam 13;
+	begins with {00011010*}
+	admissibility [0001]
+	constant parameter #1 = 13
+	size 8..872
+		field `_`: ComplaintPricing (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ BlockCreateFees = ConfigParam 14;
+	begins with {01101011*}
+	admissibility [0010]
+	constant parameter #1 = 14
+	size 8..584
+		field `_`: BlockCreateFees (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ validators_elected_for:uint32 elections_start_before:uint32 elections_end_before:uint32 stake_held_for:uint32 = ConfigParam 15;
+	begins with {*}
+	admissibility [0001]
+	constant parameter #1 = 15
+	size =128 (fixed) (any bits)
+		field `validators_elected_for`: uint32 (used=0) (is_nat_subtype=0)
+		field `elections_start_before`: uint32 (used=0) (is_nat_subtype=0)
+		field `elections_end_before`: uint32 (used=0) (is_nat_subtype=0)
+		field `stake_held_for`: uint32 (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ max_validators:(## 16) max_main_validators:(## 16) min_validators:(## 16) {<= max_main_validators max_validators} {<= min_validators max_main_validators} {<= 1 min_validators} = ConfigParam 16;
+	begins with {*}
+	admissibility [0010]
+	constant parameter #1 = 16
+	size =48 (fixed) (any bits)
+		field `max_validators`: ## 16 (used=1) (is_nat_subtype=1)
+		field `max_main_validators`: ## 16 (used=1) (is_nat_subtype=1)
+		field `min_validators`: ## 16 (used=1) (is_nat_subtype=1)
+		field `_`: <= _2 _1 (used=0) (is_nat_subtype=0)
+		field `_`: <= _3 _2 (used=0) (is_nat_subtype=0)
+		field `_`: <= 1 _3 (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ min_stake:Grams max_stake:Grams min_total_stake:Grams max_stake_factor:uint32 = ConfigParam 17;
+	begins with {*}
+	admissibility [0001]
+	constant parameter #1 = 17
+	size 32..896
+		field `min_stake`: Grams (used=0) (is_nat_subtype=0)
+		field `max_stake`: Grams (used=0) (is_nat_subtype=0)
+		field `min_total_stake`: Grams (used=0) (is_nat_subtype=0)
+		field `max_stake_factor`: uint32 (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ (Hashmap 32 StoragePrices) = ConfigParam 18;
+	begins with {*}
+	admissibility [0010]
+	constant parameter #1 = 18
+	size 2..infty
+		field `_`: Hashmap 32 StoragePrices (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ global_id:int32 = ConfigParam 19;
+	begins with {*}
+	admissibility [0001]
+	constant parameter #1 = 19
+	size =32 (fixed) (any bits)
+		field `global_id`: int32 (used=0) (is_nat_subtype=0)
+  constructor `config_mc_gas_prices`
+	config_mc_gas_prices$_ GasLimitsPrices = ConfigParam 20;
+	begins with {11010001*,11011101*,11011110*}
+	admissibility [0010]
+	constant parameter #1 = 20
+	size 392..2047
+		field `_`: GasLimitsPrices (used=0) (is_nat_subtype=0)
+  constructor `config_gas_prices`
+	config_gas_prices$_ GasLimitsPrices = ConfigParam 21;
+	begins with {11010001*,11011101*,11011110*}
+	admissibility [0001]
+	constant parameter #1 = 21
+	size 392..2047
+		field `_`: GasLimitsPrices (used=0) (is_nat_subtype=0)
+  constructor `config_mc_block_limits`
+	config_mc_block_limits$_ BlockLimits = ConfigParam 22;
+	begins with {0101110111000011*,0101111011000011*}
+	admissibility [0010]
+	constant parameter #1 = 22
+	size 320..496
+		field `_`: BlockLimits (used=0) (is_nat_subtype=0)
+  constructor `config_block_limits`
+	config_block_limits$_ BlockLimits = ConfigParam 23;
+	begins with {0101110111000011*,0101111011000011*}
+	admissibility [0001]
+	constant parameter #1 = 23
+	size 320..496
+		field `_`: BlockLimits (used=0) (is_nat_subtype=0)
+  constructor `config_mc_fwd_prices`
+	config_mc_fwd_prices$_ MsgForwardPrices = ConfigParam 24;
+	begins with {11101010*}
+	admissibility [0010]
+	constant parameter #1 = 24
+	size =264 (fixed)
+		field `_`: MsgForwardPrices (used=0) (is_nat_subtype=0)
+  constructor `config_fwd_prices`
+	config_fwd_prices$_ MsgForwardPrices = ConfigParam 25;
+	begins with {11101010*}
+	admissibility [0001]
+	constant parameter #1 = 25
+	size =264 (fixed)
+		field `_`: MsgForwardPrices (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ CatchainConfig = ConfigParam 28;
+	begins with {11000001*,11000010*}
+	admissibility [0010]
+	constant parameter #1 = 28
+	size 136..144
+		field `_`: CatchainConfig (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ ConsensusConfig = ConfigParam 29;
+	begins with {1101011*,1101100*}
+	admissibility [0001]
+	constant parameter #1 = 29
+	size 248..296
+		field `_`: ConsensusConfig (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ fundamental_smc_addr:(HashmapE 256 True) = ConfigParam 31;
+	begins with {*}
+	admissibility [0001]
+	constant parameter #1 = 31
+	size 1..1+1R (any bits)
+		field `fundamental_smc_addr`: HashmapE 256 True (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ prev_validators:ValidatorSet = ConfigParam 32;
+	begins with {00010001*,00010010*}
+	admissibility [0010]
+	constant parameter #1 = 32
+	size 106..infty
+		field `prev_validators`: ValidatorSet (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ prev_temp_validators:ValidatorSet = ConfigParam 33;
+	begins with {00010001*,00010010*}
+	admissibility [0001]
+	constant parameter #1 = 33
+	size 106..infty
+		field `prev_temp_validators`: ValidatorSet (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ cur_validators:ValidatorSet = ConfigParam 34;
+	begins with {00010001*,00010010*}
+	admissibility [0010]
+	constant parameter #1 = 34
+	size 106..infty
+		field `cur_validators`: ValidatorSet (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ cur_temp_validators:ValidatorSet = ConfigParam 35;
+	begins with {00010001*,00010010*}
+	admissibility [0001]
+	constant parameter #1 = 35
+	size 106..infty
+		field `cur_temp_validators`: ValidatorSet (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ next_validators:ValidatorSet = ConfigParam 36;
+	begins with {00010001*,00010010*}
+	admissibility [0010]
+	constant parameter #1 = 36
+	size 106..infty
+		field `next_validators`: ValidatorSet (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ next_temp_validators:ValidatorSet = ConfigParam 37;
+	begins with {00010001*,00010010*}
+	admissibility [0001]
+	constant parameter #1 = 37
+	size 106..infty
+		field `next_temp_validators`: ValidatorSet (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ (HashmapE 256 ValidatorSignedTempKey) = ConfigParam 39;
+	begins with {*}
+	admissibility [0001]
+	constant parameter #1 = 39
+	size 1..1+1R (any bits)
+		field `_`: HashmapE 256 ValidatorSignedTempKey (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ MisbehaviourPunishmentConfig = ConfigParam 40;
+	begins with {00000001*}
+	admissibility [0010]
+	constant parameter #1 = 40
+	size 184..472
+		field `_`: MisbehaviourPunishmentConfig (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ SizeLimitsConfig = ConfigParam 43;
+	begins with {00000001*,00000010*}
+	admissibility [0001]
+	constant parameter #1 = 43
+	size 168..368
+		field `_`: SizeLimitsConfig (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ SuspendedAddressList = ConfigParam 44;
+	begins with {00000000*}
+	admissibility [0010]
+	constant parameter #1 = 44
+	size 41..41+1R
+		field `_`: SuspendedAddressList (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ PrecompiledContractsConfig = ConfigParam 45;
+	begins with {11000000*}
+	admissibility [0001]
+	constant parameter #1 = 45
+	size 9..9+1R
+		field `_`: PrecompiledContractsConfig (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ OracleBridgeParams = ConfigParam 71;
+	begins with {*}
+	admissibility [0001]
+	constant parameter #1 = 71
+	size 769..769+1R (any bits)
+		field `_`: OracleBridgeParams (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ OracleBridgeParams = ConfigParam 72;
+	begins with {*}
+	admissibility [0010]
+	constant parameter #1 = 72
+	size 769..769+1R (any bits)
+		field `_`: OracleBridgeParams (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ OracleBridgeParams = ConfigParam 73;
+	begins with {*}
+	admissibility [0001]
+	constant parameter #1 = 73
+	size 769..769+1R (any bits)
+		field `_`: OracleBridgeParams (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ JettonBridgeParams = ConfigParam 79;
+	begins with {0000000*}
+	admissibility [0001]
+	constant parameter #1 = 79
+	size 529..817+2R
+		field `_`: JettonBridgeParams (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ JettonBridgeParams = ConfigParam 81;
+	begins with {0000000*}
+	admissibility [0001]
+	constant parameter #1 = 81
+	size 529..817+2R
+		field `_`: JettonBridgeParams (used=0) (is_nat_subtype=0)
+  constructor `_`
+	_$_ JettonBridgeParams = ConfigParam 82;
+	begins with {0000000*}
+	admissibility [0010]
+	constant parameter #1 = 82
+	size 529..817+2R
+		field `_`: JettonBridgeParams (used=0) (is_nat_subtype=0)
+  constructor detection: CONST_PARAM 
+  type size 0..infty
+  type begins with {*}
+  type admissibility [1111]
+
+type #1692: `BurningConfig`, arity 0, 1 constructors
+  constructor `burning_config`
+	burning_config#01 blackhole_addr:(Maybe bits256) fee_burn_num:# fee_burn_denom:# {<= fee_burn_num fee_burn_denom} {<= 1 fee_burn_denom} = BurningConfig;
+	begins with {00000001*}
+	size 73..infty
+		field `blackhole_addr`: Maybe bits256 (used=0) (is_nat_subtype=0)
+		field `fee_burn_num`: # (used=1) (is_nat_subtype=1)
+		field `fee_burn_denom`: # (used=1) (is_nat_subtype=1)
+		field `_`: <= _2 _3 (used=0) (is_nat_subtype=0)
+		field `_`: <= 1 _3 (used=0) (is_nat_subtype=0)
+  type size 73..infty
+  type begins with {00000001*}
+
+type #1693: `ConfigProposalSetup`, arity 0, 1 constructors
+  constructor `cfg_vote_cfg`
+	cfg_vote_cfg#36 min_tot_rounds:uint8 max_tot_rounds:uint8 min_wins:uint8 max_losses:uint8 min_store_sec:uint32 max_store_sec:uint32 bit_price:uint32 cell_price:uint32 = ConfigProposalSetup;
+	begins with {00110110*}
+	size =168 (fixed) (any bits)
+		field `min_tot_rounds`: uint8 (used=0) (is_nat_subtype=0)
+		field `max_tot_rounds`: uint8 (used=0) (is_nat_subtype=0)
+		field `min_wins`: uint8 (used=0) (is_nat_subtype=0)
+		field `max_losses`: uint8 (used=0) (is_nat_subtype=0)
+		field `min_store_sec`: uint32 (used=0) (is_nat_subtype=0)
+		field `max_store_sec`: uint32 (used=0) (is_nat_subtype=0)
+		field `bit_price`: uint32 (used=0) (is_nat_subtype=0)
+		field `cell_price`: uint32 (used=0) (is_nat_subtype=0)
+  type size =168 (fixed)
+  type begins with {00110110*}
+
+type #1694: `ConfigVotingSetup`, arity 0, 1 constructors
+  constructor `cfg_vote_setup`
+	cfg_vote_setup#91 normal_params:^ConfigProposalSetup critical_params:^ConfigProposalSetup = ConfigVotingSetup;
+	begins with {10010001*}
+	size =8+2R (fixed) (any bits)
+		field `normal_params`: ^ConfigProposalSetup (used=0) (is_nat_subtype=0)
+		field `critical_params`: ^ConfigProposalSetup (used=0) (is_nat_subtype=0)
+  type size =8+2R (fixed)
+  type begins with {10010001*}
+
+type #1695: `ConfigProposal`, arity 0, 1 constructors
+  constructor `cfg_proposal`
+	cfg_proposal#f3 param_id:int32 param_value:(Maybe ^Cell) if_hash_equal:(Maybe uint256) = ConfigProposal;
+	begins with {11110011*}
+	size 42..infty
+		field `param_id`: int32 (used=0) (is_nat_subtype=0)
+		field `param_value`: Maybe ^Cell (used=0) (is_nat_subtype=0)
+		field `if_hash_equal`: Maybe uint256 (used=0) (is_nat_subtype=0)
+  type size 42..infty
+  type begins with {11110011*}
+
+type #1696: `ConfigProposalStatus`, arity 0, 1 constructors
+  constructor `cfg_proposal_status`
+	cfg_proposal_status#ce expires:uint32 proposal:^ConfigProposal is_critical:Bool voters:(HashmapE 16 True) remaining_weight:int64 validator_set_id:uint256 rounds_remaining:uint8 wins:uint8 losses:uint8 = ConfigProposalStatus;
+	begins with {11001110*}
+	size 386+1R..386+2R (any bits)
+		field `expires`: uint32 (used=0) (is_nat_subtype=0)
+		field `proposal`: ^ConfigProposal (used=0) (is_nat_subtype=0)
+		field `is_critical`: Bool (used=0) (is_nat_subtype=0)
+		field `voters`: HashmapE 16 True (used=0) (is_nat_subtype=0)
+		field `remaining_weight`: int64 (used=0) (is_nat_subtype=0)
+		field `validator_set_id`: uint256 (used=0) (is_nat_subtype=0)
+		field `rounds_remaining`: uint8 (used=0) (is_nat_subtype=0)
+		field `wins`: uint8 (used=0) (is_nat_subtype=0)
+		field `losses`: uint8 (used=0) (is_nat_subtype=0)
+  type size 386+1R..386+2R
+  type begins with {11001110*}
+
+type #1697: `WorkchainFormat`, arity 1, 2 constructors
+  constant parameters: const
+  constructor `wfmt_basic`
+	wfmt_basic$0001 vm_version:int32 vm_mode:uint64 = WorkchainFormat 1;
+	begins with {0001*}
+	admissibility [0100]
+	constant parameter #1 = 1
+	size =100 (fixed) (any bits)
+		field `vm_version`: int32 (used=0) (is_nat_subtype=0)
+		field `vm_mode`: uint64 (used=0) (is_nat_subtype=0)
+  constructor `wfmt_ext`
+	wfmt_ext$0000 min_addr_len:(## 12) max_addr_len:(## 12) addr_len_step:(## 12) {<= 64 min_addr_len} {<= min_addr_len max_addr_len} {<= max_addr_len 1023} {<= addr_len_step 1023} workchain_type_id:(## 32) {<= 1 workchain_type_id} = WorkchainFormat 0;
+	begins with {0000*}
+	admissibility [1000]
+	constant parameter #1 = 0
+	size =72 (fixed) (any bits)
+		field `min_addr_len`: ## 12 (used=1) (is_nat_subtype=1)
+		field `max_addr_len`: ## 12 (used=1) (is_nat_subtype=1)
+		field `addr_len_step`: ## 12 (used=1) (is_nat_subtype=1)
+		field `_`: <= 64 _1 (used=0) (is_nat_subtype=0)
+		field `_`: <= _1 _2 (used=0) (is_nat_subtype=0)
+		field `_`: <= _2 1023 (used=0) (is_nat_subtype=0)
+		field `_`: <= _3 1023 (used=0) (is_nat_subtype=0)
+		field `workchain_type_id`: ## 32 (used=1) (is_nat_subtype=1)
+		field `_`: <= 1 _8 (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(4) PARAM CONST_PARAM 
+  type size 72..100
+  type begins with {000*}
+  type admissibility [1100]
+
+type #1698: `WcSplitMergeTimings`, arity 0, 1 constructors
+  constructor `wc_split_merge_timings`
+	wc_split_merge_timings$0000 split_merge_delay:uint32 split_merge_interval:uint32 min_split_merge_interval:uint32 max_split_merge_delay:uint32 = WcSplitMergeTimings;
+	begins with {0000*}
+	size =132 (fixed) (any bits)
+		field `split_merge_delay`: uint32 (used=0) (is_nat_subtype=0)
+		field `split_merge_interval`: uint32 (used=0) (is_nat_subtype=0)
+		field `min_split_merge_interval`: uint32 (used=0) (is_nat_subtype=0)
+		field `max_split_merge_delay`: uint32 (used=0) (is_nat_subtype=0)
+  type size =132 (fixed)
+  type begins with {0000*}
+
+type #1699: `WorkchainDescr`, arity 0, 2 constructors
+  constructor `workchain`
+	workchain#a6 enabled_since:uint32 monitor_min_split:(## 8) min_split:(## 8) max_split:(## 8) {<= monitor_min_split min_split} basic:(## 1) active:Bool accept_msgs:Bool flags:(## 13) {= flags 0} zerostate_root_hash:bits256 zerostate_file_hash:bits256 version:uint32 format:(WorkchainFormat basic) = WorkchainDescr;
+	begins with {10100110*}
+	size 696..724
+		field `enabled_since`: uint32 (used=0) (is_nat_subtype=0)
+		field `monitor_min_split`: ## 8 (used=1) (is_nat_subtype=1)
+		field `min_split`: ## 8 (used=1) (is_nat_subtype=1)
+		field `max_split`: ## 8 (used=0) (is_nat_subtype=1)
+		field `_`: <= _2 _3 (used=0) (is_nat_subtype=0)
+		field `basic`: ## 1 (used=1) (is_nat_subtype=1)
+		field `active`: Bool (used=0) (is_nat_subtype=0)
+		field `accept_msgs`: Bool (used=0) (is_nat_subtype=0)
+		field `flags`: ## 13 (used=1) (is_nat_subtype=1)
+		field `_`: = _9 0 (used=0) (is_nat_subtype=0)
+		field `zerostate_root_hash`: bits256 (used=0) (is_nat_subtype=0)
+		field `zerostate_file_hash`: bits256 (used=0) (is_nat_subtype=0)
+		field `version`: uint32 (used=0) (is_nat_subtype=0)
+		field `format`: WorkchainFormat _6 (used=0) (is_nat_subtype=0)
+  constructor `workchain_v2`
+	workchain_v2#a7 enabled_since:uint32 monitor_min_split:(## 8) min_split:(## 8) max_split:(## 8) {<= monitor_min_split min_split} basic:(## 1) active:Bool accept_msgs:Bool flags:(## 13) {= flags 0} zerostate_root_hash:bits256 zerostate_file_hash:bits256 version:uint32 format:(WorkchainFormat basic) split_merge_timings:WcSplitMergeTimings persistent_state_split_depth:(## 8) {<= persistent_state_split_depth 63} = WorkchainDescr;
+	begins with {10100111*}
+	size 836..864
+		field `enabled_since`: uint32 (used=0) (is_nat_subtype=0)
+		field `monitor_min_split`: ## 8 (used=1) (is_nat_subtype=1)
+		field `min_split`: ## 8 (used=1) (is_nat_subtype=1)
+		field `max_split`: ## 8 (used=0) (is_nat_subtype=1)
+		field `_`: <= _2 _3 (used=0) (is_nat_subtype=0)
+		field `basic`: ## 1 (used=1) (is_nat_subtype=1)
+		field `active`: Bool (used=0) (is_nat_subtype=0)
+		field `accept_msgs`: Bool (used=0) (is_nat_subtype=0)
+		field `flags`: ## 13 (used=1) (is_nat_subtype=1)
+		field `_`: = _9 0 (used=0) (is_nat_subtype=0)
+		field `zerostate_root_hash`: bits256 (used=0) (is_nat_subtype=0)
+		field `zerostate_file_hash`: bits256 (used=0) (is_nat_subtype=0)
+		field `version`: uint32 (used=0) (is_nat_subtype=0)
+		field `format`: WorkchainFormat _6 (used=0) (is_nat_subtype=0)
+		field `split_merge_timings`: WcSplitMergeTimings (used=0) (is_nat_subtype=0)
+		field `persistent_state_split_depth`: ## 8 (used=1) (is_nat_subtype=1)
+		field `_`: <= _16 63 (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(8) 
+  type size 696..864
+  type begins with {1010011*}
+
+type #1700: `ComplaintPricing`, arity 0, 1 constructors
+  constructor `complaint_prices`
+	complaint_prices#1a deposit:Grams bit_price:Grams cell_price:Grams = ComplaintPricing;
+	begins with {00011010*}
+	size 8..872
+		field `deposit`: Grams (used=0) (is_nat_subtype=0)
+		field `bit_price`: Grams (used=0) (is_nat_subtype=0)
+		field `cell_price`: Grams (used=0) (is_nat_subtype=0)
+  type size 8..872
+  type begins with {00011010*}
+
+type #1701: `BlockCreateFees`, arity 0, 1 constructors
+  constructor `block_grams_created`
+	block_grams_created#6b masterchain_block_fee:Grams basechain_block_fee:Grams = BlockCreateFees;
+	begins with {01101011*}
+	size 8..584
+		field `masterchain_block_fee`: Grams (used=0) (is_nat_subtype=0)
+		field `basechain_block_fee`: Grams (used=0) (is_nat_subtype=0)
+  type size 8..584
+  type begins with {01101011*}
+
+type #1702: `StoragePrices`, arity 0, 1 constructors
+  constructor `_`
+	_#cc utime_since:uint32 bit_price_ps:uint64 cell_price_ps:uint64 mc_bit_price_ps:uint64 mc_cell_price_ps:uint64 = StoragePrices;
+	begins with {11001100*}
+	size =296 (fixed) (any bits)
+		field `utime_since`: uint32 (used=0) (is_nat_subtype=0)
+		field `bit_price_ps`: uint64 (used=0) (is_nat_subtype=0)
+		field `cell_price_ps`: uint64 (used=0) (is_nat_subtype=0)
+		field `mc_bit_price_ps`: uint64 (used=0) (is_nat_subtype=0)
+		field `mc_cell_price_ps`: uint64 (used=0) (is_nat_subtype=0)
+  type size =296 (fixed)
+  type begins with {11001100*}
+
+type #1703: `GasLimitsPrices`, arity 0, 3 constructors
+  constructor `gas_prices`
+	gas_prices#dd gas_price:uint64 gas_limit:uint64 gas_credit:uint64 block_gas_limit:uint64 freeze_due_limit:uint64 delete_due_limit:uint64 = GasLimitsPrices;
+	begins with {11011101*}
+	size =392 (fixed) (any bits)
+		field `gas_price`: uint64 (used=0) (is_nat_subtype=0)
+		field `gas_limit`: uint64 (used=0) (is_nat_subtype=0)
+		field `gas_credit`: uint64 (used=0) (is_nat_subtype=0)
+		field `block_gas_limit`: uint64 (used=0) (is_nat_subtype=0)
+		field `freeze_due_limit`: uint64 (used=0) (is_nat_subtype=0)
+		field `delete_due_limit`: uint64 (used=0) (is_nat_subtype=0)
+  constructor `gas_prices_ext`
+	gas_prices_ext#de gas_price:uint64 gas_limit:uint64 special_gas_limit:uint64 gas_credit:uint64 block_gas_limit:uint64 freeze_due_limit:uint64 delete_due_limit:uint64 = GasLimitsPrices;
+	begins with {11011110*}
+	size =456 (fixed) (any bits)
+		field `gas_price`: uint64 (used=0) (is_nat_subtype=0)
+		field `gas_limit`: uint64 (used=0) (is_nat_subtype=0)
+		field `special_gas_limit`: uint64 (used=0) (is_nat_subtype=0)
+		field `gas_credit`: uint64 (used=0) (is_nat_subtype=0)
+		field `block_gas_limit`: uint64 (used=0) (is_nat_subtype=0)
+		field `freeze_due_limit`: uint64 (used=0) (is_nat_subtype=0)
+		field `delete_due_limit`: uint64 (used=0) (is_nat_subtype=0)
+  constructor `gas_flat_pfx`
+	gas_flat_pfx#d1 flat_gas_limit:uint64 flat_gas_price:uint64 other:GasLimitsPrices = GasLimitsPrices;
+	begins with {11010001*}
+	size 528..2047
+		field `flat_gas_limit`: uint64 (used=0) (is_nat_subtype=0)
+		field `flat_gas_price`: uint64 (used=0) (is_nat_subtype=0)
+		field `other`: GasLimitsPrices (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(7) 
+  type size 392..2047
+  type begins with {11010001*,11011101*,11011110*}
+
+type #1704: `ParamLimits`, arity 0, 1 constructors
+  constructor `param_limits`
+	param_limits#c3 underload:# soft_limit:# {<= underload soft_limit} hard_limit:# {<= soft_limit hard_limit} = ParamLimits;
+	begins with {11000011*}
+	size =104 (fixed) (any bits)
+		field `underload`: # (used=1) (is_nat_subtype=1)
+		field `soft_limit`: # (used=1) (is_nat_subtype=1)
+		field `_`: <= _1 _2 (used=0) (is_nat_subtype=0)
+		field `hard_limit`: # (used=1) (is_nat_subtype=1)
+		field `_`: <= _2 _4 (used=0) (is_nat_subtype=0)
+  type size =104 (fixed)
+  type begins with {11000011*}
+
+type #1705: `ImportedMsgQueueLimits`, arity 0, 1 constructors
+  constructor `imported_msg_queue_limits`
+	imported_msg_queue_limits#d3 max_bytes:# max_msgs:# = ImportedMsgQueueLimits;
+	begins with {11010011*}
+	size =72 (fixed) (any bits)
+		field `max_bytes`: # (used=0) (is_nat_subtype=1)
+		field `max_msgs`: # (used=0) (is_nat_subtype=1)
+  type size =72 (fixed)
+  type begins with {11010011*}
+
+type #1706: `BlockLimits`, arity 0, 2 constructors
+  constructor `block_limits`
+	block_limits#5d bytes:ParamLimits gas:ParamLimits lt_delta:ParamLimits = BlockLimits;
+	begins with {0101110111000011*}
+	size =320 (fixed)
+		field `bytes`: ParamLimits (used=0) (is_nat_subtype=0)
+		field `gas`: ParamLimits (used=0) (is_nat_subtype=0)
+		field `lt_delta`: ParamLimits (used=0) (is_nat_subtype=0)
+  constructor `block_limits_v2`
+	block_limits_v2#5e bytes:ParamLimits gas:ParamLimits lt_delta:ParamLimits collated_data:ParamLimits imported_msg_queue:ImportedMsgQueueLimits = BlockLimits;
+	begins with {0101111011000011*}
+	size =496 (fixed)
+		field `bytes`: ParamLimits (used=0) (is_nat_subtype=0)
+		field `gas`: ParamLimits (used=0) (is_nat_subtype=0)
+		field `lt_delta`: ParamLimits (used=0) (is_nat_subtype=0)
+		field `collated_data`: ParamLimits (used=0) (is_nat_subtype=0)
+		field `imported_msg_queue`: ImportedMsgQueueLimits (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(7) 
+  type size 320..496
+  type begins with {0101110111000011*,0101111011000011*}
+
+type #1707: `MsgForwardPrices`, arity 0, 1 constructors
+  constructor `msg_forward_prices`
+	msg_forward_prices#ea lump_price:uint64 bit_price:uint64 cell_price:uint64 ihr_price_factor:uint32 first_frac:uint16 next_frac:uint16 = MsgForwardPrices;
+	begins with {11101010*}
+	size =264 (fixed) (any bits)
+		field `lump_price`: uint64 (used=0) (is_nat_subtype=0)
+		field `bit_price`: uint64 (used=0) (is_nat_subtype=0)
+		field `cell_price`: uint64 (used=0) (is_nat_subtype=0)
+		field `ihr_price_factor`: uint32 (used=0) (is_nat_subtype=0)
+		field `first_frac`: uint16 (used=0) (is_nat_subtype=0)
+		field `next_frac`: uint16 (used=0) (is_nat_subtype=0)
+  type size =264 (fixed)
+  type begins with {11101010*}
+
+type #1708: `CatchainConfig`, arity 0, 2 constructors
+  constructor `catchain_config`
+	catchain_config#c1 mc_catchain_lifetime:uint32 shard_catchain_lifetime:uint32 shard_validators_lifetime:uint32 shard_validators_num:uint32 = CatchainConfig;
+	begins with {11000001*}
+	size =136 (fixed) (any bits)
+		field `mc_catchain_lifetime`: uint32 (used=0) (is_nat_subtype=0)
+		field `shard_catchain_lifetime`: uint32 (used=0) (is_nat_subtype=0)
+		field `shard_validators_lifetime`: uint32 (used=0) (is_nat_subtype=0)
+		field `shard_validators_num`: uint32 (used=0) (is_nat_subtype=0)
+  constructor `catchain_config_new`
+	catchain_config_new#c2 flags:(## 7) {= flags 0} shuffle_mc_validators:Bool mc_catchain_lifetime:uint32 shard_catchain_lifetime:uint32 shard_validators_lifetime:uint32 shard_validators_num:uint32 = CatchainConfig;
+	begins with {11000010*}
+	size =144 (fixed) (any bits)
+		field `flags`: ## 7 (used=1) (is_nat_subtype=1)
+		field `_`: = _1 0 (used=0) (is_nat_subtype=0)
+		field `shuffle_mc_validators`: Bool (used=0) (is_nat_subtype=0)
+		field `mc_catchain_lifetime`: uint32 (used=0) (is_nat_subtype=0)
+		field `shard_catchain_lifetime`: uint32 (used=0) (is_nat_subtype=0)
+		field `shard_validators_lifetime`: uint32 (used=0) (is_nat_subtype=0)
+		field `shard_validators_num`: uint32 (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(7) 
+  type size 136..144
+  type begins with {11000001*,11000010*}
+
+type #1709: `ConsensusConfig`, arity 0, 4 constructors
+  constructor `consensus_config`
+	consensus_config#d6 round_candidates:# {<= 1 round_candidates} next_candidate_delay_ms:uint32 consensus_timeout_ms:uint32 fast_attempts:uint32 attempt_duration:uint32 catchain_max_deps:uint32 max_block_bytes:uint32 max_collated_bytes:uint32 = ConsensusConfig;
+	begins with {11010110*}
+	size =264 (fixed) (any bits)
+		field `round_candidates`: # (used=1) (is_nat_subtype=1)
+		field `_`: <= 1 _1 (used=0) (is_nat_subtype=0)
+		field `next_candidate_delay_ms`: uint32 (used=0) (is_nat_subtype=0)
+		field `consensus_timeout_ms`: uint32 (used=0) (is_nat_subtype=0)
+		field `fast_attempts`: uint32 (used=0) (is_nat_subtype=0)
+		field `attempt_duration`: uint32 (used=0) (is_nat_subtype=0)
+		field `catchain_max_deps`: uint32 (used=0) (is_nat_subtype=0)
+		field `max_block_bytes`: uint32 (used=0) (is_nat_subtype=0)
+		field `max_collated_bytes`: uint32 (used=0) (is_nat_subtype=0)
+  constructor `consensus_config_new`
+	consensus_config_new#d7 flags:(## 7) {= flags 0} new_catchain_ids:Bool round_candidates:(## 8) {<= 1 round_candidates} next_candidate_delay_ms:uint32 consensus_timeout_ms:uint32 fast_attempts:uint32 attempt_duration:uint32 catchain_max_deps:uint32 max_block_bytes:uint32 max_collated_bytes:uint32 = ConsensusConfig;
+	begins with {11010111*}
+	size =248 (fixed) (any bits)
+		field `flags`: ## 7 (used=1) (is_nat_subtype=1)
+		field `_`: = _1 0 (used=0) (is_nat_subtype=0)
+		field `new_catchain_ids`: Bool (used=0) (is_nat_subtype=0)
+		field `round_candidates`: ## 8 (used=1) (is_nat_subtype=1)
+		field `_`: <= 1 _4 (used=0) (is_nat_subtype=0)
+		field `next_candidate_delay_ms`: uint32 (used=0) (is_nat_subtype=0)
+		field `consensus_timeout_ms`: uint32 (used=0) (is_nat_subtype=0)
+		field `fast_attempts`: uint32 (used=0) (is_nat_subtype=0)
+		field `attempt_duration`: uint32 (used=0) (is_nat_subtype=0)
+		field `catchain_max_deps`: uint32 (used=0) (is_nat_subtype=0)
+		field `max_block_bytes`: uint32 (used=0) (is_nat_subtype=0)
+		field `max_collated_bytes`: uint32 (used=0) (is_nat_subtype=0)
+  constructor `consensus_config_v3`
+	consensus_config_v3#d8 flags:(## 7) {= flags 0} new_catchain_ids:Bool round_candidates:(## 8) {<= 1 round_candidates} next_candidate_delay_ms:uint32 consensus_timeout_ms:uint32 fast_attempts:uint32 attempt_duration:uint32 catchain_max_deps:uint32 max_block_bytes:uint32 max_collated_bytes:uint32 proto_version:uint16 = ConsensusConfig;
+	begins with {11011000*}
+	size =264 (fixed) (any bits)
+		field `flags`: ## 7 (used=1) (is_nat_subtype=1)
+		field `_`: = _1 0 (used=0) (is_nat_subtype=0)
+		field `new_catchain_ids`: Bool (used=0) (is_nat_subtype=0)
+		field `round_candidates`: ## 8 (used=1) (is_nat_subtype=1)
+		field `_`: <= 1 _4 (used=0) (is_nat_subtype=0)
+		field `next_candidate_delay_ms`: uint32 (used=0) (is_nat_subtype=0)
+		field `consensus_timeout_ms`: uint32 (used=0) (is_nat_subtype=0)
+		field `fast_attempts`: uint32 (used=0) (is_nat_subtype=0)
+		field `attempt_duration`: uint32 (used=0) (is_nat_subtype=0)
+		field `catchain_max_deps`: uint32 (used=0) (is_nat_subtype=0)
+		field `max_block_bytes`: uint32 (used=0) (is_nat_subtype=0)
+		field `max_collated_bytes`: uint32 (used=0) (is_nat_subtype=0)
+		field `proto_version`: uint16 (used=0) (is_nat_subtype=0)
+  constructor `consensus_config_v4`
+	consensus_config_v4#d9 flags:(## 7) {= flags 0} new_catchain_ids:Bool round_candidates:(## 8) {<= 1 round_candidates} next_candidate_delay_ms:uint32 consensus_timeout_ms:uint32 fast_attempts:uint32 attempt_duration:uint32 catchain_max_deps:uint32 max_block_bytes:uint32 max_collated_bytes:uint32 proto_version:uint16 catchain_max_blocks_coeff:uint32 = ConsensusConfig;
+	begins with {11011001*}
+	size =296 (fixed) (any bits)
+		field `flags`: ## 7 (used=1) (is_nat_subtype=1)
+		field `_`: = _1 0 (used=0) (is_nat_subtype=0)
+		field `new_catchain_ids`: Bool (used=0) (is_nat_subtype=0)
+		field `round_candidates`: ## 8 (used=1) (is_nat_subtype=1)
+		field `_`: <= 1 _4 (used=0) (is_nat_subtype=0)
+		field `next_candidate_delay_ms`: uint32 (used=0) (is_nat_subtype=0)
+		field `consensus_timeout_ms`: uint32 (used=0) (is_nat_subtype=0)
+		field `fast_attempts`: uint32 (used=0) (is_nat_subtype=0)
+		field `attempt_duration`: uint32 (used=0) (is_nat_subtype=0)
+		field `catchain_max_deps`: uint32 (used=0) (is_nat_subtype=0)
+		field `max_block_bytes`: uint32 (used=0) (is_nat_subtype=0)
+		field `max_collated_bytes`: uint32 (used=0) (is_nat_subtype=0)
+		field `proto_version`: uint16 (used=0) (is_nat_subtype=0)
+		field `catchain_max_blocks_coeff`: uint32 (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(8) 
+  type size 248..296
+  type begins with {1101011*,1101100*}
+
+type #1710: `ValidatorTempKey`, arity 0, 1 constructors
+  constructor `validator_temp_key`
+	validator_temp_key$0011 adnl_addr:bits256 temp_public_key:SigPubKey seqno:# valid_until:uint32 = ValidatorTempKey;
+	begins with {0011*}
+	size =612 (fixed)
+		field `adnl_addr`: bits256 (used=0) (is_nat_subtype=0)
+		field `temp_public_key`: SigPubKey (used=0) (is_nat_subtype=0)
+		field `seqno`: # (used=0) (is_nat_subtype=1)
+		field `valid_until`: uint32 (used=0) (is_nat_subtype=0)
+  type size =612 (fixed)
+  type begins with {0011*}
+
+type #1711: `ValidatorSignedTempKey`, arity 0, 1 constructors
+  constructor `signed_temp_key`
+	signed_temp_key$0100 key:^ValidatorTempKey signature:CryptoSignature = ValidatorSignedTempKey;
+	begins with {01000101*,010011110101*}
+	size 520+1R..524+2R
+		field `key`: ^ValidatorTempKey (used=0) (is_nat_subtype=0)
+		field `signature`: CryptoSignature (used=0) (is_nat_subtype=0)
+  type size 520+1R..524+2R
+  type begins with {01000101*,010011110101*}
+
+type #1712: `MisbehaviourPunishmentConfig`, arity 0, 1 constructors
+  constructor `misbehaviour_punishment_config_v1`
+	misbehaviour_punishment_config_v1#01 default_flat_fine:Grams default_proportional_fine:uint32 severity_flat_mult:uint16 severity_proportional_mult:uint16 unpunishable_interval:uint16 long_interval:uint16 long_flat_mult:uint16 long_proportional_mult:uint16 medium_interval:uint16 medium_flat_mult:uint16 medium_proportional_mult:uint16 = MisbehaviourPunishmentConfig;
+	begins with {00000001*}
+	size 184..472
+		field `default_flat_fine`: Grams (used=0) (is_nat_subtype=0)
+		field `default_proportional_fine`: uint32 (used=0) (is_nat_subtype=0)
+		field `severity_flat_mult`: uint16 (used=0) (is_nat_subtype=0)
+		field `severity_proportional_mult`: uint16 (used=0) (is_nat_subtype=0)
+		field `unpunishable_interval`: uint16 (used=0) (is_nat_subtype=0)
+		field `long_interval`: uint16 (used=0) (is_nat_subtype=0)
+		field `long_flat_mult`: uint16 (used=0) (is_nat_subtype=0)
+		field `long_proportional_mult`: uint16 (used=0) (is_nat_subtype=0)
+		field `medium_interval`: uint16 (used=0) (is_nat_subtype=0)
+		field `medium_flat_mult`: uint16 (used=0) (is_nat_subtype=0)
+		field `medium_proportional_mult`: uint16 (used=0) (is_nat_subtype=0)
+  type size 184..472
+  type begins with {00000001*}
+
+type #1713: `SizeLimitsConfig`, arity 0, 2 constructors
+  constructor `size_limits_config`
+	size_limits_config#01 max_msg_bits:uint32 max_msg_cells:uint32 max_library_cells:uint32 max_vm_data_depth:uint16 max_ext_msg_size:uint32 max_ext_msg_depth:uint16 = SizeLimitsConfig;
+	begins with {00000001*}
+	size =168 (fixed) (any bits)
+		field `max_msg_bits`: uint32 (used=0) (is_nat_subtype=0)
+		field `max_msg_cells`: uint32 (used=0) (is_nat_subtype=0)
+		field `max_library_cells`: uint32 (used=0) (is_nat_subtype=0)
+		field `max_vm_data_depth`: uint16 (used=0) (is_nat_subtype=0)
+		field `max_ext_msg_size`: uint32 (used=0) (is_nat_subtype=0)
+		field `max_ext_msg_depth`: uint16 (used=0) (is_nat_subtype=0)
+  constructor `size_limits_config_v2`
+	size_limits_config_v2#02 max_msg_bits:uint32 max_msg_cells:uint32 max_library_cells:uint32 max_vm_data_depth:uint16 max_ext_msg_size:uint32 max_ext_msg_depth:uint16 max_acc_state_cells:uint32 max_mc_acc_state_cells:uint32 max_acc_public_libraries:uint32 defer_out_queue_size_limit:uint32 max_msg_extra_currencies:uint32 max_acc_fixed_prefix_length:uint8 acc_state_cells_for_storage_dict:uint32 = SizeLimitsConfig;
+	begins with {00000010*}
+	size =368 (fixed) (any bits)
+		field `max_msg_bits`: uint32 (used=0) (is_nat_subtype=0)
+		field `max_msg_cells`: uint32 (used=0) (is_nat_subtype=0)
+		field `max_library_cells`: uint32 (used=0) (is_nat_subtype=0)
+		field `max_vm_data_depth`: uint16 (used=0) (is_nat_subtype=0)
+		field `max_ext_msg_size`: uint32 (used=0) (is_nat_subtype=0)
+		field `max_ext_msg_depth`: uint16 (used=0) (is_nat_subtype=0)
+		field `max_acc_state_cells`: uint32 (used=0) (is_nat_subtype=0)
+		field `max_mc_acc_state_cells`: uint32 (used=0) (is_nat_subtype=0)
+		field `max_acc_public_libraries`: uint32 (used=0) (is_nat_subtype=0)
+		field `defer_out_queue_size_limit`: uint32 (used=0) (is_nat_subtype=0)
+		field `max_msg_extra_currencies`: uint32 (used=0) (is_nat_subtype=0)
+		field `max_acc_fixed_prefix_length`: uint8 (used=0) (is_nat_subtype=0)
+		field `acc_state_cells_for_storage_dict`: uint32 (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(7) 
+  type size 168..368
+  type begins with {00000001*,00000010*}
+
+type #1714: `SuspendedAddressList`, arity 0, 1 constructors
+  constructor `suspended_address_list`
+	suspended_address_list#00 addresses:(HashmapE 288 Unit) suspended_until:uint32 = SuspendedAddressList;
+	begins with {00000000*}
+	size 41..41+1R (any bits)
+		field `addresses`: HashmapE 288 Unit (used=0) (is_nat_subtype=0)
+		field `suspended_until`: uint32 (used=0) (is_nat_subtype=0)
+  type size 41..41+1R
+  type begins with {00000000*}
+
+type #1715: `PrecompiledSmc`, arity 0, 1 constructors
+  constructor `precompiled_smc`
+	precompiled_smc#b0 gas_usage:uint64 = PrecompiledSmc;
+	begins with {10110000*}
+	size =72 (fixed) (any bits)
+		field `gas_usage`: uint64 (used=0) (is_nat_subtype=0)
+  type size =72 (fixed)
+  type begins with {10110000*}
+
+type #1716: `PrecompiledContractsConfig`, arity 0, 1 constructors
+  constructor `precompiled_contracts_config`
+	precompiled_contracts_config#c0 list:(HashmapE 256 PrecompiledSmc) = PrecompiledContractsConfig;
+	begins with {11000000*}
+	size 9..9+1R (any bits)
+		field `list`: HashmapE 256 PrecompiledSmc (used=0) (is_nat_subtype=0)
+  type size 9..9+1R
+  type begins with {11000000*}
+
+type #1717: `OracleBridgeParams`, arity 0, 1 constructors
+  constructor `oracle_bridge_params`
+	oracle_bridge_params$_ bridge_address:bits256 oracle_mutlisig_address:bits256 oracles:(HashmapE 256 uint256) external_chain_address:bits256 = OracleBridgeParams;
+	begins with {*}
+	size 769..769+1R (any bits)
+		field `bridge_address`: bits256 (used=0) (is_nat_subtype=0)
+		field `oracle_mutlisig_address`: bits256 (used=0) (is_nat_subtype=0)
+		field `oracles`: HashmapE 256 uint256 (used=0) (is_nat_subtype=0)
+		field `external_chain_address`: bits256 (used=0) (is_nat_subtype=0)
+  type size 769..769+1R (any bits)
+  type begins with {*}
+
+type #1718: `JettonBridgePrices`, arity 0, 1 constructors
+  constructor `jetton_bridge_prices`
+	jetton_bridge_prices$_ bridge_burn_fee:Coins bridge_mint_fee:Coins wallet_min_tons_for_storage:Coins wallet_gas_consumption:Coins minter_min_tons_for_storage:Coins discover_gas_consumption:Coins = JettonBridgePrices;
+	begins with {*}
+	size 0..1728
+		field `bridge_burn_fee`: Coins (used=0) (is_nat_subtype=0)
+		field `bridge_mint_fee`: Coins (used=0) (is_nat_subtype=0)
+		field `wallet_min_tons_for_storage`: Coins (used=0) (is_nat_subtype=0)
+		field `wallet_gas_consumption`: Coins (used=0) (is_nat_subtype=0)
+		field `minter_min_tons_for_storage`: Coins (used=0) (is_nat_subtype=0)
+		field `discover_gas_consumption`: Coins (used=0) (is_nat_subtype=0)
+  type size 0..1728
+  type begins with {*}
+
+type #1719: `JettonBridgeParams`, arity 0, 2 constructors
+  constructor `jetton_bridge_params_v0`
+	jetton_bridge_params_v0#00 bridge_address:bits256 oracles_address:bits256 oracles:(HashmapE 256 uint256) state_flags:uint8 burn_bridge_fee:Coins = JettonBridgeParams;
+	begins with {00000000*}
+	size 529..817+1R
+		field `bridge_address`: bits256 (used=0) (is_nat_subtype=0)
+		field `oracles_address`: bits256 (used=0) (is_nat_subtype=0)
+		field `oracles`: HashmapE 256 uint256 (used=0) (is_nat_subtype=0)
+		field `state_flags`: uint8 (used=0) (is_nat_subtype=0)
+		field `burn_bridge_fee`: Coins (used=0) (is_nat_subtype=0)
+  constructor `jetton_bridge_params_v1`
+	jetton_bridge_params_v1#01 bridge_address:bits256 oracles_address:bits256 oracles:(HashmapE 256 uint256) state_flags:uint8 prices:^JettonBridgePrices external_chain_address:bits256 = JettonBridgeParams;
+	begins with {00000001*}
+	size 785+1R..785+2R (any bits)
+		field `bridge_address`: bits256 (used=0) (is_nat_subtype=0)
+		field `oracles_address`: bits256 (used=0) (is_nat_subtype=0)
+		field `oracles`: HashmapE 256 uint256 (used=0) (is_nat_subtype=0)
+		field `state_flags`: uint8 (used=0) (is_nat_subtype=0)
+		field `prices`: ^JettonBridgePrices (used=0) (is_nat_subtype=0)
+		field `external_chain_address`: bits256 (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(8) 
+  type size 529..817+2R
+  type begins with {0000000*}
+
+type #1720: `BlockSignaturesPure`, arity 0, 1 constructors
+  constructor `block_signatures_pure`
+	block_signatures_pure$_ sig_count:uint32 sig_weight:uint64 signatures:(HashmapE 16 CryptoSignaturePair) = BlockSignaturesPure;
+	begins with {*}
+	size 97..97+1R (any bits)
+		field `sig_count`: uint32 (used=0) (is_nat_subtype=0)
+		field `sig_weight`: uint64 (used=0) (is_nat_subtype=0)
+		field `signatures`: HashmapE 16 CryptoSignaturePair (used=0) (is_nat_subtype=0)
+  type size 97..97+1R (any bits)
+  type begins with {*}
+
+type #1721: `BlockSignatures`, arity 0, 1 constructors
+  constructor `block_signatures`
+	block_signatures#11 validator_info:ValidatorBaseInfo pure_signatures:BlockSignaturesPure = BlockSignatures;
+	begins with {00010001*}
+	size 169..169+1R (any bits)
+		field `validator_info`: ValidatorBaseInfo (used=0) (is_nat_subtype=0)
+		field `pure_signatures`: BlockSignaturesPure (used=0) (is_nat_subtype=0)
+  type size 169..169+1R
+  type begins with {00010001*}
+
+type #1722: `BlockProof`, arity 0, 1 constructors
+  constructor `block_proof`
+	block_proof#c3 proof_for:BlockIdExt root:^Cell signatures:(Maybe ^BlockSignatures) = BlockProof;
+	begins with {1100001100*}
+	size 657+1R..infty
+		field `proof_for`: BlockIdExt (used=0) (is_nat_subtype=0)
+		field `root`: ^Cell (used=0) (is_nat_subtype=0)
+		field `signatures`: Maybe ^BlockSignatures (used=0) (is_nat_subtype=0)
+  type size 657+1R..infty
+  type begins with {1100001100*}
+
+type #1723: `ProofChain`, arity 1, 2 constructors
+  constructor `chain_empty`
+	chain_empty$_ = ProofChain 0;
+	begins with {*}
+	admissibility [1000]
+	size =0 (fixed) (any bits)
+  constructor `chain_link`
+	chain_link$_ {n:#} root:^Cell prev:n?^(ProofChain n) = ProofChain (n + 1);
+	begins with {*}
+	admissibility [0111]
+	size 0+1R..0+2R (any bits)
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `root`: ^Cell (used=0) (is_nat_subtype=0)
+		field `prev`: _1?^(ProofChain _1) (used=0) (is_nat_subtype=0)
+  constructor detection: PARAM 
+  type size 0..0+2R (any bits)
+  type begins with {*}
+  type admissibility [1111]
+
+type #1724: `TopBlockDescr`, arity 0, 1 constructors
+  constructor `top_block_descr`
+	top_block_descr#d5 proof_for:BlockIdExt signatures:(Maybe ^BlockSignatures) len:(## 8) {<= 1 len} {<= len 8} chain:(ProofChain len) = TopBlockDescr;
+	begins with {1101010100*}
+	size 665..infty
+		field `proof_for`: BlockIdExt (used=0) (is_nat_subtype=0)
+		field `signatures`: Maybe ^BlockSignatures (used=0) (is_nat_subtype=0)
+		field `len`: ## 8 (used=1) (is_nat_subtype=1)
+		field `_`: <= 1 _3 (used=0) (is_nat_subtype=0)
+		field `_`: <= _3 8 (used=0) (is_nat_subtype=0)
+		field `chain`: ProofChain _3 (used=0) (is_nat_subtype=0)
+  type size 665..infty
+  type begins with {1101010100*}
+
+type #1725: `TopBlockDescrSet`, arity 0, 1 constructors
+  constructor `top_block_descr_set`
+	top_block_descr_set#4ac789f3 collection:(HashmapE 96 ^TopBlockDescr) = TopBlockDescrSet;
+	begins with {01001010110001111000100111110011*}
+	size 33..33+1R (any bits)
+		field `collection`: HashmapE 96 ^TopBlockDescr (used=0) (is_nat_subtype=0)
+  type size 33..33+1R
+  type begins with {01001010110001111000100111110011*}
+
+type #1726: `AccountStorageDictProof`, arity 0, 1 constructors
+  constructor `account_storage_dict_proof`
+	account_storage_dict_proof#37c1e3fc proof:^Cell = AccountStorageDictProof;
+	begins with {00110111110000011110001111111100*}
+	size =32+1R (fixed) (any bits)
+		field `proof`: ^Cell (used=0) (is_nat_subtype=0)
+  type size =32+1R (fixed)
+  type begins with {00110111110000011110001111111100*}
+
+type #1727: `ProducerInfo`, arity 0, 1 constructors
+  constructor `prod_info`
+	prod_info#34 utime:uint32 mc_blk_ref:ExtBlkRef state_proof:^(MERKLE_PROOF Block) prod_proof:^(MERKLE_PROOF ShardState) = ProducerInfo;
+	begins with {00110100*}
+	size =648+2R (fixed) (any bits)
+		field `utime`: uint32 (used=0) (is_nat_subtype=0)
+		field `mc_blk_ref`: ExtBlkRef (used=0) (is_nat_subtype=0)
+		field `state_proof`: ^(MERKLE_PROOF Block) (used=0) (is_nat_subtype=0)
+		field `prod_proof`: ^(MERKLE_PROOF ShardState) (used=0) (is_nat_subtype=0)
+  type size =648+2R (fixed)
+  type begins with {00110100*}
+
+type #1728: `ComplaintDescr`, arity 0, 2 constructors
+  constructor `no_blk_gen`
+	no_blk_gen#450e8bd9 from_utime:uint32 prod_info:^ProducerInfo = ComplaintDescr;
+	begins with {01000101000011101000101111011001*}
+	size =64+1R (fixed) (any bits)
+		field `from_utime`: uint32 (used=0) (is_nat_subtype=0)
+		field `prod_info`: ^ProducerInfo (used=0) (is_nat_subtype=0)
+  constructor `no_blk_gen_diff`
+	no_blk_gen_diff#c737b0ca prod_info_old:^ProducerInfo prod_info_new:^ProducerInfo = ComplaintDescr;
+	begins with {11000111001101111011000011001010*}
+	size =32+2R (fixed) (any bits)
+		field `prod_info_old`: ^ProducerInfo (used=0) (is_nat_subtype=0)
+		field `prod_info_new`: ^ProducerInfo (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(1) 
+  type size 32+1R..64+2R
+  type begins with {01000101000011101000101111011001*,11000111001101111011000011001010*}
+
+type #1729: `ValidatorComplaint`, arity 0, 1 constructors
+  constructor `validator_complaint`
+	validator_complaint#bc validator_pubkey:bits256 description:^ComplaintDescr created_at:uint32 severity:uint8 reward_addr:uint256 paid:Grams suggested_fine:Grams suggested_fine_part:uint32 = ValidatorComplaint;
+	begins with {10111100*}
+	size 592+1R..1168+1R
+		field `validator_pubkey`: bits256 (used=0) (is_nat_subtype=0)
+		field `description`: ^ComplaintDescr (used=0) (is_nat_subtype=0)
+		field `created_at`: uint32 (used=0) (is_nat_subtype=0)
+		field `severity`: uint8 (used=0) (is_nat_subtype=0)
+		field `reward_addr`: uint256 (used=0) (is_nat_subtype=0)
+		field `paid`: Grams (used=0) (is_nat_subtype=0)
+		field `suggested_fine`: Grams (used=0) (is_nat_subtype=0)
+		field `suggested_fine_part`: uint32 (used=0) (is_nat_subtype=0)
+  type size 592+1R..1168+1R
+  type begins with {10111100*}
+
+type #1730: `ValidatorComplaintStatus`, arity 0, 1 constructors
+  constructor `complaint_status`
+	complaint_status#2d complaint:^ValidatorComplaint voters:(HashmapE 16 True) vset_id:uint256 weight_remaining:int64 = ValidatorComplaintStatus;
+	begins with {00101101*}
+	size 329+1R..329+2R (any bits)
+		field `complaint`: ^ValidatorComplaint (used=0) (is_nat_subtype=0)
+		field `voters`: HashmapE 16 True (used=0) (is_nat_subtype=0)
+		field `vset_id`: uint256 (used=0) (is_nat_subtype=0)
+		field `weight_remaining`: int64 (used=0) (is_nat_subtype=0)
+  type size 329+1R..329+2R
+  type begins with {00101101*}
+
+type #1731: `VmStackValue`, arity 0, 9 constructors
+  constructor `vm_stk_null`
+	vm_stk_null#00 = VmStackValue;
+	begins with {00000000*}
+	size =8 (fixed) (any bits)
+  constructor `vm_stk_tinyint`
+	vm_stk_tinyint#01 value:int64 = VmStackValue;
+	begins with {00000001*}
+	size =72 (fixed) (any bits)
+		field `value`: int64 (used=0) (is_nat_subtype=0)
+  constructor `vm_stk_int`
+	vm_stk_int#0201_ value:int257 = VmStackValue;
+	begins with {000000100000000*}
+	size =272 (fixed) (any bits)
+		field `value`: int257 (used=0) (is_nat_subtype=0)
+  constructor `vm_stk_nan`
+	vm_stk_nan#02ff = VmStackValue;
+	begins with {0000001011111111*}
+	size =16 (fixed) (any bits)
+  constructor `vm_stk_cell`
+	vm_stk_cell#03 cell:^Cell = VmStackValue;
+	begins with {00000011*}
+	size =8+1R (fixed) (any bits)
+		field `cell`: ^Cell (used=0) (is_nat_subtype=0)
+  constructor `vm_stk_slice`
+	vm_stk_slice#04 VmCellSlice = VmStackValue;
+	begins with {00000100*}
+	size =34+1R (fixed)
+		field `_`: VmCellSlice (used=0) (is_nat_subtype=0)
+  constructor `vm_stk_builder`
+	vm_stk_builder#05 cell:^Cell = VmStackValue;
+	begins with {00000101*}
+	size =8+1R (fixed) (any bits)
+		field `cell`: ^Cell (used=0) (is_nat_subtype=0)
+  constructor `vm_stk_cont`
+	vm_stk_cont#06 cont:VmCont = VmStackValue;
+	begins with {000001100*,00000110100*,0000011010100*,000001101100*,000001101111*}
+	size 12..infty
+		field `cont`: VmCont (used=0) (is_nat_subtype=0)
+  constructor `vm_stk_tuple`
+	vm_stk_tuple#07 len:(## 16) data:(VmTuple len) = VmStackValue;
+	begins with {00000111*}
+	size 24..24+2R (any bits)
+		field `len`: ## 16 (used=1) (is_nat_subtype=1)
+		field `data`: VmTuple _1 (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(9) 
+  type size 8..infty
+  type begins with {0000000*,000000100000000*,0000001011111111*,00000011*,0000010*,000001100*,00000110100*,0000011010100*,000001101100*,000001101111*,00000111*}
+
+type #1732: `VmCellSlice`, arity 0, 1 constructors
+  constructor `_`
+	_$_ cell:^Cell st_bits:(## 10) end_bits:(## 10) {<= st_bits end_bits} st_ref:(#<= 4) end_ref:(#<= 4) {<= st_ref end_ref} = VmCellSlice;
+	begins with {*}
+	size =26+1R (fixed)
+		field `cell`: ^Cell (used=0) (is_nat_subtype=0)
+		field `st_bits`: ## 10 (used=1) (is_nat_subtype=1)
+		field `end_bits`: ## 10 (used=1) (is_nat_subtype=1)
+		field `_`: <= _2 _3 (used=0) (is_nat_subtype=0)
+		field `st_ref`: #<= 4 (used=1) (is_nat_subtype=1)
+		field `end_ref`: #<= 4 (used=1) (is_nat_subtype=1)
+		field `_`: <= _5 _6 (used=0) (is_nat_subtype=0)
+  type size =26+1R (fixed)
+  type begins with {*}
+
+type #1733: `VmCont`, arity 0, 10 constructors
+  constructor `vmc_std`
+	vmc_std$00 cdata:VmControlData code:VmCellSlice = VmCont;
+	begins with {00*}
+	size 32+1R..infty
+		field `cdata`: VmControlData (used=0) (is_nat_subtype=0)
+		field `code`: VmCellSlice (used=0) (is_nat_subtype=0)
+  constructor `vmc_envelope`
+	vmc_envelope$01 cdata:VmControlData next:^VmCont = VmCont;
+	begins with {01*}
+	size 6+1R..infty
+		field `cdata`: VmControlData (used=0) (is_nat_subtype=0)
+		field `next`: ^VmCont (used=0) (is_nat_subtype=0)
+  constructor `vmc_quit`
+	vmc_quit$1000 exit_code:int32 = VmCont;
+	begins with {1000*}
+	size =36 (fixed) (any bits)
+		field `exit_code`: int32 (used=0) (is_nat_subtype=0)
+  constructor `vmc_quit_exc`
+	vmc_quit_exc$1001 = VmCont;
+	begins with {1001*}
+	size =4 (fixed) (any bits)
+  constructor `vmc_repeat`
+	vmc_repeat#a4_ count:uint63 body:^VmCont after:^VmCont = VmCont;
+	begins with {10100*}
+	size =68+2R (fixed) (any bits)
+		field `count`: uint63 (used=0) (is_nat_subtype=0)
+		field `body`: ^VmCont (used=0) (is_nat_subtype=0)
+		field `after`: ^VmCont (used=0) (is_nat_subtype=0)
+  constructor `vmc_until`
+	vmc_until#c2_ body:^VmCont after:^VmCont = VmCont;
+	begins with {110000*}
+	size =6+2R (fixed) (any bits)
+		field `body`: ^VmCont (used=0) (is_nat_subtype=0)
+		field `after`: ^VmCont (used=0) (is_nat_subtype=0)
+  constructor `vmc_again`
+	vmc_again#c6_ body:^VmCont = VmCont;
+	begins with {110001*}
+	size =6+1R (fixed) (any bits)
+		field `body`: ^VmCont (used=0) (is_nat_subtype=0)
+  constructor `vmc_while_cond`
+	vmc_while_cond#ca_ cond:^VmCont body:^VmCont after:^VmCont = VmCont;
+	begins with {110010*}
+	size =6+3R (fixed) (any bits)
+		field `cond`: ^VmCont (used=0) (is_nat_subtype=0)
+		field `body`: ^VmCont (used=0) (is_nat_subtype=0)
+		field `after`: ^VmCont (used=0) (is_nat_subtype=0)
+  constructor `vmc_while_body`
+	vmc_while_body#ce_ cond:^VmCont body:^VmCont after:^VmCont = VmCont;
+	begins with {110011*}
+	size =6+3R (fixed) (any bits)
+		field `cond`: ^VmCont (used=0) (is_nat_subtype=0)
+		field `body`: ^VmCont (used=0) (is_nat_subtype=0)
+		field `after`: ^VmCont (used=0) (is_nat_subtype=0)
+  constructor `vmc_pushint`
+	vmc_pushint$1111 value:int32 next:^VmCont = VmCont;
+	begins with {1111*}
+	size =36+1R (fixed) (any bits)
+		field `value`: int32 (used=0) (is_nat_subtype=0)
+		field `next`: ^VmCont (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(6) 
+  type size 4..infty
+  type begins with {0*,100*,10100*,1100*,1111*}
+
+type #1734: `VmTupleRef`, arity 1, 3 constructors
+  constructor `vm_tupref_nil`
+	vm_tupref_nil$_ = VmTupleRef 0;
+	begins with {*}
+	admissibility [1000]
+	size =0 (fixed) (any bits)
+  constructor `vm_tupref_single`
+	vm_tupref_single$_ entry:^VmStackValue = VmTupleRef 1;
+	begins with {*}
+	admissibility [0100]
+	size =0+1R (fixed) (any bits)
+		field `entry`: ^VmStackValue (used=0) (is_nat_subtype=0)
+  constructor `vm_tupref_any`
+	vm_tupref_any$_ {n:#} ref:^(VmTuple (n + 2)) = VmTupleRef (n + 2);
+	begins with {*}
+	admissibility [0011]
+	size =0+1R (fixed) (any bits)
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `ref`: ^(VmTuple (_1 + 2)) (used=0) (is_nat_subtype=0)
+  constructor detection: PARAM 
+  type size 0..0+1R (any bits)
+  type begins with {*}
+  type admissibility [1111]
+
+type #1735: `VmTuple`, arity 1, 2 constructors
+  constructor `vm_tuple_nil`
+	vm_tuple_nil$_ = VmTuple 0;
+	begins with {*}
+	admissibility [1000]
+	size =0 (fixed) (any bits)
+  constructor `vm_tuple_tcons`
+	vm_tuple_tcons$_ {n:#} head:(VmTupleRef n) tail:^VmStackValue = VmTuple (n + 1);
+	begins with {*}
+	admissibility [0111]
+	size 0+1R..0+2R (any bits)
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `head`: VmTupleRef _1 (used=0) (is_nat_subtype=0)
+		field `tail`: ^VmStackValue (used=0) (is_nat_subtype=0)
+  constructor detection: PARAM 
+  type size 0..0+2R (any bits)
+  type begins with {*}
+  type admissibility [1111]
+
+type #1736: `VmStackList`, arity 1, 2 constructors
+  constructor `vm_stk_cons`
+	vm_stk_cons$_ {n:#} rest:^(VmStackList n) tos:VmStackValue = VmStackList (n + 1);
+	begins with {0000000*,000000100000000*,0000001011111111*,00000011*,0000010*,000001100*,00000110100*,0000011010100*,000001101100*,000001101111*,00000111*}
+	admissibility [0111]
+	size 8+1R..infty
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `rest`: ^(VmStackList _1) (used=0) (is_nat_subtype=0)
+		field `tos`: VmStackValue (used=0) (is_nat_subtype=0)
+  constructor `vm_stk_nil`
+	vm_stk_nil$_ = VmStackList 0;
+	begins with {*}
+	admissibility [1000]
+	size =0 (fixed) (any bits)
+  constructor detection: PARAM 
+  type size 0..infty
+  type begins with {*}
+  type admissibility [1111]
+
+type #1737: `VmStack`, arity 0, 1 constructors
+  constructor `vm_stack`
+	vm_stack$_ depth:(## 24) stack:(VmStackList depth) = VmStack;
+	begins with {*}
+	size 24..infty
+		field `depth`: ## 24 (used=1) (is_nat_subtype=1)
+		field `stack`: VmStackList _1 (used=0) (is_nat_subtype=0)
+  type size 24..infty
+  type begins with {*}
+
+type #1738: `VmSaveList`, arity 0, 1 constructors
+  constructor `_` (simple forwarder)
+	_$_ cregs:(HashmapE 4 VmStackValue) = VmSaveList;
+	begins with {*}
+	size 1..1+1R (any bits)
+		field `cregs`: HashmapE 4 VmStackValue (used=0) (is_nat_subtype=0)
+  type size 1..1+1R (any bits)
+  type begins with {*}
+
+type #1739: `TYPE_1739`, arity 0, 1 constructors
+  constructor `_`
+	_$_ max_limit:int64 cur_limit:int64 credit:int64 = TYPE_1739;
+	begins with {*}
+	size =192 (fixed) (any bits)
+		field `max_limit`: int64 (used=0) (is_nat_subtype=0)
+		field `cur_limit`: int64 (used=0) (is_nat_subtype=0)
+		field `credit`: int64 (used=0) (is_nat_subtype=0)
+  type size =192 (fixed) (any bits)
+  type begins with {*}
+
+type #1740: `VmGasLimits`, arity 0, 1 constructors
+  constructor `gas_limits`
+	gas_limits$_ remaining:int64 ^[$_ max_limit:int64 cur_limit:int64 credit:int64 ] = VmGasLimits;
+	begins with {*}
+	size =64+1R (fixed) (any bits)
+		field `remaining`: int64 (used=0) (is_nat_subtype=0)
+		field `_`: ^[$_ max_limit:int64 cur_limit:int64 credit:int64 ] (used=0) (is_nat_subtype=0)
+  type size =64+1R (fixed) (any bits)
+  type begins with {*}
+
+type #1741: `VmLibraries`, arity 0, 1 constructors
+  constructor `_` (simple forwarder)
+	_$_ libraries:(HashmapE 256 ^Cell) = VmLibraries;
+	begins with {*}
+	size 1..1+1R (any bits)
+		field `libraries`: HashmapE 256 ^Cell (used=0) (is_nat_subtype=0)
+  type size 1..1+1R (any bits)
+  type begins with {*}
+
+type #1742: `VmControlData`, arity 0, 1 constructors
+  constructor `vm_ctl_data`
+	vm_ctl_data$_ nargs:(Maybe uint13) stack:(Maybe VmStack) save:VmSaveList cp:(Maybe int16) = VmControlData;
+	begins with {*}
+	size 4..infty
+		field `nargs`: Maybe uint13 (used=0) (is_nat_subtype=0)
+		field `stack`: Maybe VmStack (used=0) (is_nat_subtype=0)
+		field `save`: VmSaveList (used=0) (is_nat_subtype=0)
+		field `cp`: Maybe int16 (used=0) (is_nat_subtype=0)
+  type size 4..infty
+  type begins with {*}
+
+type #1743: `DNSRecord`, arity 0, 5 constructors
+  constructor `dns_text`
+	dns_text#1eda Text = DNSRecord;
+	begins with {0001111011011010*}
+	size 24..1055+1R (any bits)
+		field `_`: Text (used=0) (is_nat_subtype=0)
+  constructor `dns_next_resolver`
+	dns_next_resolver#ba93 resolver:MsgAddressInt = DNSRecord;
+	begins with {10111010100100111*}
+	size 60..infty
+		field `resolver`: MsgAddressInt (used=0) (is_nat_subtype=0)
+  constructor `dns_adnl_address`
+	dns_adnl_address#ad01 adnl_addr:bits256 flags:(## 8) {<= flags 1} proto_list:flags.0?ProtoList = DNSRecord;
+	begins with {1010110100000001*}
+	size 280..2047
+		field `adnl_addr`: bits256 (used=0) (is_nat_subtype=0)
+		field `flags`: ## 8 (used=1) (is_nat_subtype=1)
+		field `_`: <= _2 1 (used=0) (is_nat_subtype=0)
+		field `proto_list`: _2.0?ProtoList (used=0) (is_nat_subtype=0)
+  constructor `dns_smc_address`
+	dns_smc_address#9fd3 smc_addr:MsgAddressInt flags:(## 8) {<= flags 1} cap_list:flags.0?SmcCapList = DNSRecord;
+	begins with {10011111110100111*}
+	size 68..infty
+		field `smc_addr`: MsgAddressInt (used=0) (is_nat_subtype=0)
+		field `flags`: ## 8 (used=1) (is_nat_subtype=1)
+		field `_`: <= _2 1 (used=0) (is_nat_subtype=0)
+		field `cap_list`: _2.0?SmcCapList (used=0) (is_nat_subtype=0)
+  constructor `dns_storage_address`
+	dns_storage_address#7473 bag_id:bits256 = DNSRecord;
+	begins with {0111010001110011*}
+	size =272 (fixed) (any bits)
+		field `bag_id`: bits256 (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(4) 
+  type size 24..infty
+  type begins with {0001111011011010*,0111010001110011*,10011111110100111*,1010110100000001*,10111010100100111*}
+
+type #1744: `DNS_RecordSet`, arity 0, 1 constructors
+  constructor `_` (simple forwarder)
+	_$_ (HashmapE 256 ^DNSRecord) = DNS_RecordSet;
+	begins with {*}
+	size 1..1+1R (any bits)
+		field `_`: HashmapE 256 ^DNSRecord (used=0) (is_nat_subtype=0)
+  type size 1..1+1R (any bits)
+  type begins with {*}
+
+type #1745: `TextChunks`, arity 1, 2 constructors
+  constructor `text_chunk`
+	text_chunk$_ {n:#} len:(## 8) data:(bits (8 * len)) next:(TextChunkRef n) = TextChunks (n + 1);
+	begins with {*}
+	admissibility [0111]
+	size 8..1031+1R (any bits)
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `len`: ## 8 (used=1) (is_nat_subtype=1)
+		field `data`: bits (8 * _2) (used=0) (is_nat_subtype=0)
+		field `next`: TextChunkRef _1 (used=0) (is_nat_subtype=0)
+  constructor `text_chunk_empty`
+	text_chunk_empty$_ = TextChunks 0;
+	begins with {*}
+	admissibility [1000]
+	size =0 (fixed) (any bits)
+  constructor detection: PARAM 
+  type size 0..1031+1R (any bits)
+  type begins with {*}
+  type admissibility [1111]
+
+type #1746: `TextChunkRef`, arity 1, 2 constructors
+  constructor `chunk_ref`
+	chunk_ref$_ {n:#} ref:^(TextChunks (n + 1)) = TextChunkRef (n + 1);
+	begins with {*}
+	admissibility [0111]
+	size =0+1R (fixed) (any bits)
+		field `n`: # (used=1) (is_nat_subtype=1)
+		field `ref`: ^(TextChunks (_1 + 1)) (used=0) (is_nat_subtype=0)
+  constructor `chunk_ref_empty`
+	chunk_ref_empty$_ = TextChunkRef 0;
+	begins with {*}
+	admissibility [1000]
+	size =0 (fixed) (any bits)
+  constructor detection: PARAM 
+  type size 0..0+1R (any bits)
+  type begins with {*}
+  type admissibility [1111]
+
+type #1747: `Text`, arity 0, 1 constructors
+  constructor `text`
+	text$_ chunks:(## 8) rest:(TextChunks chunks) = Text;
+	begins with {*}
+	size 8..1039+1R (any bits)
+		field `chunks`: ## 8 (used=1) (is_nat_subtype=1)
+		field `rest`: TextChunks _1 (used=0) (is_nat_subtype=0)
+  type size 8..1039+1R (any bits)
+  type begins with {*}
+
+type #1748: `ProtoList`, arity 0, 2 constructors
+  constructor `proto_list_nil`
+	proto_list_nil$0 = ProtoList;
+	begins with {0*}
+	size =1 (fixed) (any bits)
+  constructor `proto_list_next`
+	proto_list_next$1 head:Protocol tail:ProtoList = ProtoList;
+	begins with {10100100001010100*}
+	size 18..2047
+		field `head`: Protocol (used=0) (is_nat_subtype=0)
+		field `tail`: ProtoList (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(1) 
+  type size 1..2047
+  type begins with {0*,10100100001010100*}
+
+type #1749: `Protocol`, arity 0, 1 constructors
+  constructor `proto_http`
+	proto_http#4854 = Protocol;
+	begins with {0100100001010100*}
+	size =16 (fixed) (any bits)
+  (SIMPLE ENUM)
+  type size =16 (fixed)
+  type begins with {0100100001010100*}
+
+type #1750: `SmcCapList`, arity 0, 2 constructors
+  constructor `cap_list_nil`
+	cap_list_nil$0 = SmcCapList;
+	begins with {0*}
+	size =1 (fixed) (any bits)
+  constructor `cap_list_next`
+	cap_list_next$1 head:SmcCapability tail:SmcCapList = SmcCapList;
+	begins with {10010000101110111*,10101001101110001*,10111000111110100*,111111111*}
+	size 18..infty
+		field `head`: SmcCapability (used=0) (is_nat_subtype=0)
+		field `tail`: SmcCapList (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(1) 
+  type size 1..infty
+  type begins with {0*,10010000101110111*,10101001101110001*,10111000111110100*,111111111*}
+
+type #1751: `SmcCapability`, arity 0, 4 constructors
+  constructor `cap_method_seqno`
+	cap_method_seqno#5371 = SmcCapability;
+	begins with {0101001101110001*}
+	size =16 (fixed) (any bits)
+  constructor `cap_method_pubkey`
+	cap_method_pubkey#71f4 = SmcCapability;
+	begins with {0111000111110100*}
+	size =16 (fixed) (any bits)
+  constructor `cap_is_wallet`
+	cap_is_wallet#2177 = SmcCapability;
+	begins with {0010000101110111*}
+	size =16 (fixed) (any bits)
+  constructor `cap_name`
+	cap_name#ff name:Text = SmcCapability;
+	begins with {11111111*}
+	size 16..1047+1R (any bits)
+		field `name`: Text (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(3) 
+  type size 16..1047+1R
+  type begins with {0010000101110111*,0101001101110001*,0111000111110100*,11111111*}
+
+type #1752: `ChanConfig`, arity 0, 1 constructors
+  constructor `chan_config`
+	chan_config$_ init_timeout:uint32 close_timeout:uint32 a_key:bits256 b_key:bits256 a_addr:^MsgAddressInt b_addr:^MsgAddressInt channel_id:uint64 min_A_extra:Grams = ChanConfig;
+	begins with {*}
+	size 640+2R..928+2R
+		field `init_timeout`: uint32 (used=0) (is_nat_subtype=0)
+		field `close_timeout`: uint32 (used=0) (is_nat_subtype=0)
+		field `a_key`: bits256 (used=0) (is_nat_subtype=0)
+		field `b_key`: bits256 (used=0) (is_nat_subtype=0)
+		field `a_addr`: ^MsgAddressInt (used=0) (is_nat_subtype=0)
+		field `b_addr`: ^MsgAddressInt (used=0) (is_nat_subtype=0)
+		field `channel_id`: uint64 (used=0) (is_nat_subtype=0)
+		field `min_A_extra`: Grams (used=0) (is_nat_subtype=0)
+  type size 640+2R..928+2R
+  type begins with {*}
+
+type #1753: `ChanState`, arity 0, 3 constructors
+  constructor `chan_state_init`
+	chan_state_init$000 signed_A:Bool signed_B:Bool min_A:Grams min_B:Grams expire_at:uint32 A:Grams B:Grams = ChanState;
+	begins with {000*}
+	size 37..1189
+		field `signed_A`: Bool (used=0) (is_nat_subtype=0)
+		field `signed_B`: Bool (used=0) (is_nat_subtype=0)
+		field `min_A`: Grams (used=0) (is_nat_subtype=0)
+		field `min_B`: Grams (used=0) (is_nat_subtype=0)
+		field `expire_at`: uint32 (used=0) (is_nat_subtype=0)
+		field `A`: Grams (used=0) (is_nat_subtype=0)
+		field `B`: Grams (used=0) (is_nat_subtype=0)
+  constructor `chan_state_close`
+	chan_state_close$001 signed_A:Bool signed_B:Bool promise_A:Grams promise_B:Grams expire_at:uint32 A:Grams B:Grams = ChanState;
+	begins with {001*}
+	size 37..1189
+		field `signed_A`: Bool (used=0) (is_nat_subtype=0)
+		field `signed_B`: Bool (used=0) (is_nat_subtype=0)
+		field `promise_A`: Grams (used=0) (is_nat_subtype=0)
+		field `promise_B`: Grams (used=0) (is_nat_subtype=0)
+		field `expire_at`: uint32 (used=0) (is_nat_subtype=0)
+		field `A`: Grams (used=0) (is_nat_subtype=0)
+		field `B`: Grams (used=0) (is_nat_subtype=0)
+  constructor `chan_state_payout`
+	chan_state_payout$010 A:Grams B:Grams = ChanState;
+	begins with {010*}
+	size 3..579
+		field `A`: Grams (used=0) (is_nat_subtype=0)
+		field `B`: Grams (used=0) (is_nat_subtype=0)
+  constructor detection: PFX(3) 
+  type size 3..1189
+  type begins with {00*,010*}
+
+type #1754: `ChanPromise`, arity 0, 1 constructors
+  constructor `chan_promise`
+	chan_promise$_ channel_id:uint64 promise_A:Grams promise_B:Grams = ChanPromise;
+	begins with {*}
+	size 64..640
+		field `channel_id`: uint64 (used=0) (is_nat_subtype=0)
+		field `promise_A`: Grams (used=0) (is_nat_subtype=0)
+		field `promise_B`: Grams (used=0) (is_nat_subtype=0)
+  type size 64..640
+  type begins with {*}
+
+type #1755: `ChanSignedPromise`, arity 0, 1 constructors
+  constructor `chan_signed_promise`
+	chan_signed_promise$_ sig:(Maybe ^bits512) promise:ChanPromise = ChanSignedPromise;
+	begins with {*}
+	size 65..infty
+		field `sig`: Maybe ^bits512 (used=0) (is_nat_subtype=0)
+		field `promise`: ChanPromise (used=0) (is_nat_subtype=0)
+  type size 65..infty
+  type begins with {*}
+
+type #1756: `ChanMsg`, arity 0, 4 constructors
+  constructor `chan_msg_init`
+	chan_msg_init#27317822 inc_A:Grams inc_B:Grams min_A:Grams min_B:Grams channel_id:uint64 = ChanMsg;
+	begins with {00100111001100010111100000100010*}
+	size 96..1248
+		field `inc_A`: Grams (used=0) (is_nat_subtype=0)
+		field `inc_B`: Grams (used=0) (is_nat_subtype=0)
+		field `min_A`: Grams (used=0) (is_nat_subtype=0)
+		field `min_B`: Grams (used=0) (is_nat_subtype=0)
+		field `channel_id`: uint64 (used=0) (is_nat_subtype=0)
+  constructor `chan_msg_close`
+	chan_msg_close#f28ae183 extra_A:Grams extra_B:Grams promise:ChanSignedPromise = ChanMsg;
+	begins with {11110010100010101110000110000011*}
+	size 97..infty
+		field `extra_A`: Grams (used=0) (is_nat_subtype=0)
+		field `extra_B`: Grams (used=0) (is_nat_subtype=0)
+		field `promise`: ChanSignedPromise (used=0) (is_nat_subtype=0)
+  constructor `chan_msg_timeout`
+	chan_msg_timeout#43278a28 = ChanMsg;
+	begins with {01000011001001111000101000101000*}
+	size =32 (fixed) (any bits)
+  constructor `chan_msg_payout`
+	chan_msg_payout#37fe7810 = ChanMsg;
+	begins with {00110111111111100111100000010000*}
+	size =32 (fixed) (any bits)
+  constructor detection: PFX(4) 
+  type size 32..infty
+  type begins with {00100111001100010111100000100010*,00110111111111100111100000010000*,01000011001001111000101000101000*,11110010100010101110000110000011*}
+
+type #1757: `ChanSignedMsg`, arity 0, 1 constructors
+  constructor `chan_signed_msg`
+	chan_signed_msg$_ sig_A:(Maybe ^bits512) sig_B:(Maybe ^bits512) msg:ChanMsg = ChanSignedMsg;
+	begins with {*}
+	size 34..infty
+		field `sig_A`: Maybe ^bits512 (used=0) (is_nat_subtype=0)
+		field `sig_B`: Maybe ^bits512 (used=0) (is_nat_subtype=0)
+		field `msg`: ChanMsg (used=0) (is_nat_subtype=0)
+  type size 34..infty
+  type begins with {*}
+
+type #1758: `ChanOp`, arity 0, 1 constructors
+  constructor `chan_op_cmd`
+	chan_op_cmd#912838d1 msg:ChanSignedMsg = ChanOp;
+	begins with {10010001001010000011100011010001*}
+	size 66..infty
+		field `msg`: ChanSignedMsg (used=0) (is_nat_subtype=0)
+  type size 66..infty
+  type begins with {10010001001010000011100011010001*}
+
+type #1759: `ChanData`, arity 0, 1 constructors
+  constructor `chan_data`
+	chan_data$_ config:^ChanConfig state:^ChanState = ChanData;
+	begins with {*}
+	size =0+2R (fixed) (any bits)
+		field `config`: ^ChanConfig (used=0) (is_nat_subtype=0)
+		field `state`: ^ChanState (used=0) (is_nat_subtype=0)
+  type size =0+2R (fixed) (any bits)
+  type begins with {*}
+
+****************
+356 constant expressions:
+expr #1: 1
+expr #2: ## 1
+expr #3: Bit
+expr #4: True
+expr #5: 9
+expr #6: ## 9
+expr #7: 30
+expr #8: #<= 30
+expr #9: Anycast
+expr #10: Maybe Anycast
+expr #11: int8
+expr #12: bits256
+expr #13: int32
+expr #14: MsgAddressInt
+expr #15: MsgAddressExt
+expr #16: 16
+expr #17: VarUInteger 16
+expr #18: Grams
+expr #19: 32
+expr #20: VarUInteger 32
+expr #21: HashmapE 32 (VarUInteger 32)
+expr #22: ExtraCurrencyCollection
+expr #23: Bool
+expr #24: CurrencyCollection
+expr #25: uint64
+expr #26: uint32
+expr #27: MsgAddress
+expr #28: 5
+expr #29: ## 5
+expr #30: Maybe (## 5)
+expr #31: TickTock
+expr #32: Maybe TickTock
+expr #33: Cell
+expr #34: ^Cell
+expr #35: Maybe ^Cell
+expr #36: 256
+expr #37: SimpleLib
+expr #38: HashmapE 256 SimpleLib
+expr #39: CommonMsgInfo
+expr #40: StateInit
+expr #41: ^StateInit
+expr #42: Either StateInit ^StateInit
+expr #43: Maybe (Either StateInit ^StateInit)
+expr #44: CommonMsgInfoRelaxed
+expr #45: Any
+expr #46: Message Any
+expr #47: NewBounceOriginalInfo
+expr #48: ^NewBounceOriginalInfo
+expr #49: uint8
+expr #50: NewBounceComputePhaseInfo
+expr #51: Maybe NewBounceComputePhaseInfo
+expr #52: 96
+expr #53: #<= 96
+expr #54: IntermediateAddress
+expr #55: ^(Message Any)
+expr #56: Maybe uint64
+expr #57: MsgMetadata
+expr #58: Maybe MsgMetadata
+expr #59: Transaction
+expr #60: ^Transaction
+expr #61: MsgEnvelope
+expr #62: ^MsgEnvelope
+expr #63: InMsg
+expr #64: ImportFees
+expr #65: HashmapAugE 256 InMsg ImportFees
+expr #66: ^InMsg
+expr #67: uint63
+expr #68: OutMsg
+expr #69: HashmapAugE 256 OutMsg CurrencyCollection
+expr #70: 352
+expr #71: EnqueuedMsg
+expr #72: HashmapAugE 352 EnqueuedMsg uint64
+expr #73: ProcessedUpto
+expr #74: HashmapE 96 ProcessedUpto
+expr #75: 320
+expr #76: IhrPendingSince
+expr #77: HashmapE 320 IhrPendingSince
+expr #78: 64
+expr #79: HashmapE 64 EnqueuedMsg
+expr #80: uint48
+expr #81: AccountDispatchQueue
+expr #82: HashmapAugE 256 AccountDispatchQueue uint64
+expr #83: DispatchQueue
+expr #84: Maybe uint48
+expr #85: OutMsgQueue
+expr #86: ProcessedInfo
+expr #87: OutMsgQueueExtra
+expr #88: Maybe OutMsgQueueExtra
+expr #89: uint256
+expr #90: 7
+expr #91: VarUInteger 7
+expr #92: StorageUsed
+expr #93: StorageExtraInfo
+expr #94: Maybe Grams
+expr #95: StorageInfo
+expr #96: AccountStorage
+expr #97: AccountState
+expr #98: Account
+expr #99: ^Account
+expr #100: ShardAccount
+expr #101: DepthBalanceInfo
+expr #102: HashmapAugE 256 ShardAccount DepthBalanceInfo
+expr #103: uint15
+expr #104: AccountStatus
+expr #105: Maybe ^(Message Any)
+expr #106: 15
+expr #107: HashmapE 15 ^(Message Any)
+expr #108: [$_ in_msg:(Maybe ^(Message Any)) out_msgs:(HashmapE 15 ^(Message Any)) ]
+expr #109: ^[$_ in_msg:(Maybe ^(Message Any)) out_msgs:(HashmapE 15 ^(Message Any)) ]
+expr #110: HASH_UPDATE Account
+expr #111: ^(HASH_UPDATE Account)
+expr #112: TransactionDescr
+expr #113: ^TransactionDescr
+expr #114: uint16
+expr #115: HashmapAug 64 ^Transaction CurrencyCollection
+expr #116: AccountBlock
+expr #117: HashmapAugE 256 AccountBlock CurrencyCollection
+expr #118: AccStatusChange
+expr #119: ComputeSkipReason
+expr #120: 3
+expr #121: VarUInteger 3
+expr #122: Maybe (VarUInteger 3)
+expr #123: Maybe int32
+expr #124: [$_ gas_used:(VarUInteger 7) gas_limit:(VarUInteger 7) gas_credit:(Maybe (VarUInteger 3)) mode:int8 exit_code:int32 exit_arg:(Maybe int32) vm_steps:uint32 vm_init_state_hash:bits256 vm_final_state_hash:bits256 ]
+expr #125: ^[$_ gas_used:(VarUInteger 7) gas_limit:(VarUInteger 7) gas_credit:(Maybe (VarUInteger 3)) mode:int8 exit_code:int32 exit_arg:(Maybe int32) vm_steps:uint32 vm_init_state_hash:bits256 vm_final_state_hash:bits256 ]
+expr #126: TrStoragePhase
+expr #127: Maybe TrStoragePhase
+expr #128: TrCreditPhase
+expr #129: Maybe TrCreditPhase
+expr #130: TrComputePhase
+expr #131: TrActionPhase
+expr #132: ^TrActionPhase
+expr #133: Maybe ^TrActionPhase
+expr #134: TrBouncePhase
+expr #135: Maybe TrBouncePhase
+expr #136: 6
+expr #137: ## 6
+expr #138: SplitMergeInfo
+expr #139: Maybe Cell
+expr #140: OutAction
+expr #141: 8
+expr #142: ## 8
+expr #143: MessageRelaxed Any
+expr #144: ^(MessageRelaxed Any)
+expr #145: ## 7
+expr #146: LibRef
+expr #147: 60
+expr #148: #<= 60
+expr #149: ShardIdent
+expr #150: ExtBlkRef
+expr #151: #
+expr #152: OutMsgQueueInfo
+expr #153: ^OutMsgQueueInfo
+expr #154: ShardAccounts
+expr #155: ^ShardAccounts
+expr #156: LibDescr
+expr #157: HashmapE 256 LibDescr
+expr #158: BlkMasterInfo
+expr #159: Maybe BlkMasterInfo
+expr #160: [$_ overload_history:uint64 underload_history:uint64 total_balance:CurrencyCollection total_validator_fees:CurrencyCollection libraries:(HashmapE 256 LibDescr) master_ref:(Maybe BlkMasterInfo) ]
+expr #161: ^[$_ overload_history:uint64 underload_history:uint64 total_balance:CurrencyCollection total_validator_fees:CurrencyCollection libraries:(HashmapE 256 LibDescr) master_ref:(Maybe BlkMasterInfo) ]
+expr #162: McStateExtra
+expr #163: ^McStateExtra
+expr #164: Maybe ^McStateExtra
+expr #165: ShardStateUnsplit
+expr #166: ^ShardStateUnsplit
+expr #167: Hashmap 256 True
+expr #168: 0
+expr #169: GlobalVersion
+expr #170: ^BlkMasterInfo
+expr #171: BlkPrevInfo 0
+expr #172: ^(BlkPrevInfo 0)
+expr #173: ^ExtBlkRef
+expr #174: BlockInfo
+expr #175: ^BlockInfo
+expr #176: ValueFlow
+expr #177: ^ValueFlow
+expr #178: ShardState
+expr #179: MERKLE_UPDATE ShardState
+expr #180: ^(MERKLE_UPDATE ShardState)
+expr #181: BlockExtra
+expr #182: ^BlockExtra
+expr #183: InMsgDescr
+expr #184: ^InMsgDescr
+expr #185: OutMsgDescr
+expr #186: ^OutMsgDescr
+expr #187: ShardAccountBlocks
+expr #188: ^ShardAccountBlocks
+expr #189: McBlockExtra
+expr #190: ^McBlockExtra
+expr #191: Maybe ^McBlockExtra
+expr #192: [$_ from_prev_blk:CurrencyCollection to_next_blk:CurrencyCollection imported:CurrencyCollection exported:CurrencyCollection ]
+expr #193: ^[$_ from_prev_blk:CurrencyCollection to_next_blk:CurrencyCollection imported:CurrencyCollection exported:CurrencyCollection ]
+expr #194: [$_ fees_imported:CurrencyCollection recovered:CurrencyCollection created:CurrencyCollection minted:CurrencyCollection ]
+expr #195: ^[$_ fees_imported:CurrencyCollection recovered:CurrencyCollection created:CurrencyCollection minted:CurrencyCollection ]
+expr #196: ## 3
+expr #197: FutureSplitMerge
+expr #198: [$_ fees_collected:CurrencyCollection funds_created:CurrencyCollection ]
+expr #199: ^[$_ fees_collected:CurrencyCollection funds_created:CurrencyCollection ]
+expr #200: ShardDescr
+expr #201: BinTree ShardDescr
+expr #202: ^(BinTree ShardDescr)
+expr #203: HashmapE 32 ^(BinTree ShardDescr)
+expr #204: ShardFeeCreated
+expr #205: HashmapAugE 96 ShardFeeCreated ShardFeeCreated
+expr #206: Hashmap 32 ^Cell
+expr #207: ^(Hashmap 32 ^Cell)
+expr #208: KeyExtBlkRef
+expr #209: KeyMaxLt
+expr #210: HashmapAugE 32 KeyExtBlkRef KeyMaxLt
+expr #211: Counters
+expr #212: CreatorStats
+expr #213: HashmapE 256 CreatorStats
+expr #214: HashmapAugE 256 CreatorStats uint32
+expr #215: ShardHashes
+expr #216: ConfigParams
+expr #217: ## 16
+expr #218: ValidatorInfo
+expr #219: OldMcBlocksInfo
+expr #220: Maybe ExtBlkRef
+expr #221: BlockCreateStats
+expr #222: [$_ flags:(## 16) {<= flags 1} validator_info:ValidatorInfo prev_blocks:OldMcBlocksInfo after_key_block:Bool last_key_block:(Maybe ExtBlkRef) block_create_stats:flags.0?BlockCreateStats ]
+expr #223: ^[$_ flags:(## 16) {<= flags 1} validator_info:ValidatorInfo prev_blocks:OldMcBlocksInfo after_key_block:Bool last_key_block:(Maybe ExtBlkRef) block_create_stats:flags.0?BlockCreateStats ]
+expr #224: CryptoSignatureSimple
+expr #225: CryptoSignature
+expr #226: SigPubKey
+expr #227: Certificate
+expr #228: SignedCertificate
+expr #229: ^SignedCertificate
+expr #230: ShardFees
+expr #231: CryptoSignaturePair
+expr #232: HashmapE 16 CryptoSignaturePair
+expr #233: Maybe ^InMsg
+expr #234: [$_ prev_blk_signatures:(HashmapE 16 CryptoSignaturePair) recover_create_msg:(Maybe ^InMsg) mint_msg:(Maybe ^InMsg) ]
+expr #235: ^[$_ prev_blk_signatures:(HashmapE 16 CryptoSignaturePair) recover_create_msg:(Maybe ^InMsg) mint_msg:(Maybe ^InMsg) ]
+expr #236: ValidatorDescr
+expr #237: Hashmap 16 ValidatorDescr
+expr #238: HashmapE 16 ValidatorDescr
+expr #239: Maybe bits256
+expr #240: BurningConfig
+expr #241: Hashmap 32 True
+expr #242: ConfigProposalSetup
+expr #243: ^ConfigProposalSetup
+expr #244: ConfigVotingSetup
+expr #245: Maybe uint256
+expr #246: ConfigProposal
+expr #247: ^ConfigProposal
+expr #248: HashmapE 16 True
+expr #249: int64
+expr #250: 12
+expr #251: ## 12
+expr #252: 1023
+expr #253: ## 32
+expr #254: 13
+expr #255: ## 13
+expr #256: WcSplitMergeTimings
+expr #257: 63
+expr #258: WorkchainDescr
+expr #259: HashmapE 32 WorkchainDescr
+expr #260: ComplaintPricing
+expr #261: BlockCreateFees
+expr #262: StoragePrices
+expr #263: Hashmap 32 StoragePrices
+expr #264: GasLimitsPrices
+expr #265: ParamLimits
+expr #266: ImportedMsgQueueLimits
+expr #267: BlockLimits
+expr #268: MsgForwardPrices
+expr #269: CatchainConfig
+expr #270: ConsensusConfig
+expr #271: HashmapE 256 True
+expr #272: ValidatorSet
+expr #273: ValidatorTempKey
+expr #274: ^ValidatorTempKey
+expr #275: ValidatorSignedTempKey
+expr #276: HashmapE 256 ValidatorSignedTempKey
+expr #277: MisbehaviourPunishmentConfig
+expr #278: SizeLimitsConfig
+expr #279: 288
+expr #280: Unit
+expr #281: HashmapE 288 Unit
+expr #282: SuspendedAddressList
+expr #283: PrecompiledSmc
+expr #284: HashmapE 256 PrecompiledSmc
+expr #285: PrecompiledContractsConfig
+expr #286: HashmapE 256 uint256
+expr #287: OracleBridgeParams
+expr #288: Coins
+expr #289: JettonBridgePrices
+expr #290: ^JettonBridgePrices
+expr #291: JettonBridgeParams
+expr #292: ValidatorBaseInfo
+expr #293: BlockSignaturesPure
+expr #294: BlockIdExt
+expr #295: BlockSignatures
+expr #296: ^BlockSignatures
+expr #297: Maybe ^BlockSignatures
+expr #298: TopBlockDescr
+expr #299: ^TopBlockDescr
+expr #300: HashmapE 96 ^TopBlockDescr
+expr #301: Block
+expr #302: MERKLE_PROOF Block
+expr #303: ^(MERKLE_PROOF Block)
+expr #304: MERKLE_PROOF ShardState
+expr #305: ^(MERKLE_PROOF ShardState)
+expr #306: ProducerInfo
+expr #307: ^ProducerInfo
+expr #308: ComplaintDescr
+expr #309: ^ComplaintDescr
+expr #310: ValidatorComplaint
+expr #311: ^ValidatorComplaint
+expr #312: int257
+expr #313: 10
+expr #314: ## 10
+expr #315: 4
+expr #316: #<= 4
+expr #317: VmCellSlice
+expr #318: VmCont
+expr #319: VmStackValue
+expr #320: ^VmStackValue
+expr #321: 2
+expr #322: 24
+expr #323: ## 24
+expr #324: HashmapE 4 VmStackValue
+expr #325: [$_ max_limit:int64 cur_limit:int64 credit:int64 ]
+expr #326: ^[$_ max_limit:int64 cur_limit:int64 credit:int64 ]
+expr #327: HashmapE 256 ^Cell
+expr #328: uint13
+expr #329: Maybe uint13
+expr #330: VmStack
+expr #331: Maybe VmStack
+expr #332: VmSaveList
+expr #333: int16
+expr #334: Maybe int16
+expr #335: VmControlData
+expr #336: ^VmCont
+expr #337: DNSRecord
+expr #338: ^DNSRecord
+expr #339: HashmapE 256 ^DNSRecord
+expr #340: Text
+expr #341: ProtoList
+expr #342: Protocol
+expr #343: SmcCapList
+expr #344: SmcCapability
+expr #345: ^MsgAddressInt
+expr #346: bits512
+expr #347: ^bits512
+expr #348: Maybe ^bits512
+expr #349: ChanPromise
+expr #350: ChanSignedPromise
+expr #351: ChanMsg
+expr #352: ChanSignedMsg
+expr #353: ChanConfig
+expr #354: ^ChanConfig
+expr #355: ChanState
+expr #356: ^ChanState

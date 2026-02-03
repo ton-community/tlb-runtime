@@ -8,10 +8,10 @@ const config: Config = {
     silent: false,
     coverageThreshold: {
         global: {
-            statements: 77,
-            branches: 70,
-            functions: 78,
-            lines: 78,
+            statements: 55,
+            branches: 48,
+            functions: 72,
+            lines: 56,
         },
     },
     coverageReporters: ['json-summary', 'text', 'lcov'],

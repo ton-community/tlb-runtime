@@ -1,6 +1,6 @@
-import { TLBMathExpr, TLBNumberExpr, TLBVarExpr, TLBBinaryOp, TLBUnaryOp } from '@ton-community/tlb-codegen';
-
 // Interpreter to evaluate TLBMathExpr at runtime
+import { TLBMathExpr } from './types';
+
 export class MathExprEvaluator {
     private variables: Map<string, number>;
 
@@ -23,11 +23,11 @@ export class MathExprEvaluator {
     }
 
     evaluate(expr: TLBMathExpr): number {
-        if (expr instanceof TLBNumberExpr) {
+        if (expr.kind === 'TLBNumberExpr') {
             return expr.n;
         }
 
-        if (expr instanceof TLBVarExpr) {
+        if (expr.kind === 'TLBVarExpr') {
             const value = this.variables.get(expr.x);
             if (value === undefined) {
                 throw new Error(`Variable ${expr.x} is not defined`);
@@ -35,7 +35,7 @@ export class MathExprEvaluator {
             return value;
         }
 
-        if (expr instanceof TLBBinaryOp) {
+        if (expr.kind === 'TLBBinaryOp') {
             const left = this.evaluate(expr.left);
             const right = this.evaluate(expr.right);
             switch (expr.operation) {
@@ -73,17 +73,15 @@ export class MathExprEvaluator {
                     return left >= right ? 1 : 0;
                 case '=':
                     return left === right ? 1 : 0;
-                default:
-                    throw new Error(`Unknown operation: ${expr.operation}`);
             }
         }
 
-        if (expr instanceof TLBUnaryOp) {
+        if (expr.kind === 'TLBUnaryOp') {
             const operation = expr.operation;
             switch (operation) {
                 case '.': {
                     const innerExpr = expr.value;
-                    if (innerExpr instanceof TLBBinaryOp && innerExpr.operation === '-') {
+                    if (innerExpr.kind === 'TLBBinaryOp' && innerExpr.operation === '-') {
                         const left = this.evaluate(innerExpr.left);
                         const right = this.evaluate(innerExpr.right);
                         if (right === 1) {
@@ -91,7 +89,7 @@ export class MathExprEvaluator {
                         }
                         return left - right;
                     }
-                    if (innerExpr instanceof TLBNumberExpr) {
+                    if (innerExpr.kind === 'TLBNumberExpr') {
                         return MathExprEvaluator.calculateBitsForLessThanOrEqual(innerExpr.n);
                     }
                     return this.evaluate(innerExpr);
@@ -100,7 +98,9 @@ export class MathExprEvaluator {
                 case '-':
                     return -this.evaluate(expr.value);
                 case '~':
-                    return ~this.evaluate(expr.value);
+                    // In TL-B, ~n means 'inferred/computed value of n'.
+                    // Always return the inner value directly.
+                    return this.evaluate(expr.value);
                 case '!':
                     return this.evaluate(expr.value) ? 0 : 1;
                 default:
