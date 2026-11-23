@@ -1,6 +1,6 @@
 {
   "name": "@ton-community/tlb-runtime",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0-alpha.4",
   "description": "TL‑B Runtime is a library for parsing and (de)serializing data according to TL‑B schemas",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -19,8 +19,7 @@
     "test:coverage": "jest --coverage",
     "prepublishOnly": "npm run clean && npm run build",
     "changeset": "changeset",
-    "version-packages": "changeset version",
-    "release": "changeset publish"
+    "version-packages": "changeset version"
   },
   "keywords": [
     "ton",
