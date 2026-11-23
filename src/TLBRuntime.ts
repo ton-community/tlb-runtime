@@ -949,6 +949,17 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
 
         // Serialize fields
         for (const field of constructor.fields) {
+            // Codegen represents a named reference as a single subfield with the same name.
+            if (field.name && field.subFields.length === 1 && field.subFields[0].name === field.name) {
+                const { fieldType } = field.subFields[0];
+                if (fieldType.kind === 'TLBCellType' || fieldType.kind === 'TLBNamedType') {
+                    const referenceType: TLBFieldType =
+                        fieldType.kind === 'TLBCellType' ? fieldType : { kind: 'TLBCellInsideType', value: fieldType };
+                    this.serializeFieldType(referenceType, data[field.name], builder, variables);
+                    continue;
+                }
+            }
+
             if (!field.anonymous) {
                 this.serializeField(field, data[field.name], builder, variables);
             } else {
