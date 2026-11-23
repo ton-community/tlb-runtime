@@ -995,7 +995,11 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
         switch (fieldType.kind) {
             case 'TLBNumberType': {
                 const bits = evaluator.evaluate(fieldType.bits);
-                builder.storeUint(value, bits);
+                if (fieldType.signed) {
+                    builder.storeInt(value, bits);
+                } else {
+                    builder.storeUint(value, bits);
+                }
                 break;
             }
 
