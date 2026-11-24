@@ -17,6 +17,7 @@ import {
     TLBType,
     TLBField,
     TLBFieldType,
+    TLBVarExpr,
     getTLBCodeByAST,
 } from '@ton-community/tlb-codegen';
 import { ast } from '@ton-community/tlb-parser';
@@ -53,6 +54,16 @@ export class TLBDataError extends TLBRuntimeError {}
 
 function tagKey(tag: TLBConstructorTag): string {
     return `0b${BigInt(tag.binary).toString(2).padStart(tag.bitLen, '0')}`;
+}
+
+function evaluateNumericArgument(argument: TLBFieldType | undefined, evaluator: MathExprEvaluator): number | undefined {
+    if (argument?.kind === 'TLBExprMathType') {
+        return evaluator.evaluate(argument.initialExpr);
+    }
+    if (argument?.kind === 'TLBNumberType') {
+        return evaluator.evaluate(argument.bits);
+    }
+    return undefined;
 }
 
 export interface TLBRuntimeConfig {
@@ -229,24 +240,25 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
         type: TLBType,
         data: Slice,
         args: TLBFieldType[] = [],
-        initialVariables?: Map<string, number>,
+        parentVariables?: Map<string, number>,
+        outputVariables?: Map<string, number>,
     ): Result<T> {
         for (const constructor of type.constructors) {
             const prev = data.clone();
-            const result = this.deserializeConstructor(type, constructor, prev, args, initialVariables);
-            if (result.success) {
-                const bitsUsed = data.remainingBits - prev.remainingBits;
-                const refsUsed = data.remainingRefs - prev.remainingRefs;
+            const outputs = outputVariables ? new Map<string, number>() : undefined;
+            const result = this.deserializeConstructor(type, constructor, prev, args, parentVariables, outputs);
+            if (!result.success) continue;
 
-                if (bitsUsed > 0) {
-                    data.skip(bitsUsed);
-                }
-                for (let i = 0; i < refsUsed; i++) {
-                    data.loadRef();
-                }
-
-                return result;
+            data.skip(data.remainingBits - prev.remainingBits);
+            while (data.remainingRefs > prev.remainingRefs) {
+                data.loadRef();
             }
+            if (outputVariables && outputs) {
+                for (const [name, value] of outputs) {
+                    outputVariables.set(name, value);
+                }
+            }
+            return result;
         }
 
         return {
@@ -260,7 +272,8 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
         constructor: TLBConstructor,
         slice: Slice,
         args: TLBFieldType[] = [],
-        initialVariables?: Map<string, number>,
+        parentVariables?: Map<string, number>,
+        outputVariables?: Map<string, number>,
     ): Result<T> {
         const kind = type.constructors.length > 1 ? `${type.name}_${constructor.name}` : type.name;
         // Check tag if present
@@ -283,25 +296,32 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
         }
 
         // Initialize variables map for constraint evaluation
-        const variables = new Map<string, number>(initialVariables);
+        const variables = new Map<string, number>(parentVariables);
+        const callerEvaluator = new MathExprEvaluator(parentVariables);
+        const argValues = args.map((argument) => {
+            try {
+                return evaluateNumericArgument(argument, callerEvaluator);
+            } catch {
+                return undefined;
+            }
+        });
 
         // Initialize variables from constructor parameters (from type arguments)
         if (args.length > 0 && constructor.parameters.length > 0) {
             const evaluator = new MathExprEvaluator(variables);
             for (let i = 0; i < Math.min(args.length, constructor.parameters.length); i++) {
                 const param = constructor.parameters[i];
-                const arg = args[i];
+                const argValue = argValues[i];
 
-                let argValue: number | undefined = undefined;
-                try {
-                    if (arg.kind === 'TLBExprMathType') {
-                        // Evaluate provided argument initial expression for binding
-                        argValue = evaluator.evaluate(arg.initialExpr);
-                    } else if (arg.kind === 'TLBNumberType') {
-                        argValue = evaluator.evaluate(arg.bits);
-                    }
-                } catch (error) {
-                    void error;
+                if (
+                    param.variable.isConst &&
+                    typeof argValue === 'number' &&
+                    evaluator.evaluate(param.paramExpr) !== argValue
+                ) {
+                    return {
+                        success: false,
+                        error: new TLBDataError(`Type argument does not match constructor ${kind}`),
+                    };
                 }
 
                 if (param.argName && typeof argValue === 'number') {
@@ -309,6 +329,17 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
                 }
 
                 try {
+                    const derived = param.variable.deriveExpr;
+                    if (
+                        derived &&
+                        (!(derived instanceof TLBVarExpr) ||
+                            derived.x !== param.variable.name ||
+                            argValue === undefined) &&
+                        Array.from(derived.variables).every((name) => variables.has(name))
+                    ) {
+                        variables.set(param.variable.name, evaluator.evaluate(derived));
+                        continue;
+                    }
                     if (param.variable?.name && typeof argValue === 'number') {
                         const varName = param.variable.name;
                         let solved = false;
@@ -398,23 +429,11 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
         // Fallback: some schemas keep numeric variables only in `variables` and not in `parameters`.
         // In that case, bind them positionally from type arguments.
         if (args.length > 0 && constructor.parameters.length === 0 && constructor.variables.length > 0) {
-            const evaluator = new MathExprEvaluator(variables);
             const numericVars = constructor.variables.filter((v) => v.type === '#');
-            for (let i = 0; i < Math.min(args.length, numericVars.length); i++) {
-                const v = numericVars[i];
-                const arg = args[i];
-                try {
-                    let argValue: number | undefined;
-                    if (arg.kind === 'TLBExprMathType') {
-                        argValue = evaluator.evaluate(arg.initialExpr);
-                    } else if (arg.kind === 'TLBNumberType') {
-                        argValue = evaluator.evaluate(arg.bits);
-                    }
-                    if (typeof argValue === 'number') {
-                        variables.set(v.name, argValue);
-                    }
-                } catch (error) {
-                    void error;
+            for (let i = 0; i < Math.min(argValues.length, numericVars.length); i++) {
+                const value = argValues[i];
+                if (value !== undefined) {
+                    variables.set(numericVars[i].name, value);
                 }
             }
         }
@@ -436,7 +455,6 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
                     };
                 }
                 const ref = slice.loadRef();
-
                 // Special case: if we have only one subfield, handle it directly
                 if (field.subFields.length === 1) {
                     const subfield = field.subFields[0];
@@ -449,44 +467,7 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
                         const refSlice = ref.beginParse(true);
                         const type = this.types.get(referencedType.name);
                         if (type) {
-                            const forwardedArgs = referencedType.arguments;
-                            // Seed nested variables from type arguments where possible
-                            let initialSeed: Map<string, number> | undefined;
-                            if (type.constructors.length > 0) {
-                                const nestedCtor = type.constructors[0];
-                                const evaluator = new MathExprEvaluator(variables);
-                                const merged = new Map<string, number>(variables);
-                                if (nestedCtor.parameters.length > 0) {
-                                    for (
-                                        let i = 0;
-                                        i < Math.min(forwardedArgs.length, nestedCtor.parameters.length);
-                                        i++
-                                    ) {
-                                        const param = nestedCtor.parameters[i];
-                                        const arg = forwardedArgs[i];
-                                        try {
-                                            let argValue: number | undefined;
-                                            if (arg.kind === 'TLBExprMathType') {
-                                                argValue = evaluator.evaluate(arg.initialExpr);
-                                            } else if (arg.kind === 'TLBNumberType') {
-                                                argValue = evaluator.evaluate(arg.bits);
-                                            }
-                                            if (
-                                                typeof argValue === 'number' &&
-                                                param.variable.type === '#' &&
-                                                !param.variable.negated
-                                            ) {
-                                                merged.set(param.variable.name, argValue);
-                                            }
-                                        } catch (error) {
-                                            void error;
-                                        }
-                                    }
-                                    initialSeed = merged;
-                                }
-                            }
-
-                            const result = this.deserializeType(type, refSlice, forwardedArgs, initialSeed);
+                            const result = this.deserializeType(type, refSlice, referencedType.arguments, variables);
                             if (result.success) {
                                 value[field.name] = result.value;
                             } else {
@@ -525,18 +506,11 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
             }
         }
 
-        // Compute derived parameter variables that depend on already deserialized fields
-        if (constructor.parameters.length > 0) {
-            for (const param of constructor.parameters) {
+        for (const variable of constructor.variables) {
+            if (variable.deriveExpr) {
                 try {
-                    if (
-                        param.variable?.name &&
-                        param.variable.deriveExpr &&
-                        variables.get(param.variable.name) === undefined
-                    ) {
-                        const derived = new MathExprEvaluator(variables).evaluate(param.variable.deriveExpr);
-                        variables.set(param.variable.name, derived);
-                    }
+                    const derived = new MathExprEvaluator(variables).evaluate(variable.deriveExpr);
+                    variables.set(variable.name, derived);
                 } catch (error) {
                     void error;
                 }
@@ -554,6 +528,15 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
             }
         }
 
+        if (outputVariables) {
+            for (const [index, param] of constructor.parameters.entries()) {
+                const argument = args[index];
+                if (param.variable.negated && argument?.kind === 'TLBNegatedType') {
+                    outputVariables.set(argument.variableName, evaluator.evaluate(param.paramExpr));
+                }
+            }
+        }
+
         if (kind === 'ExprType' && typeof (value as Record<string, unknown>)['x'] === 'number') {
             // For ExprType, tests expect bigints for numeric payload even if small
             (value as Record<string, unknown>)['x'] = BigInt((value as Record<string, number>)['x']);
@@ -566,7 +549,7 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
         if (constructor.parameters.length > 0) {
             for (const param of constructor.parameters) {
                 try {
-                    if (param.variable.type === '#' && !param.variable.negated && !param.variable.isConst) {
+                    if (param.variable.type === '#' && !param.variable.isConst) {
                         const val = variables.get(param.variable.name);
                         if (typeof val === 'number') {
                             orderedValue[param.variable.name] = val;
@@ -580,7 +563,7 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
             const fieldNamesSet = new Set(constructor.fields.map((f) => f.name));
             for (const v of constructor.variables) {
                 try {
-                    if (v.type === '#' && !v.negated && !v.isConst && !fieldNamesSet.has(v.name)) {
+                    if (v.type === '#' && !v.isConst && !fieldNamesSet.has(v.name)) {
                         const val = variables.get(v.name);
                         if (typeof val === 'number') {
                             orderedValue[v.name] = val;
@@ -679,42 +662,7 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
 
         switch (fieldType.kind) {
             case 'TLBNumberType': {
-                let bits: number;
-                try {
-                    bits = evaluator.evaluate(fieldType.bits);
-                } catch (e) {
-                    // Try to bind all numeric parameters from ctxArgs using ctxConstructor parameter list
-                    let rebound = false;
-                    if (ctxConstructor?.parameters?.length && ctxArgs?.length) {
-                        for (let i = 0; i < Math.min(ctxConstructor.parameters.length, ctxArgs.length); i++) {
-                            const p = ctxConstructor.parameters[i];
-                            const a = ctxArgs[i];
-                            if (p.variable?.type === '#') {
-                                try {
-                                    let val: number | undefined;
-                                    if (a.kind === 'TLBExprMathType') {
-                                        val = new MathExprEvaluator(variables).evaluate(a.initialExpr);
-                                    } else if (a.kind === 'TLBNumberType') {
-                                        val = new MathExprEvaluator(variables).evaluate(a.bits);
-                                    }
-                                    if (typeof val === 'number') {
-                                        variables.set(p.variable.name, val);
-                                        rebound = true;
-                                    }
-                                } catch {
-                                    /* skip */
-                                }
-                            }
-                        }
-                        if (rebound) {
-                            bits = new MathExprEvaluator(variables).evaluate(fieldType.bits);
-                        } else {
-                            throw e;
-                        }
-                    } else {
-                        throw e;
-                    }
-                }
+                const bits = evaluator.evaluate(fieldType.bits);
                 const val = this.loadBigInt(slice, bits, fieldType.signed);
                 const maxBits = (fieldType as unknown as { maxBits?: number }).maxBits;
                 const preferNumber = maxBits !== undefined ? maxBits <= 32 : false;
@@ -783,37 +731,10 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
                 if (!type) {
                     throw new TLBDataError(`Type ${fieldType.name} not found in TL-B schema`);
                 }
-                // Pass type arguments and explicitly build child variables for nested type
                 const forwardedArgs = fieldType.arguments.map((arg) =>
                     this.resolveTypeArgument(arg, ctxConstructor, ctxArgs),
                 );
-                let childVars = new Map<string, number>(variables);
-                if (type.constructors.length > 0 && forwardedArgs.length > 0) {
-                    const nestedCtor = type.constructors[0];
-                    const evaluator = new MathExprEvaluator(childVars);
-                    const max = Math.min(forwardedArgs.length, nestedCtor.parameters.length);
-                    for (let i = 0; i < max; i++) {
-                        const param = nestedCtor.parameters[i];
-                        const arg = forwardedArgs[i];
-                        if (param.variable?.type === '#') {
-                            try {
-                                let val: number | undefined;
-                                if (arg.kind === 'TLBExprMathType') {
-                                    val = evaluator.evaluate(arg.initialExpr);
-                                } else if (arg.kind === 'TLBNumberType') {
-                                    val = evaluator.evaluate(arg.bits);
-                                }
-                                if (typeof val === 'number') {
-                                    childVars.set(param.variable.name, val);
-                                }
-                            } catch (error) {
-                                void error;
-                            }
-                        }
-                    }
-                }
-
-                return unwrap(this.deserializeType(type, slice, forwardedArgs, childVars));
+                return unwrap(this.deserializeType(type, slice, forwardedArgs, variables, variables));
             }
 
             case 'TLBCoinsType': {
@@ -987,6 +908,7 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
         data: any,
         builder: Builder,
         args: TLBFieldType[] = [],
+        parentVariables?: Map<string, number>,
     ): void {
         // Find matching constructor by kind
         const typeKind = (data as TypedCell).kind;
@@ -1012,7 +934,52 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
         }
 
         // Initialize variables map for constraint evaluation
-        const variables = new Map<string, number>();
+        const variables = new Map<string, number>(parentVariables);
+        const unboundRootInputs = parentVariables
+            ? []
+            : constructor.parameters
+                  .filter(({ variable }) => variable.type === '#' && !variable.negated && !variable.isConst)
+                  .map(({ variable }) => variable.name);
+        for (const variable of constructor.variables) {
+            if (unboundRootInputs.includes(variable.name)) continue;
+            const value: unknown = data[variable.name];
+            if (variable.type === '#' && (typeof value === 'number' || typeof value === 'bigint')) {
+                const nat = Number(value);
+                if (Number.isSafeInteger(nat) && nat >= 0) {
+                    variables.set(variable.name, nat);
+                }
+            }
+        }
+        const evaluator = new MathExprEvaluator(variables);
+        const callerEvaluator = new MathExprEvaluator(parentVariables);
+        for (const [index, param] of constructor.parameters.entries()) {
+            const { variable, argName, paramExpr } = param;
+            if (variable.type !== '#' || variable.negated) continue;
+            const bound = evaluateNumericArgument(args[index], callerEvaluator);
+            if (bound !== undefined) {
+                if (variable.isConst) {
+                    if (evaluator.evaluate(paramExpr) !== bound) {
+                        throw new TLBDataError(`Type argument does not match constructor ${typeKind}`);
+                    }
+                    continue;
+                }
+                if (argName) variables.set(argName, bound);
+                const expression = variable.deriveExpr;
+                const resolved =
+                    expression && (!(expression instanceof TLBVarExpr) || expression.x !== variable.name)
+                        ? evaluator.evaluate(expression)
+                        : bound;
+                const supplied: unknown = data[variable.name];
+                if ((typeof supplied === 'number' || typeof supplied === 'bigint') && Number(supplied) !== resolved) {
+                    throw new TLBDataError(`Parameter ${variable.name} does not match the schema`);
+                }
+                variables.set(variable.name, resolved);
+                continue;
+            }
+            if (argName && Array.from(paramExpr.variables).every((name) => variables.has(name))) {
+                variables.set(argName, evaluator.evaluate(paramExpr));
+            }
+        }
 
         // Serialize fields
         for (const field of constructor.fields) {
@@ -1044,7 +1011,6 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
         }
 
         // Check constraints
-        const evaluator = new MathExprEvaluator(variables);
         for (const constraint of constructor.constraints) {
             if (evaluator.evaluate(constraint) !== 1) {
                 throw new TLBDataError(`Constraint failed for type ${type.name}, constructor ${constructor.name}`);
@@ -1112,7 +1078,7 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
                 if (!type) {
                     throw new TLBDataError(`Type ${fieldType.name} not found in TL-B schema`);
                 }
-                this.serializeType(type, value, builder, fieldType.arguments);
+                this.serializeType(type, value, builder, fieldType.arguments, variables);
                 break;
             }
 

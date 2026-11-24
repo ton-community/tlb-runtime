@@ -49,6 +49,9 @@ export const TLBLib = {
 // language=tlb
 export const TLBTVMReflection = `${TLBStd.Maybe}${TLBLib.HashmapE}vm_stk_null#00 = VmStackValue; vm_stk_tinyint#01 value:int64 = VmStackValue; vm_stk_int#0201_ value:int257 = VmStackValue; vm_stk_nan#02ff = VmStackValue; vm_stk_cell#03 cell:^Cell = VmStackValue; _ cell:^Cell st_bits:(## 10) end_bits:(## 10) { st_bits <= end_bits } st_ref:(#<= 4) end_ref:(#<= 4) { st_ref <= end_ref } = VmCellSlice; vm_stk_slice#04 _:VmCellSlice = VmStackValue; vm_stk_builder#05 cell:^Cell = VmStackValue; vm_stk_cont#06 cont:VmCont = VmStackValue; vm_tupref_nil$_ = VmTupleRef 0; vm_tupref_single$_ entry:^VmStackValue = VmTupleRef 1; vm_tupref_any$_ {n:#} ref:^(VmTuple (n + 2)) = VmTupleRef (n + 2); vm_tuple_nil$_ = VmTuple 0; vm_tuple_tcons$_ {n:#} head:(VmTupleRef n) tail:^VmStackValue = VmTuple (n + 1); vm_stk_tuple#07 len:(## 16) data:(VmTuple len) = VmStackValue; vm_stack#_ depth:(## 24) stack:(VmStackList depth) = VmStack; vm_stk_cons#_ {n:#} rest:^(VmStackList n) tos:VmStackValue = VmStackList (n + 1); vm_stk_nil#_ = VmStackList 0; _ cregs:(HashmapE 4 VmStackValue) = VmSaveList; gas_limits#_ remaining:int64 _:^[ max_limit:int64 cur_limit:int64 credit:int64 ] = VmGasLimits; _ libraries:(HashmapE 256 ^Cell) = VmLibraries; vm_ctl_data$_ nargs:(Maybe uint13) stack:(Maybe VmStack) save:VmSaveList cp:(Maybe int16) = VmControlData; vmc_std$00 cdata:VmControlData code:VmCellSlice = VmCont; vmc_envelope$01 cdata:VmControlData next:^VmCont = VmCont; vmc_quit$1000 exit_code:int32 = VmCont; vmc_quit_exc$1001 = VmCont; vmc_repeat$10100 count:uint63 body:^VmCont after:^VmCont = VmCont; vmc_until$110000 body:^VmCont after:^VmCont = VmCont; vmc_again$110001 body:^VmCont = VmCont; vmc_while_cond$110010 cond:^VmCont body:^VmCont after:^VmCont = VmCont; vmc_while_body$110011 cond:^VmCont body:^VmCont after:^VmCont = VmCont; vmc_pushint$1111 value:int32 next:^VmCont = VmCont;`;
 
+const intBitsParametrized =
+    'a$_ {e:#} h:(int (e * 8)) f:(uint (7 * e)) i:(bits (5 + e)) j:(int 5) k:(uint e) tc:Cell = IntBitsParametrized e; a$_ {x:#} a:(IntBitsParametrized x) = IntBitsParametrizedInside x;';
+
 export const groupCorpus: TLBCorpus = {
     'Built-in types': [
         ['_ x:# = OneNatParam;', [[{ kind: 'OneNatParam', x: 42 }, 'b5ee9c724101010100060000080000002a05a6f044']]],
@@ -131,13 +134,12 @@ export const groupCorpus: TLBCorpus = {
             ],
         ],
         [
-            '_ {n:#} x:(## n) = ParamType n; _#de x:(ParamType 4) = UseParamType;',
+            '_ {n:#} x:(## n) = ParamType n; _ x:(ParamType 4) = StandaloneParamType; _#de x:(ParamType 4) = UseParamType;',
             [
                 [
                     {
-                        kind: 'ParamType',
-                        n: 4,
-                        x: 10,
+                        kind: 'StandaloneParamType',
+                        x: { kind: 'ParamType', n: 4, x: 10 },
                     },
                     'b5ee9c72410101010003000001a82322a95d',
                 ],
@@ -198,19 +200,19 @@ export const groupCorpus: TLBCorpus = {
             ],
         ],
         [
-            'a$0 {n:#} = ParamConstructor n; b$1 {n:#} = ParamConstructor (n + 1);',
+            'a$0 {n:#} = ParamConstructor n; b$1 {n:#} = ParamConstructor (n + 1); _ value:(ParamConstructor 3) = BoundParamConstructor;',
             [
                 [
                     {
-                        kind: 'ParamConstructor_a',
-                        n: 3,
+                        kind: 'BoundParamConstructor',
+                        value: { kind: 'ParamConstructor_a', n: 3 },
                     },
                     'b5ee9c7241010101000300000140f6d24034',
                 ],
                 [
                     {
-                        kind: 'ParamConstructor_b',
-                        n: 3,
+                        kind: 'BoundParamConstructor',
+                        value: { kind: 'ParamConstructor_b', n: 2 },
                     },
                     'b5ee9c72410101010003000001c08ee9b6b6',
                 ],
@@ -629,13 +631,12 @@ export const groupCorpus: TLBCorpus = {
             ],
         ],
         [
-            '_ {x:#} value:(## x) = BitLenArg x; _ {n:#} ref:^(BitLenArg (n + 2)) = MathExprAsCombArg (n + 2);',
+            '_ {x:#} value:(## x) = BitLenArg x; _ {n:#} ref:^(BitLenArg (n + 2)) = MathExprAsCombArg (n + 2); _ value:(MathExprAsCombArg 10) = BoundMathExprAsCombArg;',
             [
                 [
                     {
-                        kind: 'MathExprAsCombArg',
-                        n: 8,
-                        ref: { kind: 'BitLenArg', x: 10, value: 1000n },
+                        kind: 'BoundMathExprAsCombArg',
+                        value: { kind: 'MathExprAsCombArg', n: 8, ref: { kind: 'BitLenArg', x: 10, value: 1000 } },
                     },
                     'b5ee9c72410102010007000100010003fa2059c5f201',
                 ],
@@ -915,15 +916,19 @@ export const groupCorpus: TLBCorpus = {
                         k: 5,
                         x: {
                             kind: 'ParamDifNames_c',
-                            n: 3,
+                            n: 4,
                             x: {
                                 kind: 'ParamDifNames_c',
-                                n: 2,
-                                x: { kind: 'ParamDifNames_c', n: 1, x: { kind: 'ParamDifNames_a' } },
+                                n: 3,
+                                x: {
+                                    kind: 'ParamDifNames_c',
+                                    n: 2,
+                                    x: { kind: 'ParamDifNames_c', n: 1, x: { kind: 'ParamDifNames_a' } },
+                                },
                             },
                         },
                     },
-                    'b5ee9c7241010101000300000174580c39c3',
+                    'b5ee9c724101010100030000017a7fb3416f',
                 ],
             ],
         ],
@@ -970,7 +975,7 @@ export const groupCorpus: TLBCorpus = {
     ],
     'Slice types': [
         [
-            'a$_ {e:#} h:(int (e * 8)) f:(uint (7 * e)) i:(bits (5 + e)) j:(int 5) k:(uint e) tc:Cell = IntBitsParametrized e; a$_ {x:#} a:(IntBitsParametrized x) = IntBitsParametrizedInside x; a$_ x:(IntBitsParametrizedInside 5) = IntBitsParametrizedOutside;',
+            `${intBitsParametrized} a$_ x:(IntBitsParametrizedInside 6) = IntBitsParametrizedOutside;`,
             [
                 [
                     {
@@ -983,15 +988,20 @@ export const groupCorpus: TLBCorpus = {
                                 f: 3n,
                                 h: 7n,
                                 j: 9,
-                                k: 10n,
-                                i: beginCell().storeUint(676, 10).endCell().beginParse().loadBits(10),
+                                k: 10,
+                                i: beginCell().storeUint(676, 11).endCell().beginParse().loadBits(11),
                                 tc: beginCell().storeUint(76, 10).endCell(),
                             },
-                            x: 5,
+                            x: 6,
                         },
                     },
-                    'b5ee9c7241010101001200001f0000000000070000000000ea44942640e5e8bbef',
+                    'b5ee9c7241010101001200001f0000000000070000000000d5224a1320225a4607',
                 ],
+            ],
+        ],
+        [
+            `${intBitsParametrized} a$_ x:(IntBitsParametrizedInside 5) = IntBitsParametrizedOutside;`,
+            [
                 [
                     {
                         kind: 'IntBitsParametrizedOutside',
@@ -1003,7 +1013,7 @@ export const groupCorpus: TLBCorpus = {
                                 f: 3n,
                                 h: 7n,
                                 j: 9,
-                                k: 10n,
+                                k: 10,
                                 i: beginCell().storeUint(676, 10).endCell().beginParse().loadBits(10),
                                 tc: beginCell().storeUint(76, 10).endCell(),
                             },
@@ -1033,7 +1043,7 @@ export const groupCorpus: TLBCorpus = {
                             kind: 'IntBitsInside',
                             a: {
                                 kind: 'IntBits',
-                                arg: 3n,
+                                arg: 3,
                                 d: 5,
                                 g: beginCell().storeUint(3, 2).endCell().beginParse().loadBits(2),
                                 x: beginCell().storeUint(76, 10).endCell(),
@@ -1065,9 +1075,10 @@ export const groupCorpus: TLBCorpus = {
             'tag seq_no:# seq_no_2:# { prev_seq_no:# } { 2 + ~prev_seq_no + 1 = 2 + seq_no + 2 } { prev_seq_no_2:# } { ~prev_seq_no_2 = 100 + seq_no_2 * 8 * 7 } = ComplexCrc32;',
             [
                 [
-                    // TODO it data actual only deserialize, in some cases serialization and deserialization data may differ, this must be taken into account in the test set
                     {
                         kind: 'ComplexCrc32',
+                        prev_seq_no: 2000,
+                        prev_seq_no_2: 112100,
                         seq_no: 1999,
                         seq_no_2: 2000,
                     },
