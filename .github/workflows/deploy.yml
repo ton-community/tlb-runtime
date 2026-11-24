@@ -57,7 +57,8 @@ jobs:
         run: yarn run build
 
       - name: Publish
-        run: npm publish --access public
+        # TODO: Remove the explicit --tag latest after the stable release.
+        run: npm publish --access public --tag latest
 
   release:
     name: Create GitHub Release
