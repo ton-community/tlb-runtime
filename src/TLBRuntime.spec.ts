@@ -7,6 +7,36 @@ import { parseTLB } from './TLBRuntime';
 
 describe('TLBRuntime', () => {
     describe('deserialize', () => {
+        it.each([
+            { fields: 'q:uint8', bits: 8, payload: 7, group: 7, flat: { q: 7 } },
+            { fields: 'q:uint8 z:uint8', bits: 16, payload: 0x0709, group: { q: 7, z: 9 }, flat: { q: 7, z: 9 } },
+        ])(
+            'preserves the historical shape of an anonymous group ($fields)',
+            ({ fields, bits, payload, group, flat }) => {
+                const schema = `_ ^[ ${fields} ] suffix:uint8 = Group;`;
+                const child = beginCell().storeUint(payload, bits).endCell();
+                const cell = beginCell().storeRef(child).storeUint(5, 8).endCell();
+                const data = { kind: 'Group', '': group, suffix: 5 };
+
+                expect(parseCell(schema, cell)).toEqual(data);
+                expect(encodeCell(schema, data).equals(cell)).toBe(true);
+                expect(encodeCell(schema, { kind: 'Group', ...flat, suffix: 5 }).equals(cell)).toBe(true);
+            },
+        );
+
+        it('requires complete anonymous group references in a fallback', () => {
+            const schema =
+                'first$_ flag:uint1 ^[ left:uint4 ] ^[ right:uint4 ] = First; ' +
+                'last$0 left:^Cell right:^Cell { 1 = 0 } = Last;';
+            const left = beginCell().storeUint(12, 4).endCell();
+            const right = beginCell().storeUint(7, 4).endCell();
+            const incomplete = beginCell().storeUint(7, 4).storeRef(Cell.EMPTY).endCell();
+            const makeCell = (ref: Cell) => beginCell().storeBit(false).storeRef(left).storeRef(ref).endCell();
+
+            expect(parseCell(schema, makeCell(right))).toEqual({ kind: 'First', flag: 0, left: 12, right: 7 });
+            expect(() => parseCell(schema, makeCell(incomplete))).toThrow();
+        });
+
         it('resolves a generic cell type inside a reference', () => {
             const schema = '_ {X:Type} v:^X = Box X; _ box:(Box Cell) suffix:uint8 = BoxUser;';
             const leaf = beginCell().storeUint(11, 4).endCell();

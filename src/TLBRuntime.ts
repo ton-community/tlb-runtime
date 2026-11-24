@@ -94,6 +94,14 @@ function evaluateNumericArgument(argument: TLBFieldType | undefined, evaluator: 
     return undefined;
 }
 
+function findLegacyAnonymousGroup(fields: TLBField[]): TLBField | undefined {
+    const groups = fields.filter((field) => !field.name && field.subFields.length > 0);
+    if (groups.length === 1 && groups[0].subFields.every(({ name, subFields }) => name && subFields.length === 0)) {
+        return groups[0];
+    }
+    return undefined;
+}
+
 export interface TLBRuntimeConfig {
     autoText: boolean;
 }
@@ -516,6 +524,7 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
             kind,
         };
 
+        const legacyGroup = findLegacyAnonymousGroup(constructor.fields);
         for (const field of constructor.fields) {
             // field.subFields.length
             if (field.subFields.length > 0) {
@@ -526,6 +535,21 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
                     };
                 }
                 const ref = slice.loadRef();
+                if (!field.name && field !== legacyGroup) {
+                    const refSlice = ref.beginParse(true);
+                    this.deserializeAnonymousFields(
+                        field.subFields,
+                        refSlice,
+                        variables,
+                        constructor,
+                        args,
+                        value,
+                        attempt,
+                    );
+                    recordReferenceRemainder(attempt, refSlice);
+                    continue;
+                }
+
                 const subfield = field.subFields.length === 1 ? field.subFields[0] : undefined;
                 const referencedType = subfield && this.resolveTypeArgument(subfield.fieldType, constructor, args);
                 if (referencedType?.kind === 'TLBCellType') {
@@ -665,7 +689,9 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
             }
         }
         // Fields in alphabetical order for stable output
-        const fieldNames = constructor.fields.map((f) => f.name).sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+        const fieldNames = Object.keys(value)
+            .filter((name) => name !== 'kind')
+            .sort();
         for (const name of fieldNames) {
             orderedValue[name] = (value as Record<string, unknown>)[name];
         }
@@ -674,6 +700,46 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
             success: true,
             value: orderedValue,
         };
+    }
+
+    private deserializeAnonymousFields(
+        fields: TLBField[],
+        slice: Slice,
+        variables: Map<string, number>,
+        constructor: TLBConstructor,
+        args: TLBFieldType[],
+        value: Record<string, ParsedCell>,
+        attempt?: DecodeAttempt,
+    ): void {
+        for (const field of fields) {
+            if (!field.name && field.subFields.length > 0) {
+                const refSlice = slice.loadRef().beginParse(true);
+                this.deserializeAnonymousFields(
+                    field.subFields,
+                    refSlice,
+                    variables,
+                    constructor,
+                    args,
+                    value,
+                    attempt,
+                );
+                recordReferenceRemainder(attempt, refSlice);
+            } else {
+                const subfield = field.subFields[0];
+                const decoded =
+                    field.subFields.length === 1 && subfield.name === field.name
+                        ? this.deserializeFieldType(
+                              { kind: 'TLBCellInsideType', value: subfield.fieldType },
+                              slice,
+                              variables,
+                              constructor,
+                              args,
+                              attempt,
+                          )
+                        : this.deserializeField(field, slice, variables, constructor, args, attempt);
+                value[field.name] = decoded;
+            }
+        }
     }
 
     private deserializeField(
@@ -1091,8 +1157,44 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
             }
         }
 
-        // Serialize fields
-        for (const field of constructor.fields) {
+        this.serializeFields(constructor.fields, data, builder, variables, constructor, args);
+
+        // Check constraints
+        for (const constraint of constructor.constraints) {
+            if (evaluator.evaluate(constraint) !== 1) {
+                throw new TLBDataError(`Constraint failed for type ${type.name}, constructor ${constructor.name}`);
+            }
+        }
+    }
+
+    private serializeFields(
+        fields: TLBField[],
+        data: Record<string, ParsedCell>,
+        builder: Builder,
+        variables: Map<string, number>,
+        constructor: TLBConstructor,
+        args: TLBFieldType[],
+    ): void {
+        const legacyGroup = Object.hasOwn(data, '') ? findLegacyAnonymousGroup(constructor.fields) : undefined;
+        for (const field of fields) {
+            if (!field.name && field.subFields.length > 0) {
+                let groupData = data;
+                if (field === legacyGroup) {
+                    const value = data[''];
+                    if (field.subFields.length === 1) {
+                        groupData = { [field.subFields[0].name]: value };
+                    } else {
+                        if (!value || typeof value !== 'object' || Array.isArray(value)) {
+                            throw new TLBDataError('Expected an object for the anonymous group');
+                        }
+                        groupData = value as Record<string, ParsedCell>;
+                    }
+                }
+                const nested = beginCell();
+                this.serializeFields(field.subFields, groupData, nested, variables, constructor, args);
+                builder.storeRef(nested.endCell());
+                continue;
+            }
             if (field.name && field.subFields.length === 1 && field.subFields[0].name === field.name) {
                 const { fieldType } = field.subFields[0];
                 if (
@@ -1111,20 +1213,7 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
             }
 
             const fieldType = this.resolveTypeArgument(field.fieldType, constructor, args);
-            if (!field.anonymous) {
-                this.serializeField({ ...field, fieldType }, data[field.name], builder, variables);
-            } else {
-                // For anonymous fields, we need to extract from constraints or use default
-                // This is a simplified approach, would need more complex logic for real cases
-                this.serializeField({ ...field, fieldType }, null, builder, variables);
-            }
-        }
-
-        // Check constraints
-        for (const constraint of constructor.constraints) {
-            if (evaluator.evaluate(constraint) !== 1) {
-                throw new TLBDataError(`Constraint failed for type ${type.name}, constructor ${constructor.name}`);
-            }
+            this.serializeField({ ...field, fieldType }, field.name ? data[field.name] : null, builder, variables);
         }
     }
 
@@ -1174,10 +1263,11 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
             }
 
             case 'TLBBitsType': {
-                if (typeof value === 'string') {
-                    value = stringToBits(value);
-                }
-                if (value instanceof BitString) {
+                if (typeof value === 'boolean' && evaluator.evaluate(fieldType.bits) === 1) {
+                    builder.storeBit(value);
+                } else if (typeof value === 'string') {
+                    builder.storeBits(stringToBits(value));
+                } else if (value instanceof BitString) {
                     builder.storeBits(value);
                 }
                 break;

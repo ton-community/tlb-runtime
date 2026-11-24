@@ -762,7 +762,7 @@ export const groupCorpus: TLBCorpus = {
             '_ a:(## 6) b:(a . 2)?(## 32) = BitSelection;',
             [
                 [{ kind: 'BitSelection', a: 5, b: 5 }, 'b5ee9c7241010101000700000914000000160ae584e0'],
-                [{ kind: 'BitSelection', a: 8 }, 'b5ee9c7241010101000700000920000000163e8f4b94'],
+                [{ kind: 'BitSelection', a: 8 }, 'b5ee9c72410101010003000001226331bdb4'],
             ],
         ],
         [
