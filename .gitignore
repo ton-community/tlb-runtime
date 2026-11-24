@@ -85,3 +85,7 @@ pids
 
 # TernJS port file
 .tern-port
+
+# Yarn
+yarn-error.log
+.yarn/
