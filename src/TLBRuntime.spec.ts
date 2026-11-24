@@ -84,6 +84,72 @@ describe('TLBRuntime', () => {
             },
         );
 
+        it('keeps the read error for a truncated root even if a shorter type shares its tag', () => {
+            const schema =
+                'plain$_ value:uint16 = Plain; short#12 value:uint8 = Short; ' +
+                'tiny#11 value:uint8 = Tiny; wide#12 value:uint16 = Wide;';
+            const truncated = beginCell().storeUint(0x12, 8).storeUint(7, 8).endCell();
+            const wide = beginCell().storeUint(0x12, 8).storeUint(0x1234, 16).endCell();
+            const tiny = beginCell().storeUint(0x11, 8).storeUint(7, 8).endCell();
+
+            expect(() => parseCell(schema, truncated)).toThrow();
+            expect(parseCell(schema, wide)).toEqual({ kind: 'Wide', value: 0x1234 });
+            expect(parseCell(schema, tiny)).toEqual({ kind: 'Tiny', value: 7 });
+        });
+
+        it('keeps the read error for a missing root reference even if a type without a tag fits', () => {
+            const schema = 'plain$_ value:uint9 = Plain; root$0 value:uint8 ref:^Cell = Root;';
+            const truncated = beginCell().storeBit(false).storeUint(7, 8).endCell();
+
+            expect(() => parseCell(schema, truncated)).toThrow('No more references available for field ref');
+        });
+
+        it.each([
+            { tag: '$0', width: 8 },
+            { tag: '$_', width: 9 },
+        ])('tries a complete alternative ($tag) after a root constraint fails', ({ tag, width }) => {
+            const schema = `first${tag} value:uint${width} ref:^Cell = First; last$0 value:uint8 ref:^Cell { value > 9 } = Last;`;
+            const ref = beginCell().storeUint(12, 4).endCell();
+            const cell = beginCell().storeBit(false).storeUint(7, 8).storeRef(ref).endCell();
+            const withExtraBit = beginCell().storeSlice(cell.beginParse()).storeBit(true).endCell();
+            const withExtraRef = beginCell().storeSlice(cell.beginParse()).storeRef(beginCell().endCell()).endCell();
+
+            expect(parseCell(schema, cell)).toEqual({ kind: 'First', value: 7, ref });
+            expect(() => parseCell(schema, withExtraBit)).toThrow();
+            expect(() => parseCell(schema, withExtraRef)).toThrow();
+        });
+
+        it('requires complete nested typed references in the alternative', () => {
+            const schema =
+                'leaf$_ value:uint4 = Leaf; branch$_ leaf:^Leaf = Branch; ' +
+                'first$_ value:uint9 ref:^Branch = First; last$0 value:uint8 ref:^Cell { value > 9 } = Last;';
+            const makeCell = (leaf: Cell) =>
+                beginCell().storeBit(false).storeUint(7, 8).storeRef(beginCell().storeRef(leaf).endCell()).endCell();
+            const leaf = beginCell().storeUint(12, 4).endCell();
+            const withExtraBit = beginCell().storeUint(12, 4).storeBit(true).endCell();
+            const withExtraRef = beginCell().storeUint(12, 4).storeRef(Cell.EMPTY).endCell();
+
+            expect(parseCell(schema, makeCell(leaf))).toEqual({
+                kind: 'First',
+                value: 7,
+                ref: { kind: 'Branch', leaf: { kind: 'Leaf', value: 12 } },
+            });
+            expect(() => parseCell(schema, makeCell(withExtraBit))).toThrow();
+            expect(() => parseCell(schema, makeCell(withExtraRef))).toThrow();
+        });
+
+        it('requires complete typed references in the root before trying a fallback', () => {
+            const schema =
+                'leaf$_ value:uint4 = Leaf; first$_ value:uint9 ref:^Cell = First; ' +
+                'last$0 value:uint8 ref:^Leaf { value > 9 } = Last;';
+            const makeCell = (leaf: Cell) => beginCell().storeBit(false).storeUint(7, 8).storeRef(leaf).endCell();
+            const leaf = beginCell().storeUint(12, 4).endCell();
+            const withExtraBit = beginCell().storeUint(12, 4).storeBit(true).endCell();
+
+            expect(parseCell(schema, makeCell(leaf))).toEqual({ kind: 'First', value: 7, ref: leaf });
+            expect(() => parseCell(schema, makeCell(withExtraBit))).toThrow();
+        });
+
         describe.each(Object.keys(groupCorpusFlat))('%s', (group) => {
             it.each(groupCorpusFlat[group])('deserialize %s', (schema, expected, boc) => {
                 const actual = parseCell(schema, Cell.fromHex(boc));

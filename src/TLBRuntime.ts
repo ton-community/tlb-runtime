@@ -24,7 +24,7 @@ import { ast } from '@ton-community/tlb-parser';
 
 import { bitsToString, normalizeBitString, stringToBits, toCell } from './common';
 import { MathExprEvaluator } from './MathExprEvaluator';
-import { Result, unwrap } from './Result';
+import { Result, Success, unwrap } from './Result';
 
 export interface TypedCell {
     kind: string;
@@ -52,8 +52,36 @@ export class TLBSchemaError extends TLBRuntimeError {}
 
 export class TLBDataError extends TLBRuntimeError {}
 
+class CompleteRootConstraintError extends TLBDataError {}
+
+interface DecodeAttempt {
+    trailingReferenceData: boolean;
+    failedConstraint: boolean;
+}
+
+interface DeserializeOptions {
+    selection?: 'first' | 'prefer-complete' | 'complete';
+    parentAttempt?: DecodeAttempt;
+}
+
 function tagKey(tag: TLBConstructorTag): string {
     return `0b${BigInt(tag.binary).toString(2).padStart(tag.bitLen, '0')}`;
+}
+
+function matchesTag(slice: Slice, tag: TLBConstructorTag): boolean {
+    return (
+        tag.bitLen > 0 && tag.bitLen <= slice.remainingBits && slice.preloadUintBig(tag.bitLen) === BigInt(tag.binary)
+    );
+}
+
+function isConsumed(slice: Slice): boolean {
+    return slice.remainingBits === 0 && slice.remainingRefs === 0;
+}
+
+function recordReferenceRemainder(attempt: DecodeAttempt | undefined, slice: Slice): void {
+    if (attempt && !isConsumed(slice)) {
+        attempt.trailingReferenceData = true;
+    }
 }
 
 function evaluateNumericArgument(argument: TLBFieldType | undefined, evaluator: MathExprEvaluator): number | undefined {
@@ -170,28 +198,27 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
             }
         }
 
-        const types = Array.from(this.types.keys());
-        try {
-            const result = this.deserializeByTypeName(this.lastTypeName, slice.clone());
+        const types = Array.from(this.types.values()).reverse();
+        const rootType = this.types.get(this.lastTypeName);
+        let firstError: Error | undefined;
+        let fallbackError: Error | undefined;
+        for (const type of rootType ? [rootType, ...types.filter((type) => type !== rootType)] : types) {
+            const result = this.deserializeType(type, slice.clone(), [], undefined, undefined, {
+                selection: fallbackError ? 'complete' : 'prefer-complete',
+            });
             if (result.success) {
                 return result;
             }
-        } catch (error) {
-            if (error instanceof Error) {
-                throw error;
-            } else {
-                throw new TLBDataError('Failed to deserialize');
+            if (type === rootType && type.constructors.some(({ tag }) => matchesTag(slice, tag))) {
+                if (!(result.error instanceof CompleteRootConstraintError)) {
+                    return result;
+                }
+                fallbackError = result.error;
             }
-        }
-        for (const typeName of types.slice().reverse()) {
-            if (typeName === this.lastTypeName) continue; // Already tried
-            const result = this.deserializeByTypeName(typeName, slice.clone());
-            if (result.success) {
-                return result;
-            }
+            firstError ??= result.error;
         }
 
-        return { success: false, error: new TLBDataError('No matching constructor') };
+        return { success: false, error: fallbackError ?? firstError ?? new TLBDataError('No matching constructor') };
     }
 
     // Deserialize data from a Slice based on a TL-B type name
@@ -242,28 +269,71 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
         args: TLBFieldType[] = [],
         parentVariables?: Map<string, number>,
         outputVariables?: Map<string, number>,
+        { selection = 'first', parentAttempt }: DeserializeOptions = {},
     ): Result<T> {
+        let selected:
+            | { slice: Slice; result: Success<T>; outputs?: Map<string, number>; trailingReferenceData?: boolean }
+            | undefined;
+        let firstError: Error | undefined;
+        let taggedError: Error | undefined;
         for (const constructor of type.constructors) {
             const prev = data.clone();
             const outputs = outputVariables ? new Map<string, number>() : undefined;
-            const result = this.deserializeConstructor(type, constructor, prev, args, parentVariables, outputs);
-            if (!result.success) continue;
+            const attempt =
+                parentAttempt || selection !== 'first'
+                    ? { trailingReferenceData: false, failedConstraint: false }
+                    : undefined;
+            let result: Result<T>;
+            try {
+                result = this.deserializeConstructor(type, constructor, prev, args, parentVariables, outputs, attempt);
+            } catch (error) {
+                const failure = error instanceof Error ? error : new TLBDataError(String(error));
+                firstError ??= failure;
+                result = { success: false, error: failure };
+            }
+            if (!result.success) {
+                if (selection === 'prefer-complete' && !taggedError && matchesTag(data, constructor.tag)) {
+                    taggedError =
+                        attempt?.failedConstraint && isConsumed(prev) && !attempt.trailingReferenceData
+                            ? new CompleteRootConstraintError(result.error.message)
+                            : result.error;
+                }
+                continue;
+            }
 
-            data.skip(data.remainingBits - prev.remainingBits);
-            while (data.remainingRefs > prev.remainingRefs) {
+            const candidate = { slice: prev, result, outputs, trailingReferenceData: attempt?.trailingReferenceData };
+            if (
+                selection === 'first' ||
+                (isConsumed(prev) && (selection === 'prefer-complete' || !attempt?.trailingReferenceData))
+            ) {
+                selected = candidate;
+                break;
+            }
+            if (selection === 'prefer-complete') selected ??= candidate;
+        }
+
+        if (selected) {
+            data.skip(data.remainingBits - selected.slice.remainingBits);
+            while (data.remainingRefs > selected.slice.remainingRefs) {
                 data.loadRef();
             }
-            if (outputVariables && outputs) {
-                for (const [name, value] of outputs) {
+            if (outputVariables && selected.outputs) {
+                for (const [name, value] of selected.outputs) {
                     outputVariables.set(name, value);
                 }
             }
-            return result;
+            if (parentAttempt && selected.trailingReferenceData) {
+                parentAttempt.trailingReferenceData = true;
+            }
+            return selected.result;
         }
 
         return {
             success: false,
-            error: new TLBDataError(`Failed to deserialize type ${type.name} no matching constructor found`),
+            error:
+                taggedError ??
+                firstError ??
+                new TLBDataError(`Failed to deserialize type ${type.name} no matching constructor found`),
         };
     }
 
@@ -274,6 +344,7 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
         args: TLBFieldType[] = [],
         parentVariables?: Map<string, number>,
         outputVariables?: Map<string, number>,
+        attempt?: DecodeAttempt,
     ): Result<T> {
         const kind = type.constructors.length > 1 ? `${type.name}_${constructor.name}` : type.name;
         // Check tag if present
@@ -455,40 +526,45 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
                     };
                 }
                 const ref = slice.loadRef();
-                // Special case: if we have only one subfield, handle it directly
-                if (field.subFields.length === 1) {
-                    const subfield = field.subFields[0];
-                    const referencedType = this.resolveTypeArgument(subfield.fieldType, constructor, args);
-                    if (referencedType.kind === 'TLBCellType') {
-                        // ^Cell - just return the cell
-                        value[field.name] = ref;
-                    } else if (referencedType.kind === 'TLBNamedType') {
-                        // ^SomeType - deserialize the type from the reference
-                        const refSlice = ref.beginParse(true);
-                        const type = this.types.get(referencedType.name);
-                        if (type) {
-                            const result = this.deserializeType(type, refSlice, referencedType.arguments, variables);
-                            if (result.success) {
-                                value[field.name] = result.value;
-                            } else {
-                                return result;
-                            }
-                        } else {
-                            return {
-                                success: false,
-                                error: new TLBDataError(`Type ${referencedType.name} not found`),
-                            };
-                        }
-                    } else {
-                        // Other single subfield types
-                        const refSlice = ref.beginParse(true);
-                        value[field.name] = this.deserializeField(subfield, refSlice, variables, constructor, args);
+                const subfield = field.subFields.length === 1 ? field.subFields[0] : undefined;
+                const referencedType = subfield && this.resolveTypeArgument(subfield.fieldType, constructor, args);
+                if (referencedType?.kind === 'TLBCellType') {
+                    value[field.name] = ref;
+                    continue;
+                }
+
+                const refSlice = ref.beginParse(true);
+                if (referencedType?.kind === 'TLBNamedType') {
+                    const type = this.types.get(referencedType.name);
+                    if (!type) {
+                        return {
+                            success: false,
+                            error: new TLBDataError(`Type ${referencedType.name} not found`),
+                        };
                     }
+                    const result = this.deserializeType(
+                        type,
+                        refSlice,
+                        referencedType.arguments,
+                        variables,
+                        undefined,
+                        {
+                            parentAttempt: attempt,
+                        },
+                    );
+                    if (!result.success) return result;
+                    value[field.name] = result.value;
+                } else if (subfield) {
+                    value[field.name] = this.deserializeField(
+                        subfield,
+                        refSlice,
+                        variables,
+                        constructor,
+                        args,
+                        attempt,
+                    );
                 } else {
-                    const refSlice = ref.beginParse(true);
-                    // FIXME
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const subfields: any = {};
+                    const subfields: Record<string, ParsedCell> = {};
                     for (const subfield of field.subFields) {
                         subfields[subfield.name] = this.deserializeField(
                             subfield,
@@ -496,13 +572,14 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
                             variables,
                             constructor,
                             args,
+                            attempt,
                         );
                     }
-
                     value[field.name] = subfields;
                 }
+                recordReferenceRemainder(attempt, refSlice);
             } else {
-                value[field.name] = this.deserializeField(field, slice, variables, constructor, args);
+                value[field.name] = this.deserializeField(field, slice, variables, constructor, args, attempt);
             }
         }
 
@@ -521,6 +598,7 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
         const evaluator = new MathExprEvaluator(variables);
         for (const constraint of constructor.constraints) {
             if (evaluator.evaluate(constraint) !== 1) {
+                if (attempt) attempt.failedConstraint = true;
                 return {
                     success: false,
                     error: new TLBDataError(`Failed to deserialize type ${kind} due to constraint`),
@@ -604,9 +682,10 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
         variables: Map<string, number>,
         ctxConstructor: TLBConstructor,
         ctxArgs: TLBFieldType[],
+        attempt?: DecodeAttempt,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ): any {
-        const value = this.deserializeFieldType(field.fieldType, slice, variables, ctxConstructor, ctxArgs);
+        const value = this.deserializeFieldType(field.fieldType, slice, variables, ctxConstructor, ctxArgs, attempt);
 
         if (
             field.name &&
@@ -656,6 +735,7 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
         variables: Map<string, number>,
         ctxConstructor: TLBConstructor,
         ctxArgs: TLBFieldType[],
+        attempt?: DecodeAttempt,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ): any {
         const evaluator = new MathExprEvaluator(variables);
@@ -707,6 +787,7 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
                             variables,
                             ctxConstructor,
                             ctxArgs,
+                            attempt,
                         );
                     }
                 }
@@ -734,7 +815,11 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
                 const forwardedArgs = fieldType.arguments.map((arg) =>
                     this.resolveTypeArgument(arg, ctxConstructor, ctxArgs),
                 );
-                return unwrap(this.deserializeType(type, slice, forwardedArgs, variables, variables));
+                return unwrap(
+                    this.deserializeType(type, slice, forwardedArgs, variables, variables, {
+                        parentAttempt: attempt,
+                    }),
+                );
             }
 
             case 'TLBCoinsType': {
@@ -774,13 +859,29 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
                     return ref;
                 }
                 const refSlice = ref.beginParse();
-                return this.deserializeFieldType(fieldType.value, refSlice, variables, ctxConstructor, ctxArgs);
+                const value = this.deserializeFieldType(
+                    fieldType.value,
+                    refSlice,
+                    variables,
+                    ctxConstructor,
+                    ctxArgs,
+                    attempt,
+                );
+                recordReferenceRemainder(attempt, refSlice);
+                return value;
             }
 
             case 'TLBHashmapType': {
                 const keySize = evaluator.evaluate(fieldType.key.expr);
                 const parseValue = (sl: Slice) =>
-                    this.deserializeFieldType(fieldType.value, sl, new Map(variables), ctxConstructor, ctxArgs);
+                    this.deserializeFieldType(
+                        fieldType.value,
+                        sl,
+                        new Map(variables),
+                        ctxConstructor,
+                        ctxArgs,
+                        attempt,
+                    );
                 const emptyBig = () => Dictionary.empty(Dictionary.Keys.BigUint(keySize));
                 const emptyNum = () => Dictionary.empty(Dictionary.Keys.Uint(keySize));
                 if (keySize > 32) {
@@ -815,7 +916,9 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
                 const times = evaluator.evaluate(fieldType.times);
                 const result = [];
                 for (let i = 0; i < times; i++) {
-                    result.push(this.deserializeFieldType(fieldType.value, slice, variables, ctxConstructor, ctxArgs));
+                    result.push(
+                        this.deserializeFieldType(fieldType.value, slice, variables, ctxConstructor, ctxArgs, attempt),
+                    );
                 }
                 return result;
             }
@@ -823,7 +926,14 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
             case 'TLBCondType': {
                 const condition = evaluator.evaluate(fieldType.condition);
                 if (condition) {
-                    return this.deserializeFieldType(fieldType.value, slice, variables, ctxConstructor, ctxArgs);
+                    return this.deserializeFieldType(
+                        fieldType.value,
+                        slice,
+                        variables,
+                        ctxConstructor,
+                        ctxArgs,
+                        attempt,
+                    );
                 }
                 return undefined;
             }
