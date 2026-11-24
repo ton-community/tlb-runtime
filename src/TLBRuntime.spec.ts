@@ -5,6 +5,27 @@ import { groupCorpusFlat } from './tesdata';
 
 describe('TLBRuntime', () => {
     describe('deserialize', () => {
+        it('resolves a generic cell type inside a reference', () => {
+            const schema = '_ {X:Type} v:^X = Box X; _ box:(Box Cell) suffix:uint8 = BoxUser;';
+            const leaf = beginCell().storeUint(11, 4).endCell();
+            const payload = beginCell().storeUint(21, 5).storeRef(leaf).endCell();
+            const expected = beginCell().storeRef(payload).storeUint(166, 8).endCell();
+            const data = { kind: 'BoxUser', box: { kind: 'Box', v: payload }, suffix: 166 };
+
+            expect(parseCell(schema, expected)).toEqual(data);
+            expect(encodeCell(schema, data).equals(expected)).toBe(true);
+        });
+
+        it('re-encodes a generic scalar reference and the following field unchanged', () => {
+            const schema = '_ {X:Type} v:^X = Box X; _ box:(Box uint8) suffix:uint8 = BoxUser;';
+            const payload = beginCell().storeUint(13, 8).endCell();
+            const expected = beginCell().storeRef(payload).storeUint(166, 8).endCell();
+            const data = parseCell(schema, expected);
+
+            expect(data).toEqual({ kind: 'BoxUser', box: { kind: 'Box', v: 13 }, suffix: 166 });
+            expect(encodeCell(schema, data).hash()).toEqual(expected.hash());
+        });
+
         describe.each(Object.keys(groupCorpusFlat))('%s', (group) => {
             it.each(groupCorpusFlat[group])('deserialize %s', (schema, expected, boc) => {
                 const actual = parseCell(schema, Cell.fromHex(boc));
