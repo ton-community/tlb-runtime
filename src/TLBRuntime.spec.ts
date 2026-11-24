@@ -2,7 +2,7 @@ import { beginCell, Cell, Dictionary } from '@ton/core';
 
 import { parseCell, encodeCell, replacer } from './parser';
 import { unwrap } from './Result';
-import { groupCorpusFlat, TLBLib } from './tesdata';
+import { groupCorpusFlat, TLBLib, TLBStd } from './tesdata';
 import { parseTLB } from './TLBRuntime';
 
 function corpusReplacer(key: string, value: unknown): unknown {
@@ -83,23 +83,61 @@ describe('TLBRuntime', () => {
             expect(encodeCell(schema, data).hash()).toEqual(expected.hash());
         });
 
-        it.each([false, true])('keeps the caller width in a nested generic (referenced: %s)', (referenced) => {
-            const schema =
-                '_ {n:#} y:(## n) = Sized n; _ {X:Type} n:(## 3) child:X = Box X; ' +
-                `_ n:(## 3) box:${referenced ? '^' : ''}(Box (Sized n)) suffix:uint8 = Envelope;`;
-            const box = beginCell().storeUint(2, 3).storeUint(2, 5).endCell();
-            const envelope = beginCell().storeUint(5, 3);
-            if (referenced) {
-                envelope.storeRef(box);
-            } else {
-                envelope.storeSlice(box.beginParse());
-            }
-            const cell = envelope.storeUint(37, 8).endCell();
-            const child = { kind: 'Sized', y: 2 };
-            const data = { kind: 'Envelope', n: 5, box: { kind: 'Box', n: 2, child }, suffix: 37 };
+        describe('keeps the caller width in a nested generic', () => {
+            const uint = beginCell().storeUint(2, 5).endCell();
+            const bits = uint.beginParse().loadBits(5);
+            const dict = Dictionary.empty(Dictionary.Keys.Uint(5), Dictionary.Values.Uint(8)).set(1, 19).set(23, 42);
 
-            expect(encodeCell(schema, data).hash()).toEqual(cell.hash());
-            expect(parseCell(schema, cell)).toEqual({ ...data, box: { ...data.box, child: { ...child, n: 5 } } });
+            const cases = [
+                {
+                    type: 'Sized n',
+                    schema: '_ {n:#} y:(## n) = Sized n;',
+                    payload: uint,
+                    value: { kind: 'Sized', y: 2 },
+                    decoded: { kind: 'Sized', n: 5, y: 2 },
+                },
+                { type: 'uint n', schema: '', payload: uint, value: 2, decoded: 2 },
+                { type: 'bits n', schema: '', payload: uint, value: bits, decoded: bits },
+                {
+                    type: 'VarUInteger n',
+                    schema: TLBStd.VarUInteger,
+                    payload: beginCell().storeVarUint(2n, 3).endCell(),
+                    value: 2n,
+                    decoded: 2n,
+                },
+                {
+                    type: 'HashmapE n uint8',
+                    schema: TLBLib.HashmapE,
+                    payload: beginCell().storeDict(dict).endCell(),
+                    value: dict,
+                    decoded: dict,
+                },
+            ];
+
+            describe.each(cases)('$type', ({ type, schema: definitions, payload, value, decoded }) => {
+                it.each([false, true])('uses the caller scope (referenced: %s)', (referenced) => {
+                    const schema =
+                        `${definitions} _ {X:Type} n:(## 3) child:X = Box X; ` +
+                        `_ n:(## 3) box:${referenced ? '^' : ''}(Box (${type})) suffix:uint8 = Envelope;`;
+                    const box = beginCell().storeUint(2, 3).storeSlice(payload.beginParse()).endCell();
+                    const envelope = beginCell().storeUint(5, 3);
+                    if (referenced) {
+                        envelope.storeRef(box);
+                    } else {
+                        envelope.storeSlice(box.beginParse());
+                    }
+                    const cell = envelope.storeUint(37, 8).endCell();
+                    const data = { kind: 'Envelope', n: 5, box: { kind: 'Box', n: 2, child: value }, suffix: 37 };
+                    const expected = { ...data, box: { ...data.box, child: decoded } };
+
+                    const parsed = parseCell(schema, cell);
+                    expect(JSON.parse(JSON.stringify(parsed, corpusReplacer))).toEqual(
+                        JSON.parse(JSON.stringify(expected, corpusReplacer)),
+                    );
+                    expect(encodeCell(schema, data).hash()).toEqual(cell.hash());
+                    expect(encodeCell(schema, parsed).hash()).toEqual(cell.hash());
+                });
+            });
         });
 
         it('computes a nested parameter in its own scope', () => {

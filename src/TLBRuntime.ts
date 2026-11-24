@@ -17,6 +17,7 @@ import {
     TLBType,
     TLBField,
     TLBFieldType,
+    TLBMathExpr,
     TLBNumberExpr,
     TLBVarExpr,
     getTLBCodeByAST,
@@ -99,6 +100,17 @@ function evaluateNumericArgument(argument: TLBFieldType | undefined, evaluator: 
         return evaluator.evaluate(argument.bits);
     }
     return undefined;
+}
+
+function bindNumericExpression(expression: TLBMathExpr, variables: Map<string, number>): TLBMathExpr {
+    if (
+        expression.hasNeg ||
+        expression.variables.size === 0 ||
+        !Array.from(expression.variables).every((name) => variables.has(name))
+    ) {
+        return expression;
+    }
+    return new TLBNumberExpr(new MathExprEvaluator(variables).evaluate(expression));
 }
 
 function findLegacyAnonymousGroup(fields: TLBField[]): TLBField | undefined {
@@ -891,7 +903,7 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
                     throw new TLBDataError(`Type ${fieldType.name} not found in TL-B schema`);
                 }
                 const forwardedArgs = fieldType.arguments.map((arg) =>
-                    this.resolveTypeArgument(arg, ctxConstructor, ctxArgs, variables),
+                    this.resolveTypeArgument(arg, ctxConstructor, ctxArgs, variables, true),
                 );
                 return unwrap(
                     this.deserializeType(type, slice, forwardedArgs, variables, variables, {
@@ -1064,6 +1076,7 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
         constructor: TLBConstructor,
         args: TLBFieldType[],
         variables: Map<string, number>,
+        isTypeArgument = false,
     ): TLBFieldType {
         switch (fieldType.kind) {
             case 'TLBNamedType': {
@@ -1075,27 +1088,50 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
                 return {
                     ...fieldType,
                     arguments: fieldType.arguments.map((arg) =>
-                        this.resolveTypeArgument(arg, constructor, args, variables),
+                        this.resolveTypeArgument(arg, constructor, args, variables, true),
                     ),
                 };
             }
             case 'TLBExprMathType': {
                 const { initialExpr } = fieldType;
-                if (
-                    initialExpr.hasNeg ||
-                    initialExpr.variables.size === 0 ||
-                    !Array.from(initialExpr.variables).every((name) => variables.has(name))
-                ) {
-                    return fieldType;
-                }
-                const resolved = new TLBNumberExpr(new MathExprEvaluator(variables).evaluate(initialExpr));
-                return { ...fieldType, expr: resolved, initialExpr: resolved };
+                const resolved = bindNumericExpression(initialExpr, variables);
+                return resolved === initialExpr ? fieldType : { ...fieldType, expr: resolved, initialExpr: resolved };
+            }
+            case 'TLBNumberType':
+                return isTypeArgument
+                    ? {
+                          ...fieldType,
+                          bits: bindNumericExpression(fieldType.bits, variables),
+                          storeBits: bindNumericExpression(fieldType.storeBits, variables),
+                      }
+                    : fieldType;
+            case 'TLBBitsType':
+                return isTypeArgument
+                    ? { ...fieldType, bits: bindNumericExpression(fieldType.bits, variables) }
+                    : fieldType;
+            case 'TLBVarIntegerType':
+                return isTypeArgument ? { ...fieldType, n: bindNumericExpression(fieldType.n, variables) } : fieldType;
+            case 'TLBHashmapType': {
+                const { key } = fieldType;
+                return {
+                    ...fieldType,
+                    key: isTypeArgument
+                        ? {
+                              ...key,
+                              expr: bindNumericExpression(key.expr, variables),
+                              initialExpr: bindNumericExpression(key.initialExpr, variables),
+                          }
+                        : key,
+                    value: this.resolveTypeArgument(fieldType.value, constructor, args, variables, isTypeArgument),
+                };
             }
             case 'TLBCellInsideType':
             case 'TLBCondType':
-            case 'TLBHashmapType':
             case 'TLBMultipleType':
-                return { ...fieldType, value: this.resolveTypeArgument(fieldType.value, constructor, args, variables) };
+                return {
+                    ...fieldType,
+                    value: this.resolveTypeArgument(fieldType.value, constructor, args, variables, isTypeArgument),
+                };
             default:
                 return fieldType;
         }
