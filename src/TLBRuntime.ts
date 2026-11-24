@@ -52,6 +52,12 @@ export class TLBSchemaError extends TLBRuntimeError {}
 
 export class TLBDataError extends TLBRuntimeError {}
 
+class UnsupportedAugmentedDictionaryError extends TLBDataError {
+    constructor() {
+        super('Augmented dictionaries are not supported');
+    }
+}
+
 class CompleteRootConstraintError extends TLBDataError {}
 
 interface DecodeAttempt {
@@ -60,7 +66,7 @@ interface DecodeAttempt {
 }
 
 interface DeserializeOptions {
-    selection?: 'first' | 'prefer-complete' | 'complete';
+    selection?: 'first' | 'prefer-complete' | 'complete' | 'complete-tagged';
     parentAttempt?: DecodeAttempt;
 }
 
@@ -209,24 +215,26 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
         const types = Array.from(this.types.values()).reverse();
         const rootType = this.types.get(this.lastTypeName);
         let firstError: Error | undefined;
-        let fallbackError: Error | undefined;
+        let fallback: { error: Error; selection: 'complete' | 'complete-tagged' } | undefined;
         for (const type of rootType ? [rootType, ...types.filter((type) => type !== rootType)] : types) {
             const result = this.deserializeType(type, slice.clone(), [], undefined, undefined, {
-                selection: fallbackError ? 'complete' : 'prefer-complete',
+                selection: fallback?.selection ?? 'prefer-complete',
             });
             if (result.success) {
                 return result;
             }
-            if (type === rootType && type.constructors.some(({ tag }) => matchesTag(slice, tag))) {
+            if (result.error instanceof UnsupportedAugmentedDictionaryError) {
+                fallback ??= { error: result.error, selection: 'complete-tagged' };
+            } else if (type === rootType && type.constructors.some(({ tag }) => matchesTag(slice, tag))) {
                 if (!(result.error instanceof CompleteRootConstraintError)) {
                     return result;
                 }
-                fallbackError = result.error;
+                fallback = { error: result.error, selection: 'complete' };
             }
             firstError ??= result.error;
         }
 
-        return { success: false, error: fallbackError ?? firstError ?? new TLBDataError('No matching constructor') };
+        return { success: false, error: fallback?.error ?? firstError ?? new TLBDataError('No matching constructor') };
     }
 
     // Deserialize data from a Slice based on a TL-B type name
@@ -285,6 +293,7 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
         let firstError: Error | undefined;
         let taggedError: Error | undefined;
         for (const constructor of type.constructors) {
+            if (selection === 'complete-tagged' && constructor.tag.bitLen === 0) continue;
             const prev = data.clone();
             const outputs = outputVariables ? new Map<string, number>() : undefined;
             const attempt =
@@ -300,6 +309,7 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
                 result = { success: false, error: failure };
             }
             if (!result.success) {
+                if (result.error instanceof UnsupportedAugmentedDictionaryError) return result;
                 if (selection === 'prefer-complete' && !taggedError && matchesTag(data, constructor.tag)) {
                     taggedError =
                         attempt?.failedConstraint && isConsumed(prev) && !attempt.trailingReferenceData
@@ -938,6 +948,7 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
             }
 
             case 'TLBHashmapType': {
+                if (fieldType.extra) throw new UnsupportedAugmentedDictionaryError();
                 const keySize = evaluator.evaluate(fieldType.key.expr);
                 const parseValue = (sl: Slice) =>
                     this.deserializeFieldType(
@@ -1313,18 +1324,25 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
             }
 
             case 'TLBHashmapType': {
+                if (fieldType.extra) throw new UnsupportedAugmentedDictionaryError();
                 const keySize = evaluator.evaluate(fieldType.key.expr);
-                const dict = Dictionary.empty(Dictionary.Keys.BigInt(keySize), Dictionary.Values.Cell());
-
-                if (value) {
-                    for (const [key, dictValue] of Object.entries(value)) {
-                        const valueBuilder = beginCell();
-                        this.serializeFieldType(fieldType.value, dictValue, valueBuilder, new Map(variables));
-                        dict.set(BigInt(key), valueBuilder.endCell());
-                    }
+                const dict = Dictionary.empty(Dictionary.Keys.BigUint(keySize), {
+                    serialize: (cell: Cell, target: Builder) => target.storeSlice(cell.beginParse()),
+                    parse: (slice: Slice) => slice.asCell(),
+                });
+                const entries: Iterable<[string | number | bigint, unknown]> =
+                    value instanceof Dictionary ? value : Object.entries(value ?? {});
+                for (const [key, dictValue] of entries) {
+                    const valueBuilder = beginCell();
+                    this.serializeFieldType(fieldType.value, dictValue, valueBuilder, new Map(variables));
+                    dict.set(BigInt(key), valueBuilder.endCell());
                 }
 
-                builder.storeDict(dict);
+                if (fieldType.directStore) {
+                    builder.storeDictDirect(dict);
+                } else {
+                    builder.storeDict(dict);
+                }
                 break;
             }
 

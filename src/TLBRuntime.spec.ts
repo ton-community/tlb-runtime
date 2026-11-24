@@ -1,11 +1,36 @@
-import { beginCell, Cell } from '@ton/core';
+import { beginCell, Cell, Dictionary } from '@ton/core';
 
 import { parseCell, encodeCell, replacer } from './parser';
 import { unwrap } from './Result';
-import { groupCorpusFlat } from './tesdata';
+import { groupCorpusFlat, TLBLib } from './tesdata';
 import { parseTLB } from './TLBRuntime';
 
+function corpusReplacer(key: string, value: unknown): unknown {
+    if (value instanceof Dictionary) {
+        return Array.from(value, ([entryKey, entryValue]) => [String(entryKey), entryValue] as const).sort(
+            ([left], [right]) => left.localeCompare(right),
+        );
+    }
+    return replacer(key, value);
+}
+
 describe('TLBRuntime', () => {
+    it('rejects a dictionary whose layout requires augmentation fields', () => {
+        const schema =
+            TLBLib.HashmapAugE + '_ value:uint17 = Generic; _ values:(HashmapAugE 2 uint16 uint8) suffix:uint8 = Aug;';
+        const cell = beginCell().storeBit(false).storeUint(37, 8).storeUint(5, 8).endCell();
+        const values = Dictionary.empty(Dictionary.Keys.Uint(2), Dictionary.Values.Uint(16));
+
+        expect(() => parseCell(schema, cell)).toThrow('Augmented dictionaries are not supported');
+        expect(parseTLB(schema).deserializeByTypeName('Aug', cell.beginParse())).toMatchObject({
+            success: false,
+            error: { message: 'Augmented dictionaries are not supported' },
+        });
+        expect(() => encodeCell(schema, { kind: 'Aug', values, suffix: 5 })).toThrow(
+            'Augmented dictionaries are not supported',
+        );
+    });
+
     describe('deserialize', () => {
         it.each([
             { fields: 'q:uint8', bits: 8, payload: 7, group: 7, flat: { q: 7 } },
@@ -180,11 +205,22 @@ describe('TLBRuntime', () => {
             expect(() => parseCell(schema, makeCell(withExtraBit))).toThrow();
         });
 
+        it('tries a complete tagged alternative after an unsupported dictionary candidate', () => {
+            const schema =
+                TLBLib.HashmapAugE +
+                'plain$00 value:uint8 = Plain; ' +
+                'aug$0 dict:(HashmapAugE 2 uint16 uint8) marker:uint8 { marker > 9 } = Aug; ' +
+                'disjoint$1 value:uint8 = Disjoint;';
+            const cell = beginCell().storeUint(0, 2).storeUint(7, 8).endCell();
+
+            expect(parseCell(schema, cell)).toEqual({ kind: 'Plain', value: 7 });
+        });
+
         describe.each(Object.keys(groupCorpusFlat))('%s', (group) => {
             it.each(groupCorpusFlat[group])('deserialize %s', (schema, expected, boc) => {
                 const actual = parseCell(schema, Cell.fromHex(boc));
-                expect(JSON.parse(JSON.stringify(actual, replacer))).toEqual(
-                    JSON.parse(JSON.stringify(expected, replacer)),
+                expect(JSON.parse(JSON.stringify(actual, corpusReplacer))).toEqual(
+                    JSON.parse(JSON.stringify(expected, corpusReplacer)),
                 );
             });
         });

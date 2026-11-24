@@ -424,14 +424,14 @@ export const groupCorpus: TLBCorpus = {
             ],
         ],
         [
-            `${TLBLib.Grams} ${TLBLib.HashmapAugE} fip$_ y:(## 5) = FixedIntParam; _$_ x:(HashmapAugE 16 Grams FixedIntParam) = HashmapAugEUser;`,
+            `${TLBLib.Grams} ${TLBLib.HashmapE} fip$_ y:(## 5) = FixedIntParam; _ extra:FixedIntParam value:Grams = LeafWithExtra; _$_ x:(HashmapE 16 LeafWithExtra) = HashmapLeafExtraUser;`,
             [
                 [
                     {
-                        kind: 'HashmapAugEUser',
+                        kind: 'HashmapLeafExtraUser',
                         x: Dictionary.empty(Dictionary.Keys.Uint(16))
-                            .set(5, { extra: { kind: 'FixedIntParam', y: 11 }, value: 8n })
-                            .set(6, { extra: { kind: 'FixedIntParam', y: 9 }, value: 3n }),
+                            .set(5, { kind: 'LeafWithExtra', extra: { kind: 'FixedIntParam', y: 11 }, value: 8n })
+                            .set(6, { kind: 'LeafWithExtra', extra: { kind: 'FixedIntParam', y: 9 }, value: 3n }),
                     },
                     'b5ee9c72410104010015000101c00102059c000c02030005558844000544881cb03ae0fb',
                 ],
