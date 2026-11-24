@@ -17,6 +17,7 @@ import {
     TLBType,
     TLBField,
     TLBFieldType,
+    TLBNumberExpr,
     TLBVarExpr,
     getTLBCodeByAST,
 } from '@ton-community/tlb-codegen';
@@ -561,7 +562,8 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
                 }
 
                 const subfield = field.subFields.length === 1 ? field.subFields[0] : undefined;
-                const referencedType = subfield && this.resolveTypeArgument(subfield.fieldType, constructor, args);
+                const referencedType =
+                    subfield && this.resolveTypeArgument(subfield.fieldType, constructor, args, variables);
                 if (referencedType?.kind === 'TLBCellType') {
                     value[field.name] = ref;
                     continue;
@@ -889,7 +891,7 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
                     throw new TLBDataError(`Type ${fieldType.name} not found in TL-B schema`);
                 }
                 const forwardedArgs = fieldType.arguments.map((arg) =>
-                    this.resolveTypeArgument(arg, ctxConstructor, ctxArgs),
+                    this.resolveTypeArgument(arg, ctxConstructor, ctxArgs, variables),
                 );
                 return unwrap(
                     this.deserializeType(type, slice, forwardedArgs, variables, variables, {
@@ -1061,27 +1063,39 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
         fieldType: TLBFieldType,
         constructor: TLBConstructor,
         args: TLBFieldType[],
+        variables: Map<string, number>,
     ): TLBFieldType {
-        if (args.length === 0) {
-            return fieldType;
-        }
         switch (fieldType.kind) {
             case 'TLBNamedType': {
                 const index = constructor.parameters.findIndex(
                     ({ variable }) => variable.type === 'Type' && variable.name === fieldType.name,
                 );
-                return (
-                    args[index] ?? {
-                        ...fieldType,
-                        arguments: fieldType.arguments.map((arg) => this.resolveTypeArgument(arg, constructor, args)),
-                    }
-                );
+                if (args[index]) return args[index];
+                if (fieldType.arguments.length === 0) return fieldType;
+                return {
+                    ...fieldType,
+                    arguments: fieldType.arguments.map((arg) =>
+                        this.resolveTypeArgument(arg, constructor, args, variables),
+                    ),
+                };
+            }
+            case 'TLBExprMathType': {
+                const { initialExpr } = fieldType;
+                if (
+                    initialExpr.hasNeg ||
+                    initialExpr.variables.size === 0 ||
+                    !Array.from(initialExpr.variables).every((name) => variables.has(name))
+                ) {
+                    return fieldType;
+                }
+                const resolved = new TLBNumberExpr(new MathExprEvaluator(variables).evaluate(initialExpr));
+                return { ...fieldType, expr: resolved, initialExpr: resolved };
             }
             case 'TLBCellInsideType':
             case 'TLBCondType':
             case 'TLBHashmapType':
             case 'TLBMultipleType':
-                return { ...fieldType, value: this.resolveTypeArgument(fieldType.value, constructor, args) };
+                return { ...fieldType, value: this.resolveTypeArgument(fieldType.value, constructor, args, variables) };
             default:
                 return fieldType;
         }
@@ -1214,7 +1228,10 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
                     fieldType.kind === 'TLBTupleType'
                 ) {
                     this.serializeFieldType(
-                        { kind: 'TLBCellInsideType', value: this.resolveTypeArgument(fieldType, constructor, args) },
+                        {
+                            kind: 'TLBCellInsideType',
+                            value: this.resolveTypeArgument(fieldType, constructor, args, variables),
+                        },
                         data[field.name],
                         builder,
                         variables,
@@ -1223,7 +1240,7 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
                 }
             }
 
-            const fieldType = this.resolveTypeArgument(field.fieldType, constructor, args);
+            const fieldType = this.resolveTypeArgument(field.fieldType, constructor, args, variables);
             this.serializeField({ ...field, fieldType }, field.name ? data[field.name] : null, builder, variables);
         }
     }

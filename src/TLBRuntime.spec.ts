@@ -83,6 +83,25 @@ describe('TLBRuntime', () => {
             expect(encodeCell(schema, data).hash()).toEqual(expected.hash());
         });
 
+        it.each([false, true])('keeps the caller width in a nested generic (referenced: %s)', (referenced) => {
+            const schema =
+                '_ {n:#} y:(## n) = Sized n; _ {X:Type} n:(## 3) child:X = Box X; ' +
+                `_ n:(## 3) box:${referenced ? '^' : ''}(Box (Sized n)) suffix:uint8 = Envelope;`;
+            const box = beginCell().storeUint(2, 3).storeUint(2, 5).endCell();
+            const envelope = beginCell().storeUint(5, 3);
+            if (referenced) {
+                envelope.storeRef(box);
+            } else {
+                envelope.storeSlice(box.beginParse());
+            }
+            const cell = envelope.storeUint(37, 8).endCell();
+            const child = { kind: 'Sized', y: 2 };
+            const data = { kind: 'Envelope', n: 5, box: { kind: 'Box', n: 2, child }, suffix: 37 };
+
+            expect(encodeCell(schema, data).hash()).toEqual(cell.hash());
+            expect(parseCell(schema, cell)).toEqual({ ...data, box: { ...data.box, child: { ...child, n: 5 } } });
+        });
+
         it('computes a nested parameter in its own scope', () => {
             const schema =
                 'make$0 seq:# { previous:# } { ~previous + 1 = seq } = Inner; _ previous:# child:Inner = Outer;';
