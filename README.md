@@ -16,29 +16,29 @@ npm install @ton-community/tlb-runtime
 import { parseTLB } from '@ton-community/tlb-runtime';
 
 interface Data {
-  kind: 'Foo';
-  x: number;
+    kind: 'Foo';
+    x: number;
 }
 
 // language=tlb
-const runtime = parseTLB<Data>('_ x:# = Foo;')
+const runtime = parseTLB<Data>('_ x:# = Foo;');
 
 const pack = runtime.serialize({
-  kind: 'Foo',
-  x: 73,
-})
+    kind: 'Foo',
+    x: 73,
+});
 if (pack.success) {
-  console.log({ pack: pack.value.endCell().toBoc().toString('base64')});
+    console.log({ pack: pack.value.endCell().toBoc().toString('base64') });
 } else {
-  console.error(pack.error.message);
+    console.error(pack.error.message);
 }
 // { pack: 'te6cckEBAQEABgAACAAAAEmTxmY2' }
 
-const unpack = runtime.deserialize('te6cckEBAQEABgAACAAAACoFpvBE')
+const unpack = runtime.deserialize('te6cckEBAQEABgAACAAAACoFpvBE');
 if (unpack.success) {
-  console.log({ unpack: unpack.value});
+    console.log({ unpack: unpack.value });
 } else {
-  console.error(unpack.error.message);
+    console.error(unpack.error.message);
 }
 // { unpack: { kind: 'Foo', x: 42 } }
 ```
@@ -64,28 +64,30 @@ burn#595f07bc
  amount:(VarUInteger 16)
  response_destination:MsgAddress
  custom_payload:(Maybe ^Cell)
- = InternalMsgBody;`
+ = InternalMsgBody;`;
 
-const runtime = parseTLB(schema)
+const runtime = parseTLB(schema);
 const pack = runtime.serialize({
-  kind: 'InternalMsgBody',
-  query_id: 0,
-  amount: 1n,
-  response_destination: 'Ef8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAU',
-  custom_payload: { kind: 'Maybe_nothing' }
-})
+    kind: 'InternalMsgBody',
+    query_id: 0,
+    amount: 1n,
+    response_destination: 'Ef8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAU',
+    custom_payload: { kind: 'Maybe_nothing' },
+});
 if (pack.success) {
-  console.log(pack.value.endCell().toBoc().toString('base64'));
+    console.log(pack.value.endCell().toBoc().toString('base64'));
 } else {
-  console.error(pack.error.message);
+    console.error(pack.error.message);
 }
 // te6cckEBAQEAMQAAXllfB7wAAAAAAAAAABAZ/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8gPSJw==
 
-const unpack = runtime.deserialize('te6cckEBAQEAMQAAXllfB7wAAAAAAAAAABKp/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4/EP1Q==')
+const unpack = runtime.deserialize(
+    'te6cckEBAQEAMQAAXllfB7wAAAAAAAAAABKp/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4/EP1Q==',
+);
 if (unpack.success) {
-  console.log(unpack.value);
+    console.log(unpack.value);
 } else {
-  console.error(unpack.error.message);
+    console.error(unpack.error.message);
 }
 // { kind: 'InternalMsgBody', query_id: 0n, amount: 42n, response_destination: Ef8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAU, custom_payload: { kind: 'Maybe_nothing' } }
 ```
@@ -105,11 +107,11 @@ yarn lint:fix
 1. Bump `version` in `package.json` and merge the PR into `main`. The [release workflow](.github/workflows/release.yaml) builds the npm tarball and runs a publish dry run on the PR.
 2. Tag the **merged version-bump commit** and push just that tag. For example, for `1.0.0-alpha.4`:
 
-   ```bash
-   git fetch origin main
-   git tag v1.0.0-alpha.4 <merged-commit-sha>
-   git push origin refs/tags/v1.0.0-alpha.4
-   ```
+    ```bash
+    git fetch origin main
+    git tag v1.0.0-alpha.4 <merged-commit-sha>
+    git push origin refs/tags/v1.0.0-alpha.4
+    ```
 
 3. Follow the [Release workflow run](https://github.com/ton-community/tlb-runtime/actions/workflows/release.yaml). It checks that the tag is exactly `v` plus the package version and the commit is on `main`, builds the package, runs the signed-integer regression test, publishes to npm, then creates a GitHub Release with generated notes.
 
