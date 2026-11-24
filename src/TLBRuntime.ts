@@ -838,11 +838,12 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
             }
 
             case 'TLBCellType': {
-                // if (slice.remainingRefs === 0) {
-                //     throw new TLBDataError('No more references available for TLBCellType');
-                // }
-                // return slice.loadRef();
-                return slice.asCell();
+                const cell = slice.asCell();
+                slice.skip(slice.remainingBits);
+                while (slice.remainingRefs > 0) {
+                    slice.loadRef();
+                }
+                return cell;
             }
 
             case 'TLBCellInsideType': {
@@ -909,12 +910,44 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
             }
 
             case 'TLBTupleType': {
-                const cell = slice.loadRef();
-                return parseTuple(cell);
+                const stack = parseTuple(slice.asCell());
+                this.skipVmStack(slice);
+                return stack;
             }
 
             default:
                 throw new TLBDataError(`Unsupported field type: ${fieldType.kind}`);
+        }
+    }
+
+    private skipVmStack(slice: Slice): void {
+        if (slice.loadUint(24) === 0) {
+            return;
+        }
+        slice.loadRef(); // The rest of the stack.
+        const tag = slice.loadUint(8);
+        switch (tag) {
+            case 1:
+                slice.skip(64);
+                break;
+            case 2:
+                slice.skip(slice.preloadUint(7) === 0 ? 7 + 257 : 8);
+                break;
+            case 4:
+                slice.skip(26);
+                slice.loadRef();
+                break;
+            case 3:
+            case 5:
+                slice.loadRef();
+                break;
+            case 7: {
+                const size = slice.loadUint(16);
+                for (let index = 0; index < Math.min(size, 2); index++) {
+                    slice.loadRef();
+                }
+                break;
+            }
         }
     }
 
@@ -949,13 +982,19 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
 
         // Serialize fields
         for (const field of constructor.fields) {
-            // Codegen represents a named reference as a single subfield with the same name.
             if (field.name && field.subFields.length === 1 && field.subFields[0].name === field.name) {
                 const { fieldType } = field.subFields[0];
-                if (fieldType.kind === 'TLBCellType' || fieldType.kind === 'TLBNamedType') {
-                    const referenceType: TLBFieldType =
-                        fieldType.kind === 'TLBCellType' ? fieldType : { kind: 'TLBCellInsideType', value: fieldType };
-                    this.serializeFieldType(referenceType, data[field.name], builder, variables);
+                if (
+                    fieldType.kind === 'TLBCellType' ||
+                    fieldType.kind === 'TLBNamedType' ||
+                    fieldType.kind === 'TLBTupleType'
+                ) {
+                    this.serializeFieldType(
+                        { kind: 'TLBCellInsideType', value: fieldType },
+                        data[field.name],
+                        builder,
+                        variables,
+                    );
                     continue;
                 }
             }
@@ -1056,11 +1095,16 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
             }
 
             case 'TLBCellType': {
-                builder.storeRef(value);
+                const cell: Cell = typeof value === 'string' ? unwrap(toCell(value)) : value;
+                builder.storeSlice(cell.beginParse());
                 break;
             }
 
             case 'TLBCellInsideType': {
+                if (fieldType.value.kind === 'TLBCellType') {
+                    builder.storeRef(typeof value === 'string' ? unwrap(toCell(value)) : value);
+                    break;
+                }
                 const nestedBuilder = beginCell();
                 this.serializeFieldType(fieldType.value, value, nestedBuilder, variables);
                 builder.storeRef(nestedBuilder.endCell());
@@ -1110,8 +1154,7 @@ export class TLBRuntime<T extends ParsedCell = ParsedCell> {
             }
 
             case 'TLBTupleType': {
-                const cell = serializeTuple(value);
-                builder.storeRef(cell);
+                builder.storeSlice(serializeTuple(value).beginParse());
                 break;
             }
 

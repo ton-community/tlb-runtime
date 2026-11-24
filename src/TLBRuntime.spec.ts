@@ -14,6 +14,20 @@ describe('TLBRuntime', () => {
     });
 
     describe('serialize', () => {
+        it('serializes a referenced TVM stack before a following field', () => {
+            const schema = '_ values:^VmStack suffix:uint8 = Frame;';
+            const stack = beginCell()
+                .storeUint(1, 24)
+                .storeRef(beginCell().endCell())
+                .storeUint(1, 8)
+                .storeInt(7, 64)
+                .endCell();
+            const expected = beginCell().storeRef(stack).storeUint(5, 8).endCell();
+            const data = { kind: 'Frame', values: [{ type: 'int', value: 7n }], suffix: 5 };
+
+            expect(encodeCell(schema, data).equals(expected)).toBe(true);
+        });
+
         it('round-trips a negative signed integer', () => {
             const schema = '_ value:int32 = Signed;';
             const cell = beginCell().storeInt(-3, 32).endCell();
