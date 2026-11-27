@@ -1,13 +1,28 @@
-import { Address, BitString, Cell } from '@ton/core';
+import { Address, BitString, Cell, ExternalAddress } from '@ton/core';
 
-import { ParsedCell, parseTLB } from './TLBRuntime';
+import { TLBSchemaError, UnknownKindError } from './errors';
+import { runtimeBy, DecodeCellOptions, TypedCell, ParsedCell, parseTLB } from './TLBRuntime';
 
+export function decodeCell(schema: string, data: Cell | string, options?: DecodeCellOptions): TypedCell {
+    return runtimeBy(schema).decodeCell(data, options);
+}
+
+/** @deprecated Use decodeCell instead. */
 export function parseCell(schema: string, data: Cell | string): ParsedCell {
     return parseTLB(schema).parseCell(data);
 }
 
-export function encodeCell(schema: string, data: ParsedCell | string): Cell {
-    return parseTLB(schema).encodeCell(data);
+export function encodeCell(schema: string, data: unknown): Cell {
+    try {
+        return runtimeBy(schema).encodeCell(data);
+    } catch (error) {
+        if (!(error instanceof TLBSchemaError || error instanceof UnknownKindError)) throw error;
+        try {
+            return parseTLB(schema).encodeCell(data);
+        } catch {
+            throw error;
+        }
+    }
 }
 
 // FIXME
@@ -16,6 +31,8 @@ export function replacer(_key: string, value: any): any {
     if (typeof value === 'bigint') {
         return value.toString();
     } else if (value instanceof Address) {
+        return value.toString();
+    } else if (value instanceof ExternalAddress) {
         return value.toString();
     } else if (value instanceof BitString) {
         return value.toString();

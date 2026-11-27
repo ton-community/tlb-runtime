@@ -18,7 +18,7 @@ import {
 } from 'tlb-parser-v2';
 
 import { Result } from '../Result';
-import { TLBSchemaError } from '../TLBRuntime';
+import { TLBSchemaError } from '../errors';
 import { symbolMap } from './SymbolMap';
 import { Type, TypeInteger, Undefined } from './Type';
 import { SrcLocation, SrcLocationProp } from './SrcLocation';
@@ -1179,6 +1179,7 @@ export class Schema {
                     firstArg.tchkOnly,
                     firstArg.isConstexpr,
                 );
+                negatedFirstArg.paramName = firstArg.paramName;
                 // Create new Add/Mul expression with negated first arg
                 const newExpr = new TypeExpr(
                     innerExpr.tp,
@@ -1206,6 +1207,7 @@ export class Schema {
                 innerExpr.tchkOnly,
                 innerExpr.isConstexpr,
             );
+            negatedExpr.paramName = innerExpr.paramName;
             return this.registerConstExpr(negatedExpr);
         }
 

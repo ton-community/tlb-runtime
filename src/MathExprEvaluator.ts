@@ -1,10 +1,16 @@
-import { TLBMathExpr, TLBNumberExpr, TLBVarExpr, TLBBinaryOp, TLBUnaryOp } from '@ton-community/tlb-codegen';
-
 // Interpreter to evaluate TLBMathExpr at runtime
-export class MathExprEvaluator {
-    private variables: Map<string, number>;
+import { TLBMathExpr } from './types';
 
-    constructor(variables: Map<string, number> = new Map()) {
+export function safeExpressionNumber(result: bigint | number): number {
+    const value = Number(result);
+    if (!Number.isSafeInteger(value)) throw new Error('Expression result exceeds the safe integer range');
+    return value;
+}
+
+export class MathExprEvaluator {
+    private variables: ReadonlyMap<string, number | bigint>;
+
+    constructor(variables: ReadonlyMap<string, number | bigint> = new Map()) {
         this.variables = variables;
     }
 
@@ -23,21 +29,26 @@ export class MathExprEvaluator {
     }
 
     evaluate(expr: TLBMathExpr): number {
-        if (expr instanceof TLBNumberExpr) {
-            return expr.n;
+        const result = this.evaluateInteger(expr);
+        return safeExpressionNumber(result);
+    }
+
+    private evaluateInteger(expr: TLBMathExpr): bigint {
+        if (expr.kind === 'TLBNumberExpr') {
+            return BigInt(expr.n);
         }
 
-        if (expr instanceof TLBVarExpr) {
+        if (expr.kind === 'TLBVarExpr') {
             const value = this.variables.get(expr.x);
             if (value === undefined) {
                 throw new Error(`Variable ${expr.x} is not defined`);
             }
-            return value;
+            return BigInt(value);
         }
 
-        if (expr instanceof TLBBinaryOp) {
-            const left = this.evaluate(expr.left);
-            const right = this.evaluate(expr.right);
+        if (expr.kind === 'TLBBinaryOp') {
+            const left = this.evaluateInteger(expr.left);
+            const right = this.evaluateInteger(expr.right);
             switch (expr.operation) {
                 case '+':
                     return left + right;
@@ -46,11 +57,13 @@ export class MathExprEvaluator {
                 case '*':
                     return left * right;
                 case '/':
-                    return Math.floor(left / right);
+                    return left / right - (left % right !== 0n && left < 0n !== right < 0n ? 1n : 0n);
                 case '%':
                     return left % right;
                 case '<<':
                     return left << right;
+                case '.':
+                    return (left >> right) & 1n;
                 case '>>':
                     return left >> right;
                 case '&':
@@ -60,49 +73,37 @@ export class MathExprEvaluator {
                 case '^':
                     return left ^ right;
                 case '==':
-                    return left === right ? 1 : 0;
+                    return left === right ? 1n : 0n;
                 case '!=':
-                    return left !== right ? 1 : 0;
+                    return left !== right ? 1n : 0n;
                 case '<':
-                    return left < right ? 1 : 0;
+                    return left < right ? 1n : 0n;
                 case '<=':
-                    return left <= right ? 1 : 0;
+                    return left <= right ? 1n : 0n;
                 case '>':
-                    return left > right ? 1 : 0;
+                    return left > right ? 1n : 0n;
                 case '>=':
-                    return left >= right ? 1 : 0;
+                    return left >= right ? 1n : 0n;
                 case '=':
-                    return left === right ? 1 : 0;
-                default:
-                    throw new Error(`Unknown operation: ${expr.operation}`);
+                    return left === right ? 1n : 0n;
             }
         }
 
-        if (expr instanceof TLBUnaryOp) {
+        if (expr.kind === 'TLBUnaryOp') {
             const operation = expr.operation;
             switch (operation) {
                 case '.': {
-                    const innerExpr = expr.value;
-                    if (innerExpr instanceof TLBBinaryOp && innerExpr.operation === '-') {
-                        const left = this.evaluate(innerExpr.left);
-                        const right = this.evaluate(innerExpr.right);
-                        if (right === 1) {
-                            return MathExprEvaluator.calculateBitsForLessThan(left);
-                        }
-                        return left - right;
-                    }
-                    if (innerExpr instanceof TLBNumberExpr) {
-                        return MathExprEvaluator.calculateBitsForLessThanOrEqual(innerExpr.n);
-                    }
-                    return this.evaluate(innerExpr);
+                    const value = this.evaluateInteger(expr.value);
+                    return value > 0n ? BigInt(value.toString(2).length) : 0n;
                 }
-
                 case '-':
-                    return -this.evaluate(expr.value);
+                    return -this.evaluateInteger(expr.value);
                 case '~':
-                    return ~this.evaluate(expr.value);
+                    // In TL-B, ~n means 'inferred/computed value of n'.
+                    // Always return the inner value directly.
+                    return this.evaluateInteger(expr.value);
                 case '!':
-                    return this.evaluate(expr.value) ? 0 : 1;
+                    return this.evaluateInteger(expr.value) ? 0n : 1n;
                 default:
                     throw new Error(`Unknown unary operation: ${operation}`);
             }

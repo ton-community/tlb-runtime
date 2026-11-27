@@ -10,10 +10,14 @@ npm install @ton-community/tlb-runtime
 
 ## Usage
 
+For new code, use `runtimeBy(schema)` and `decodeCell(schema, cell)` or `runtime.decodeCell(cell)`. The deprecated schema factory `parseTLB` uses the previous schema compiler to preserve its built-in types and normalized field names. A runtime created this way keeps that compiler when its schema changes. The previous names `parseTLB`, `parseCell` and `runtime.parseCell` remain available with deprecation annotations. Use `TypedCell` for decoded records and `DecodedCell` for field values in place of the deprecated `ParsedCell` type.
+
+With `autoText` enabled (the default), `bits` fields with a whole number of bytes decode as strings when their bytes form valid UTF-8 text. Tabs and line breaks are allowed. Invalid UTF-8 and other control characters keep the value as a `BitString`, preserving the original bytes for encoding.
+
 ### Simple
 
 ```typescript
-import { parseTLB } from '@ton-community/tlb-runtime';
+import { runtimeBy } from '@ton-community/tlb-runtime';
 
 interface Data {
     kind: 'Foo';
@@ -21,7 +25,7 @@ interface Data {
 }
 
 // language=tlb
-const runtime = parseTLB<Data>('_ x:# = Foo;');
+const runtime = runtimeBy<Data>('_ x:# = Foo;');
 
 const pack = runtime.serialize({
     kind: 'Foo',
@@ -46,7 +50,7 @@ if (unpack.success) {
 ## TEP-74 Fungible tokens (Jettons)
 
 ```typescript
-import { parseTLB } from '@ton-community/tlb-runtime';
+import { runtimeBy } from '@ton-community/tlb-runtime';
 
 // language=tlb
 const schema = `nothing$0 {X:Type} = Maybe X;
@@ -66,7 +70,7 @@ burn#595f07bc
  custom_payload:(Maybe ^Cell)
  = InternalMsgBody;`;
 
-const runtime = parseTLB(schema);
+const runtime = runtimeBy(schema);
 const pack = runtime.serialize({
     kind: 'InternalMsgBody',
     query_id: 0,
@@ -104,17 +108,21 @@ yarn lint:fix
 
 ## Release
 
-1. Bump `version` in `package.json` and merge the PR into `main`. The [release workflow](.github/workflows/release.yaml) builds the npm tarball and runs a publish dry run on the PR.
-2. Tag the **merged version-bump commit** and push just that tag. For example, for `1.0.0-alpha.4`:
+Merge the version change into `master`, then tag the merged commit with `v` followed by the version from `package.json`.
 
-    ```bash
-    git fetch origin main
-    git tag v1.0.0-alpha.4 <merged-commit-sha>
-    git push origin refs/tags/v1.0.0-alpha.4
-    ```
+```bash
+git fetch origin master
+git tag v1.0.0-alpha.5 <merged-commit-sha>
+git push origin refs/tags/v1.0.0-alpha.5
+```
 
-3. Follow the [Release workflow run](https://github.com/ton-community/tlb-runtime/actions/workflows/release.yaml). It checks that the tag is exactly `v` plus the package version and the commit is on `main`, builds the package, runs the signed-integer regression test, publishes to npm, then creates a GitHub Release with generated notes.
+The [publish workflow](.github/workflows/deploy.yml) checks the tag against the package version, builds the package, publishes it to npm with the `latest` dist-tag, and creates a GitHub Release. It uses npm trusted publishing from the `deploy` environment.
 
-Stable versions publish to `latest`; numbered prereleases such as `1.0.0-alpha.4` publish to `alpha` and are marked as prereleases on GitHub. If npm's `latest` already points to an earlier prerelease in that same series (e.g. `1.0.0-alpha.3`), it advances too.
+## Parser source
 
-**npm access:** The workflow uses [trusted publishing](https://docs.npmjs.com/trusted-publishers/) for `ton-community/tlb-runtime`, workflow `release.yaml`, without a GitHub environment. Enable `npm publish` and `npm dist-tag` in the package's Trusted Publisher settings. If authorization fails, fix the npm settings and choose **Re-run failed jobs** in Actions. This also lets you retry the final step after a successful npm publish without publishing the version twice.
+The runtime uses the npm release of [@ton-community/tlb-parser](https://www.npmjs.com/package/@ton-community/tlb-parser). The dependency name `tlb-parser-v2` distinguishes the 0.2.x parser from the 0.1.x parser required by `tlb-codegen` for the deprecated API.
+
+Unnamed reference groups such as `^[ a:uint8 ]` expose their fields on the
+parent object. Each decoded key must be unique within a constructor, including
+automatically assigned keys such as `anon1`. The schema compiler reports both
+field paths when flattening groups would overwrite a value.

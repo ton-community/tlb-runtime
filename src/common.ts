@@ -1,6 +1,6 @@
 import { BitString, Cell } from '@ton/core';
 
-import { TLBDataError } from './TLBRuntime';
+import { TLBDataError } from './errors';
 import { Result } from './Result';
 
 export function stringToBits(text: string): BitString {
@@ -8,15 +8,18 @@ export function stringToBits(text: string): BitString {
     return new BitString(bytes, 0, bytes.length * 8);
 }
 
-export function bitsToString(bits: BitString): string {
-    if (bits.length % 8 !== 0) {
-        throw new Error('Bits must be at least 8 bits');
-    }
-    let text = '';
-    for (let offset = 0; offset < bits.length; offset += 8) {
-        text += String.fromCharCode(parseInt(`0x${bits.substring(offset, 8).toString()}`));
-    }
+export function decodeBits(bits: BitString, autoText = true): BitString | string | boolean {
+    if (bits.length === 1) return bits.at(0);
+    const raw = normalizeBitString(bits);
+    if (!autoText || bits.length % 8 !== 0) return raw;
 
+    const bytes = raw.subbuffer(0, raw.length)!;
+    const text = bytes.toString('utf8');
+    // Buffer substitutes malformed UTF-8. Only return text that encodes back to the exact bytes.
+    if (!Buffer.from(text, 'utf8').equals(bytes)) return raw;
+    for (const char of text) {
+        if (/\p{Cc}/u.test(char) && char !== '\t' && char !== '\n' && char !== '\r') return raw;
+    }
     return text;
 }
 

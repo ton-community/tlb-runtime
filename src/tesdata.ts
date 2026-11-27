@@ -1,14 +1,14 @@
 import { Cell, beginCell, Address, ExternalAddress, Dictionary } from '@ton/core';
 
-import { ParsedCell } from './TLBRuntime';
+import { TypedCell } from './TLBRuntime';
 
 // based on https://github.com/ton-community/tlb-test-corpus
 export type TLBSchema = string;
 export type BoCBase64 = string;
-export type TLBGroupItem = [TLBSchema, [ParsedCell, BoCBase64][]];
+export type TLBGroupItem = [TLBSchema, [TypedCell, BoCBase64][]];
 export type TLBGroup = string;
 export type TLBCorpus = { [key: TLBGroup]: TLBGroupItem[] };
-export type TLBCase = [TLBSchema, ParsedCell, BoCBase64];
+export type TLBCase = [TLBSchema, TypedCell, BoCBase64];
 export type TLBGroupFlat = { [key: TLBGroup]: TLBCase[] };
 export function makeGroupFlat(corpus: TLBCorpus): TLBGroupFlat {
     const out: TLBGroupFlat = {};
@@ -48,6 +48,23 @@ export const TLBLib = {
 };
 // language=tlb
 export const TLBTVMReflection = `${TLBStd.Maybe}${TLBLib.HashmapE}vm_stk_null#00 = VmStackValue; vm_stk_tinyint#01 value:int64 = VmStackValue; vm_stk_int#0201_ value:int257 = VmStackValue; vm_stk_nan#02ff = VmStackValue; vm_stk_cell#03 cell:^Cell = VmStackValue; _ cell:^Cell st_bits:(## 10) end_bits:(## 10) { st_bits <= end_bits } st_ref:(#<= 4) end_ref:(#<= 4) { st_ref <= end_ref } = VmCellSlice; vm_stk_slice#04 _:VmCellSlice = VmStackValue; vm_stk_builder#05 cell:^Cell = VmStackValue; vm_stk_cont#06 cont:VmCont = VmStackValue; vm_tupref_nil$_ = VmTupleRef 0; vm_tupref_single$_ entry:^VmStackValue = VmTupleRef 1; vm_tupref_any$_ {n:#} ref:^(VmTuple (n + 2)) = VmTupleRef (n + 2); vm_tuple_nil$_ = VmTuple 0; vm_tuple_tcons$_ {n:#} head:(VmTupleRef n) tail:^VmStackValue = VmTuple (n + 1); vm_stk_tuple#07 len:(## 16) data:(VmTuple len) = VmStackValue; vm_stack#_ depth:(## 24) stack:(VmStackList depth) = VmStack; vm_stk_cons#_ {n:#} rest:^(VmStackList n) tos:VmStackValue = VmStackList (n + 1); vm_stk_nil#_ = VmStackList 0; _ cregs:(HashmapE 4 VmStackValue) = VmSaveList; gas_limits#_ remaining:int64 _:^[ max_limit:int64 cur_limit:int64 credit:int64 ] = VmGasLimits; _ libraries:(HashmapE 256 ^Cell) = VmLibraries; vm_ctl_data$_ nargs:(Maybe uint13) stack:(Maybe VmStack) save:VmSaveList cp:(Maybe int16) = VmControlData; vmc_std$00 cdata:VmControlData code:VmCellSlice = VmCont; vmc_envelope$01 cdata:VmControlData next:^VmCont = VmCont; vmc_quit$1000 exit_code:int32 = VmCont; vmc_quit_exc$1001 = VmCont; vmc_repeat$10100 count:uint63 body:^VmCont after:^VmCont = VmCont; vmc_until$110000 body:^VmCont after:^VmCont = VmCont; vmc_again$110001 body:^VmCont = VmCont; vmc_while_cond$110010 cond:^VmCont body:^VmCont after:^VmCont = VmCont; vmc_while_body$110011 cond:^VmCont body:^VmCont after:^VmCont = VmCont; vmc_pushint$1111 value:int32 next:^VmCont = VmCont;`;
+
+function augmentedLeaf(bit: boolean, y: number, value: bigint) {
+    return {
+        kind: 'HashmapAug',
+        n: 1,
+        l: 1,
+        m: 0,
+        label: {
+            kind: 'HmLabel_hml_short',
+            len: { kind: 'Unary_unary_succ', x: { kind: 'Unary_unary_zero' }, n: 0 },
+            s: [bit],
+            n: 1,
+            m: 1,
+        },
+        node: { kind: 'HashmapAugNode_ahmn_leaf', extra: { kind: 'FixedIntParam', y }, value },
+    };
+}
 
 export const groupCorpus: TLBCorpus = {
     'Built-in types': [
@@ -158,14 +175,7 @@ export const groupCorpus: TLBCorpus = {
             '_ {n:#} x:(## n) = ExprType (2 + n); _ x:(ExprType 6) = UseExprType; _#de x:^UseExprType = CellUseExprType;',
             [
                 [
-                    {
-                        kind: 'UseExprType',
-                        x: {
-                            kind: 'ExprType',
-                            n: 4,
-                            x: 10n,
-                        },
-                    },
+                    { kind: 'UseExprType', x: { kind: 'ExprType', n: 4, x: 10n } },
                     'b5ee9c72410101010003000001a82322a95d',
                 ],
                 [
@@ -191,9 +201,9 @@ export const groupCorpus: TLBCorpus = {
                     {
                         kind: 'LessThan',
                         x: 3,
-                        y: 7,
+                        y: 4,
                     },
-                    'b5ee9c72410101010003000001fcef6f16cb',
+                    'b5ee9c72410101010003000001e44ff09151',
                 ],
             ],
         ],
@@ -253,7 +263,7 @@ export const groupCorpus: TLBCorpus = {
                 [
                     {
                         kind: 'CheckKeyword',
-                        const0: 3,
+                        const: 3,
                     },
                     'b5ee9c724101010100060000080000000317f3ff1c',
                 ],
@@ -427,11 +437,32 @@ export const groupCorpus: TLBCorpus = {
                 [
                     {
                         kind: 'HashmapAugEUser',
-                        x: Dictionary.empty(Dictionary.Keys.Uint(16))
-                            .set(5, { extra: { kind: 'FixedIntParam', y: 11 }, value: 8n })
-                            .set(6, { extra: { kind: 'FixedIntParam', y: 9 }, value: 3n }),
+                        x: {
+                            kind: 'HashmapAugE_ahme_root',
+                            n: 16,
+                            extra: { kind: 'FixedIntParam', y: 20 },
+                            root: {
+                                kind: 'HashmapAug',
+                                n: 16,
+                                l: 14,
+                                m: 2,
+                                label: {
+                                    kind: 'HmLabel_hml_long',
+                                    n: 14,
+                                    m: 16,
+                                    s: [...Array<boolean>(13).fill(false), true],
+                                },
+                                node: {
+                                    kind: 'HashmapAugNode_ahmn_fork',
+                                    n: 1,
+                                    left: augmentedLeaf(true, 11, 8n),
+                                    right: augmentedLeaf(false, 9, 3n),
+                                    extra: { kind: 'FixedIntParam', y: 20 },
+                                },
+                            },
+                        },
                     },
-                    'b5ee9c72410104010015000101c00102059c000c02030005558844000544881cb03ae0fb',
+                    'b5ee9c72410104010016000101d20102079c000d2002030005558844000544881cc19ff9b9',
                 ],
             ],
         ],
@@ -531,7 +562,7 @@ export const groupCorpus: TLBCorpus = {
                         kind: 'VarIntegerUser',
                         v: -6n,
                     },
-                    'b5ee9c724101010100040000030fd4f38f8742',
+                    'b5ee9c724101010100040000033f501731a547',
                 ],
             ],
         ],
@@ -635,7 +666,7 @@ export const groupCorpus: TLBCorpus = {
                     {
                         kind: 'MathExprAsCombArg',
                         n: 8,
-                        ref: { kind: 'BitLenArg', x: 10, value: 1000n },
+                        ref: { kind: 'BitLenArg', x: 10, value: 1000 },
                     },
                     'b5ee9c72410102010007000100010003fa2059c5f201',
                 ],
@@ -654,7 +685,7 @@ export const groupCorpus: TLBCorpus = {
             ],
         ],
         [
-            `${TLBStd.Maybe} ${TLBStd.Either} ${TLBStd.Coins} ${TLBStd.Grams} ${TLBStd.VarUInteger} transfer#0f8a7ea5 query_id:uint64 amount:Coins destination:MsgAddress response_destination:MsgAddress custom_payload:(Maybe Cell) forward_ton_amount:Coins forward_payload:(Either Cell ^Cell) = JettonTransfer;`,
+            `${TLBLib.MsgAddress} ${TLBStd.Either} ${TLBStd.VarUInteger} transfer#0f8a7ea5 query_id:uint64 amount:(VarUInteger 16) destination:MsgAddress response_destination:MsgAddress custom_payload:(Maybe ^Cell) forward_ton_amount:(VarUInteger 16) forward_payload:(Either Cell ^Cell) = JettonTransfer;`,
             [
                 [
                     {
@@ -666,7 +697,7 @@ export const groupCorpus: TLBCorpus = {
                         destination: 'Ef9VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVbxn',
                         forward_payload: {
                             kind: 'Either_left',
-                            value: beginCell().endCell().toBoc().toString('base64'),
+                            value: beginCell().endCell(),
                         },
                         forward_ton_amount: '0',
                         query_id: '0',
@@ -761,7 +792,7 @@ export const groupCorpus: TLBCorpus = {
             '_ a:(## 6) b:(a . 2)?(## 32) = BitSelection;',
             [
                 [{ kind: 'BitSelection', a: 5, b: 5 }, 'b5ee9c7241010101000700000914000000160ae584e0'],
-                [{ kind: 'BitSelection', a: 8 }, 'b5ee9c7241010101000700000920000000163e8f4b94'],
+                [{ kind: 'BitSelection', a: 8 }, 'b5ee9c72410101010003000001226331bdb4'],
             ],
         ],
         [
@@ -915,15 +946,19 @@ export const groupCorpus: TLBCorpus = {
                         k: 5,
                         x: {
                             kind: 'ParamDifNames_c',
-                            n: 3,
+                            n: 4,
                             x: {
                                 kind: 'ParamDifNames_c',
-                                n: 2,
-                                x: { kind: 'ParamDifNames_c', n: 1, x: { kind: 'ParamDifNames_a' } },
+                                n: 3,
+                                x: {
+                                    kind: 'ParamDifNames_c',
+                                    n: 2,
+                                    x: { kind: 'ParamDifNames_c', n: 1, x: { kind: 'ParamDifNames_a' } },
+                                },
                             },
                         },
                     },
-                    'b5ee9c7241010101000300000174580c39c3',
+                    'b5ee9c724101010100030000017a7fb3416f',
                 ],
             ],
         ],
@@ -979,18 +1014,18 @@ export const groupCorpus: TLBCorpus = {
                             kind: 'IntBitsParametrizedInside',
                             a: {
                                 kind: 'IntBitsParametrized',
-                                e: 6,
+                                e: 5,
                                 f: 3n,
-                                h: 7n,
+                                h: -7n,
                                 j: 9,
-                                k: 10n,
+                                k: 10,
                                 i: beginCell().storeUint(676, 10).endCell().beginParse().loadBits(10),
                                 tc: beginCell().storeUint(76, 10).endCell(),
                             },
                             x: 5,
                         },
                     },
-                    'b5ee9c7241010101001200001f0000000000070000000000ea44942640e5e8bbef',
+                    'b5ee9c7241010101001000001bfffffffff9000000007522542640b35ad594',
                 ],
                 [
                     {
@@ -1003,7 +1038,7 @@ export const groupCorpus: TLBCorpus = {
                                 f: 3n,
                                 h: 7n,
                                 j: 9,
-                                k: 10n,
+                                k: 10,
                                 i: beginCell().storeUint(676, 10).endCell().beginParse().loadBits(10),
                                 tc: beginCell().storeUint(76, 10).endCell(),
                             },
@@ -1033,7 +1068,7 @@ export const groupCorpus: TLBCorpus = {
                             kind: 'IntBitsInside',
                             a: {
                                 kind: 'IntBits',
-                                arg: 3n,
+                                arg: 3,
                                 d: 5,
                                 g: beginCell().storeUint(3, 2).endCell().beginParse().loadBits(2),
                                 x: beginCell().storeUint(76, 10).endCell(),
@@ -1068,6 +1103,8 @@ export const groupCorpus: TLBCorpus = {
                     // TODO it data actual only deserialize, in some cases serialization and deserialization data may differ, this must be taken into account in the test set
                     {
                         kind: 'ComplexCrc32',
+                        prev_seq_no: 2000,
+                        prev_seq_no_2: 112100,
                         seq_no: 1999,
                         seq_no_2: 2000,
                     },
