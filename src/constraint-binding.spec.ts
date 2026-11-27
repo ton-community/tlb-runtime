@@ -117,3 +117,14 @@ it('checks the output length of a long HmLabel against its concrete argument', (
     expect(r.encodeCell(data).equals(wire(2))).toBe(true);
     expect(() => r.decodeCell(wire(3), { rootType: 'Box' })).toThrow(TLBDataError);
 });
+
+it('keeps anonymous records portable across unrelated schema declarations', () => {
+    const schema = '_ r:^[ y:uint8 ] = C;';
+    const wire = beginCell().storeRef(byte(2)).endCell();
+    const original = runtimeBy(schema).decodeCell(wire);
+    const extended = runtimeBy('_ q:^[ z:uint8 ] = D; ' + schema);
+    expect(original).toEqual({ kind: 'C', r: { y: 2 } });
+    expect(extended.decodeCell(wire)).toEqual(original);
+    expect(extended.encodeCell(original).equals(wire)).toBe(true);
+    expect(extended.encodeCell({ kind: 'C', r: { kind: 'TYPE_1553', y: 2 } }).equals(wire)).toBe(true);
+});

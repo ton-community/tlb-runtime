@@ -5,7 +5,7 @@ import { Size } from './Size';
 import { TypeExpr, TypeExprType } from './TypeExpr';
 import { SrcLocation } from './SrcLocation';
 import type { Type } from './Type';
-import { symbolMap } from './SymbolMap';
+import type { SymbolMap } from './SymbolMap';
 
 export interface ConstructorProp {
     constrName: number;
@@ -54,7 +54,10 @@ export class Constructor {
     paramConstVal: number[];
     admissibleParams: AdmissibilityInfo;
 
-    constructor(init: Partial<ConstructorProp>) {
+    constructor(
+        private readonly symbols: SymbolMap,
+        init: Partial<ConstructorProp>,
+    ) {
         this.constrName = init.constrName ?? 0;
         this.typeName = init.typeName ?? 0;
         this.typeDefined = init.typeDefined ?? null;
@@ -83,7 +86,7 @@ export class Constructor {
      * E.g., "bool_false$0" or "unit$_"
      */
     get displayName(): string {
-        const constrName = symbolMap.getName(this.constrName) || '_';
+        const constrName = this.symbols.getName(this.constrName) || '_';
 
         if (this.tagBits > 0) {
             let tagStr = '';
@@ -111,7 +114,7 @@ export class Constructor {
      * Handles implicit fields, anonymous fields, and parentheses.
      */
     private formatFieldForDeclaration(field: Field): string {
-        const fieldName = symbolMap.getName(field.name);
+        const fieldName = this.symbols.getName(field.name);
         let fieldStr = '';
 
         if (fieldName) {
@@ -152,8 +155,8 @@ export class Constructor {
      */
     get resultType(): string {
         const typeName = this.typeDefined
-            ? symbolMap.getName(this.typeDefined.typeNameId) || `type#${this.typeDefined.typeNameId}`
-            : symbolMap.getName(this.typeName) || `type#${this.typeName}`;
+            ? this.symbols.getName(this.typeDefined.typeNameId) || `type#${this.typeDefined.typeNameId}`
+            : this.symbols.getName(this.typeName) || `type#${this.typeName}`;
 
         let result = typeName;
 
@@ -174,7 +177,7 @@ export class Constructor {
                 const typeParams: string[] = [];
                 for (const field of this.fields) {
                     if (field.implicit && field.type.typeApplied?.name === 'Type') {
-                        const paramName = symbolMap.getName(field.name);
+                        const paramName = this.symbols.getName(field.name);
                         if (paramName) {
                             typeParams.push(paramName);
                         }
@@ -223,7 +226,7 @@ export class Constructor {
 
     toString(): string {
         const out: string[] = [];
-        const constrName = symbolMap.getName(this.constrName) || '_';
+        const constrName = this.symbols.getName(this.constrName) || '_';
 
         out.push(`  constructor \`${constrName}\``);
         out.push(`\t${this.declaration};`);

@@ -1,29 +1,20 @@
 export class SymbolMap {
-    static NotExist = 0;
-    private map: Map<string, number> = new Map();
-    private counter: number = 0;
+    private readonly ids = new Map<string, number>();
+    private readonly names: string[] = [];
 
-    getName(typeNameId: number): string | undefined {
-        for (const [name, id] of this.map.entries()) {
-            if (id === typeNameId) {
-                return name;
-            }
-        }
-        return undefined;
+    getName(id: number): string | undefined {
+        return this.names[id - 1];
     }
 
     lookupAdd(name: string): number {
-        if (this.map.has(name)) {
-            return this.lookup(name);
-        }
-        this.counter += 1;
-        this.map.set(name, this.counter);
-        return this.counter;
+        const existing = this.ids.get(name);
+        if (existing !== undefined) return existing;
+        const id = this.names.push(name);
+        this.ids.set(name, id);
+        return id;
     }
 
     lookup(name: string): number {
-        return this.map.get(name) || SymbolMap.NotExist;
+        return this.ids.get(name) ?? 0;
     }
 }
-
-export const symbolMap = new SymbolMap();

@@ -41,7 +41,8 @@ function fieldType(type: legacy.TLBFieldType): TLBFieldType {
             return {
                 kind: type.kind,
                 signed: type.signed,
-                bits,
+                // Alpha.4 uses the variable itself as the width of (#<= n).
+                bits: bounded && bits.value.kind === 'TLBVarExpr' ? bits.value : bits,
                 maxBits: type.maxBits,
                 ...(bounded && { upperBound: bits.value }),
             };

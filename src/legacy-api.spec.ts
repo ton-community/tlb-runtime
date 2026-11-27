@@ -262,3 +262,18 @@ it('treats native cells as opaque when looking for a numeric parameter', () => {
     const wire = beginCell().storeRef(child).endCell();
     expect(parseCell('_ {type:#} c:^Cell = T type;', wire)).toEqual({ kind: 'T', c: child });
 });
+
+it('preserves the alpha.4 wire width for a variable inclusive bound', () => {
+    const schema = '_ n:# x:(#<= n) = T;';
+    const record = { kind: 'T', n: 5, x: 3 };
+    const wire = (width: number) => beginCell().storeUint(5, 32).storeUint(3, width).endCell();
+    for (const [runtime, width] of [
+        [unwrap(TLBRuntime.from(schema)), 5],
+        [runtimeBy(schema), 3],
+    ] as const) {
+        expect(runtime.decodeCell(wire(width))).toEqual(record);
+        expect(runtime.encodeCell(record).equals(wire(width))).toBe(true);
+    }
+    expect(parseCell(schema, wire(5))).toEqual(record);
+    expect(encodeCell(schema, record).equals(wire(5))).toBe(true);
+});

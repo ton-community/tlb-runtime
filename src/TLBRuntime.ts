@@ -2075,7 +2075,7 @@ export class TLBRuntime<T = ParsedCell> {
 
         // Create final result object with normalized property order
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const orderedValue: any = { kind };
+        const orderedValue: any = type.isAnon ? {} : { kind };
         const addedNames = new Set<string>(['kind']);
 
         // 1. Add regular fields in schema order (PRIORITY: Preserves types like BigInt, Boolean)
@@ -3249,8 +3249,8 @@ export class TLBRuntime<T = ParsedCell> {
         callerVariables = new Map<string, number | bigint>(),
         enclosingTypes?: Map<string, TLBFieldType>,
     ): void {
-        // Find matching constructor by kind
-        const typeKind = (data as TypeCell).kind;
+        // Anonymous groups have one implicit constructor, including older records with a generated kind.
+        const typeKind = type.isAnon ? undefined : (data as TypeCell).kind;
         let constructor: TLBConstructor | undefined;
 
         if (typeKind === undefined || typeKind === type.name) {

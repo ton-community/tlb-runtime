@@ -3,7 +3,7 @@ import { Constructor } from './Constructor';
 import { BitPrefixCollection } from './BitPrefixCollection';
 import { AdmissibilityInfo } from './AdmissibilityInfo';
 import { BinTrie } from './BinTrie';
-import { symbolMap } from './SymbolMap';
+import type { SymbolMap } from './SymbolMap';
 
 export const Undefined = -1;
 
@@ -147,6 +147,7 @@ export class Type {
     }
 
     static create(
+        symbols: SymbolMap,
         name: string,
         typeIdx: number,
         producesNat: boolean = false,
@@ -156,7 +157,7 @@ export class Type {
         parentTypeIdx: number = Undefined,
         isInteger: number = TypeInteger.None,
     ): Type {
-        const typeNameId = symbolMap.lookupAdd(name);
+        const typeNameId = symbols.lookupAdd(name);
         if (!name.length || !typeNameId) {
             throw new Error(`Invalid type name: ${name}`);
         }
@@ -207,6 +208,7 @@ export class Type {
     }
 
     static builtinType(
+        symbols: SymbolMap,
         name: string = '',
         typeId: number,
         args: string[],
@@ -217,7 +219,7 @@ export class Type {
         isInteger: number = TypeInteger.None,
     ): Type {
         const arity = args.length;
-        const type = Type.create(name, typeId, producesNat, arity, true, true, Undefined, isInteger);
+        const type = Type.create(symbols, name, typeId, producesNat, arity, true, true, Undefined, isInteger);
 
         type.isBuiltin = true;
         type.isEnum = false;
@@ -300,7 +302,7 @@ export class Type {
 
     toString(): string {
         const out: string[] = [];
-        const name = symbolMap.getName(this.typeNameId) || `type#${this.typeNameId}`;
+        const name = this.name;
 
         out.push(`type #${this.typeIdx}: \`${name}\`, arity ${this.arity}, ${this.constrNum} constructors`);
 

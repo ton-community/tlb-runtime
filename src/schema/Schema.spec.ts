@@ -100,3 +100,11 @@ describe('Schema', () => {
         });
     });
 });
+
+it('isolates symbol IDs and names across schema compilations', () => {
+    const first = unwrap(Schema.from('_ left:uint8 = First;'));
+    const second = unwrap(Schema.from('_ right:uint8 = Second;'));
+    expect(first.findTypeByName('First')!.typeNameId).toBe(second.findTypeByName('Second')!.typeNameId);
+    expect(first.getTLBTypes().get('First')!.constructors[0].fields[0].name).toBe('left');
+    expect(second.getTLBTypes().get('Second')!.constructors[0].fields[0].name).toBe('right');
+});

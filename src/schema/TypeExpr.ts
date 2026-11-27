@@ -1,5 +1,4 @@
 import { Type } from './Type';
-import { symbolMap } from './SymbolMap';
 import { Size } from './Size';
 
 export enum TypeExprType {
@@ -65,7 +64,7 @@ export class TypeExpr {
                 return `_${this.value + 1}`;
             case TypeExprType.Apply: {
                 if (!this.typeApplied) return '?';
-                const typeName = symbolMap.getName(this.typeApplied.typeNameId) || '?';
+                const typeName = this.typeApplied.name || '?';
                 if (this.args.length === 0) {
                     return typeName;
                 }
@@ -132,7 +131,7 @@ export class TypeExpr {
                 return `_${this.value + 1}`;
             case TypeExprType.Apply:
                 if (!this.typeApplied) return '?';
-                return symbolMap.getName(this.typeApplied.typeNameId) || '?';
+                return this.typeApplied.name || '?';
             case TypeExprType.Add:
                 return '+';
             case TypeExprType.MulConst:
@@ -156,14 +155,14 @@ export class TypeExpr {
      * Convert TypeExpr to declaration string using original field names.
      * This is used for generating the TL-B declaration line.
      */
-    toDeclarationString(fields: { name: number }[]): string {
+    toDeclarationString(fields: { sourceName?: string }[]): string {
         if (this.negated) {
             return `~${this.toDeclarationStringInner(fields)}`;
         }
         return this.toDeclarationStringInner(fields);
     }
 
-    private toDeclarationStringInner(fields: { name: number }[]): string {
+    private toDeclarationStringInner(fields: { sourceName?: string }[]): string {
         switch (this.tp) {
             case TypeExprType.Type:
                 return 'Type';
@@ -171,7 +170,7 @@ export class TypeExpr {
                 // Look up original field name
                 const fieldIdx = this.value;
                 if (fieldIdx >= 0 && fieldIdx < fields.length) {
-                    const fieldName = symbolMap.getName(fields[fieldIdx].name);
+                    const fieldName = fields[fieldIdx].sourceName;
                     if (fieldName) {
                         return fieldName;
                     }
@@ -180,7 +179,7 @@ export class TypeExpr {
             }
             case TypeExprType.Apply: {
                 if (!this.typeApplied) return '?';
-                const typeName = symbolMap.getName(this.typeApplied.typeNameId) || '?';
+                const typeName = this.typeApplied.name || '?';
                 if (this.args.length === 0) {
                     return typeName;
                 }
@@ -473,7 +472,7 @@ export class TypeExpr {
                     // Check for built-in types with constant arguments
                     if (this.args.length === 1 && this.args[0].tp === TypeExprType.IntConst) {
                         const n = this.args[0].value;
-                        const typeName = symbolMap.getName(this.typeApplied.typeNameId);
+                        const typeName = this.typeApplied.name;
                         if (typeName === '##') {
                             return Size.fixedSize(Math.min(n, 2047));
                         } else if (typeName === '#<=') {
@@ -534,7 +533,7 @@ export class TypeExpr {
                 if (this.typeApplied) {
                     if (this.args.length === 1 && this.args[0].tp === TypeExprType.IntConst) {
                         const n = this.args[0].value;
-                        const typeName = symbolMap.getName(this.typeApplied.typeNameId);
+                        const typeName = this.typeApplied.name;
                         if (typeName === '#<=') {
                             // #<= n: any_bits if n is power of 2 minus 1
                             return !(n & (n + 1));

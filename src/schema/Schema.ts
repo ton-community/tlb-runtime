@@ -19,7 +19,7 @@ import {
 
 import { Result } from '../Result';
 import { TLBSchemaError } from '../errors';
-import { symbolMap } from './SymbolMap';
+import { SymbolMap } from './SymbolMap';
 import { Type, TypeInteger, Undefined } from './Type';
 import { SrcLocation, SrcLocationProp } from './SrcLocation';
 import { Constructor } from './Constructor';
@@ -41,6 +41,7 @@ interface FieldDef {
 }
 
 export class Schema {
+    private readonly symbols = new SymbolMap();
     builtinTypesNum: number = 0;
     types: Type[] = [];
     private constExprCounter: number = 0;
@@ -138,7 +139,6 @@ export class Schema {
 
             // Second pass: define constructors and fields
             // lastDeclared will be set in defineUserType for each type on first constructor
-            Schema.lastDeclaredCounter = 0;
             schema.nextAnonymousTypeIdx = schema.builtinTypesNum; // Reset to first user type index
             for (const declaration of tree.declarations) {
                 const { line, column } = declaration.locations;
@@ -337,7 +337,7 @@ export class Schema {
         }
     }
 
-    private static lastDeclaredCounter: number = 0;
+    private lastDeclaredCounter: number = 0;
 
     addTypeStub(declaration: Declaration): void {
         const name = declaration.combinator.name;
@@ -348,9 +348,9 @@ export class Schema {
         if (!existingType) {
             const typeIdx = this.types.length;
             const arity = declaration.combinator.args.length;
-            const type = Type.create(name, typeIdx, false, arity, false, false);
+            const type = Type.create(this.symbols, name, typeIdx, false, arity, false, false);
             this.types.push(type);
-            symbolMap.lookupAdd(name);
+            this.symbols.lookupAdd(name);
         }
     }
 
@@ -364,7 +364,7 @@ export class Schema {
             for (const node of walk(field)) {
                 if (!(node instanceof FieldAnonymousDef || node instanceof FieldAnonExpr)) continue;
                 const typeIdx = this.types.length;
-                const type = Type.create(`TYPE_${typeIdx}`, typeIdx, false, 0, false, true);
+                const type = Type.create(this.symbols, `TYPE_${typeIdx}`, typeIdx, false, 0, false, true);
                 type.isAnon = true;
                 this.types.push(type);
             }
@@ -385,10 +385,10 @@ export class Schema {
 
     findTypeByName(name: string | number): Type | undefined {
         if (name === 'Type') {
-            symbolMap.lookupAdd('Type'); // Ensure symbol is registered
-            return Type.create('Type', -1, false, 0, false, false); // Dummy type, not stored in types array
+            this.symbols.lookupAdd('Type'); // Ensure symbol is registered
+            return Type.create(this.symbols, 'Type', -1, false, 0, false, false); // Dummy type, not stored in types array
         }
-        const nameId = typeof name === 'string' ? symbolMap.lookup(name) : name;
+        const nameId = typeof name === 'string' ? this.symbols.lookup(name) : name;
         if (!nameId) return undefined;
         return this.types.find((t) => t.typeNameId === nameId);
     }
@@ -421,7 +421,7 @@ export class Schema {
         // Parse constructor from declaration
         if (declaration.constructorDef && declaration.fields) {
             const constrName = declaration.constructorDef.name || '_';
-            const constrNameIdx = constrName === '_' ? 0 : symbolMap.lookupAdd(constrName);
+            const constrNameIdx = constrName === '_' ? 0 : this.symbols.lookupAdd(constrName);
 
             // Parse tag if present
             let tag = 0n;
@@ -476,7 +476,7 @@ export class Schema {
             }
 
             // Create constructor
-            const constructor = new Constructor({
+            const constructor = new Constructor(this.symbols, {
                 constrName: constrNameIdx,
                 typeName: type.typeNameId,
                 typeDefined: type,
@@ -508,7 +508,7 @@ export class Schema {
                 const fieldDecl = declaration.fields[i];
                 // Check if field has name (FieldNamedDef)
                 const fieldName = 'name' in fieldDecl ? (fieldDecl.name as string) : '';
-                const fieldNameIdx = fieldName ? symbolMap.lookupAdd(fieldName) : 0;
+                const fieldNameIdx = fieldName ? this.symbols.lookupAdd(fieldName) : 0;
 
                 // Parse field type expression
                 let fieldTypeExpr: TypeExpr;
@@ -579,6 +579,7 @@ export class Schema {
                 const isConstraint = fieldDecl instanceof FieldCurlyExprDef;
 
                 const field = new Field(
+                    this.symbols.getName(fieldNameIdx),
                     i,
                     fieldNameIdx,
                     fieldTypeExpr,
@@ -711,8 +712,8 @@ export class Schema {
 
             if (isFirstConstructor) {
                 // Set lastDeclared for this type (order of first declaration)
-                Schema.lastDeclaredCounter++;
-                type.lastDeclared = Schema.lastDeclaredCounter;
+                this.lastDeclaredCounter++;
+                type.lastDeclared = this.lastDeclaredCounter;
 
                 // Initialize with first constructor
                 type.size = new Size(constructor.size.size, true); // Clone with normalization
@@ -805,7 +806,7 @@ export class Schema {
         // Exclude '=', '<', '<=' comparison types from output
         const sortedUsedTypes = Array.from(usedBuiltinTypes)
             .filter((type) => {
-                const name = symbolMap.getName(type.typeNameId);
+                const name = this.symbols.getName(type.typeNameId);
                 return name !== '=' && name !== '<' && name !== '<=';
             })
             .map((type) => ({ type, index: this.types.indexOf(type) }))
@@ -813,7 +814,7 @@ export class Schema {
             .sort((a, b) => a.index - b.index);
 
         for (const { type, index } of sortedUsedTypes) {
-            const name = symbolMap.getName(type.typeNameId) || `type#${type.typeNameId}`;
+            const name = this.symbols.getName(type.typeNameId) || `type#${type.typeNameId}`;
             const parts: string[] = [];
             // Format: built-in type #0: `#`, arity 0; prefixes {*}; size =32
             parts.push(`built-in type #${index}: \`${name}\`, arity ${type.arity}`);
@@ -900,8 +901,8 @@ export class Schema {
         type.isSimpleEnum = false;
 
         // Create anonymous constructor for this type
-        const constructor = new Constructor({
-            constrName: symbolMap.lookupAdd('_'),
+        const constructor = new Constructor(this.symbols, {
+            constrName: this.symbols.lookupAdd('_'),
             typeName: type.typeNameId,
             typeDefined: type,
             where: where,
@@ -930,7 +931,7 @@ export class Schema {
         for (let i = 0; i < fields.length; i++) {
             const fieldDecl = fields[i];
             const fieldName = 'name' in fieldDecl ? (fieldDecl.name as string) : '';
-            const fieldNameIdx = fieldName ? symbolMap.lookupAdd(fieldName) : 0;
+            const fieldNameIdx = fieldName ? this.symbols.lookupAdd(fieldName) : 0;
 
             let fieldTypeExpr: TypeExpr;
             if (fieldDecl instanceof FieldAnonymousDef) {
@@ -976,6 +977,7 @@ export class Schema {
             const isConstraint = fieldDecl instanceof FieldCurlyExprDef;
 
             const field = new Field(
+                this.symbols.getName(fieldNameIdx),
                 i,
                 fieldNameIdx,
                 fieldTypeExpr,
@@ -1289,7 +1291,7 @@ export class Schema {
         if (expr instanceof NameExpr) {
             const exprName = expr.name as string;
             // Check in params
-            const nameId = symbolMap.lookup(exprName);
+            const nameId = this.symbols.lookup(exprName);
             if (params && params.has(nameId)) {
                 const { idx, isNat } = params.get(nameId)!;
                 const paramExpr = new TypeExpr(TypeExprType.Param, null, [], idx, isNat, isNat);
@@ -1331,7 +1333,7 @@ export class Schema {
                     return this.registerConstExpr(applyExpr);
                 }
                 // Check in params
-                const nameId = symbolMap.lookup(exprName);
+                const nameId = this.symbols.lookup(exprName);
                 if (params && params.has(nameId)) {
                     const { idx, isNat } = params.get(nameId)!;
                     const paramExpr = new TypeExpr(
@@ -1349,7 +1351,7 @@ export class Schema {
         }
 
         // Default: unknown
-        return new TypeExpr(TypeExprType.Type, null, [], 'name' in expr ? symbolMap.lookupAdd(expr.name) : 0);
+        return new TypeExpr(TypeExprType.Type, null, [], 'name' in expr ? this.symbols.lookupAdd(expr.name) : 0);
     }
 
     /**
@@ -1460,7 +1462,7 @@ export class Schema {
         isInteger: number = TypeInteger.None,
     ): Type {
         const typeId = this.types.length;
-        const type = Type.builtinType(name, typeId, args, producesNat, size, minSize, anyBits, isInteger);
+        const type = Type.builtinType(this.symbols, name, typeId, args, producesNat, size, minSize, anyBits, isInteger);
         this.types.push(type);
         this.builtinTypesNum += 1;
         return type;
@@ -1512,7 +1514,7 @@ export class Schema {
 
             let anonymousCount = 0;
             for (const constructor of type.constructors) {
-                const constructorName = symbolMap.getName(constructor.constrName) || '_';
+                const constructorName = this.symbols.getName(constructor.constrName) || '_';
 
                 const declaration = this.declarationText.get(constructor) ?? '';
                 const isAnonymous = constructorName === '_' || constructorName === '';
@@ -1521,7 +1523,7 @@ export class Schema {
 
                 const paramNameMap = new Map<number, string>();
                 for (const [index, field] of constructor.fields.entries()) {
-                    const name = field.name && symbolMap.getName(field.name);
+                    const name = field.name && this.symbols.getName(field.name);
                     if (name) paramNameMap.set(index, name);
                 }
 
@@ -1581,7 +1583,7 @@ export class Schema {
                 // Build parameter name map
                 for (const [index, f] of constructor.fields.entries()) {
                     if (f.name !== 0) {
-                        const fName = symbolMap.getName(f.name);
+                        const fName = this.symbols.getName(f.name);
                         if (fName) paramNameMap.set(index, fName);
                         if (fName && !variablesMap.has(fName)) {
                             const varObj: import('../types').TLBVariable = {
@@ -1608,7 +1610,7 @@ export class Schema {
                             void error;
                         }
                     } else {
-                        const fieldName = field.name === 0 ? undefined : symbolMap.getName(field.name);
+                        const fieldName = field.name === 0 ? undefined : this.symbols.getName(field.name);
                         try {
                             const fieldType = this.typeExprToTLBFieldType(field.type, paramNameMap);
                             fields.push({
@@ -1721,7 +1723,7 @@ export class Schema {
                 if (!expr.typeApplied) {
                     throw new Error('TypeExpr.Apply without typeApplied');
                 }
-                const typeName = symbolMap.getName(expr.typeApplied.typeNameId) || '?';
+                const typeName = this.symbols.getName(expr.typeApplied.typeNameId) || '?';
 
                 if (typeName === '#') {
                     return {
@@ -1830,7 +1832,7 @@ export class Schema {
                 }
 
                 const definition = expr.typeApplied.constructors[0];
-                const constructorName = definition && symbolMap.getName(definition.constrName);
+                const constructorName = definition && this.symbols.getName(definition.constrName);
                 if (typeName === 'VmStack' && constructorName === 'vm_stack') {
                     return { kind: 'TLBTupleType' };
                 }
@@ -2007,7 +2009,7 @@ export class Schema {
             }
             default: {
                 if (expr.typeApplied) {
-                    const typeName = symbolMap.getName(expr.typeApplied.typeNameId) || '?';
+                    const typeName = this.symbols.getName(expr.typeApplied.typeNameId) || '?';
                     return {
                         kind: 'TLBNamedType',
                         name: typeName,
@@ -2071,7 +2073,7 @@ export class Schema {
             }
             case TypeExprType.Apply: {
                 if (expr.typeApplied && expr.args.length === 2) {
-                    const typeName = symbolMap.getName(expr.typeApplied.typeNameId) || '?';
+                    const typeName = this.symbols.getName(expr.typeApplied.typeNameId) || '?';
                     const left = this.typeExprToTLBMathExpr(expr.args[0], paramNameMap);
                     const right = this.typeExprToTLBMathExpr(expr.args[1], paramNameMap);
 
@@ -2143,7 +2145,7 @@ export class Schema {
                 return { kind: 'TLBNumberExpr', n: 0 };
             }
             case TypeExprType.Type:
-                throw new Error('Unknown numeric identifier ' + (symbolMap.getName(expr.value) || '?'));
+                throw new Error('Unknown numeric identifier ' + (this.symbols.getName(expr.value) || '?'));
             default:
                 return { kind: 'TLBNumberExpr', n: 0 };
         }

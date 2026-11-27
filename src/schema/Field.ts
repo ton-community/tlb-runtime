@@ -1,6 +1,5 @@
 import { TypeExpr } from './TypeExpr';
 import { SrcLocation } from './SrcLocation';
-import { symbolMap } from './SymbolMap';
 
 export class Field {
     /** Field index */
@@ -31,6 +30,7 @@ export class Field {
     loc: SrcLocation;
 
     constructor(
+        readonly sourceName: string | undefined,
         fieldIdx: number,
         name: number,
         type: TypeExpr,
@@ -61,7 +61,7 @@ export class Field {
     }
 
     toString() {
-        const fieldName = this.name === 0 ? '_' : symbolMap.getName(this.name) || `field#${this.name}`;
+        const fieldName = this.name === 0 ? '_' : this.sourceName || `field#${this.name}`;
         const fieldParts: string[] = [];
         fieldParts.push(`field \`${fieldName}\`:`);
         fieldParts.push(this.type.toString());
