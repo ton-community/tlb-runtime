@@ -12,6 +12,10 @@ npm install @ton-community/tlb-runtime
 
 For new code, use `runtimeBy(schema)` and `decodeCell(schema, cell)` or `runtime.decodeCell(cell)`. The deprecated schema factory `parseTLB` uses the previous schema compiler to preserve its built-in types and normalized field names. A runtime created this way keeps that compiler when its schema changes. The previous names `parseTLB`, `parseCell` and `runtime.parseCell` remain available with deprecation annotations. Use `TypedCell` for decoded records and `DecodedCell` for field values in place of the deprecated `ParsedCell` type.
 
+Pair the deprecated free `encodeCell(schema, data)` with `parseCell(schema, cell)` for alpha.4 records. Pair `runtime.encodeCell(data)` with `runtime.decodeCell(cell)` or the free `decodeCell(schema, cell)` for current schemas. A declared `VarInteger 5` uses a five-bit length prefix in the legacy format and a three-bit prefix in the current format. Choose the compiler that wrote the cell when reading stored data.
+
+For a factory that returns a `Result`, use `TLBRuntime.compile(schema, config)` with the current compiler. `TLBRuntime.from(schema, config)` retains the alpha.4 compiler, including normalized field names such as `const0` and the original length prefix for declared `VarInteger` fields.
+
 With `autoText` enabled (the default), `bits` fields with a whole number of bytes decode as strings when their bytes form valid UTF-8 text. Tabs and line breaks are allowed. Invalid UTF-8 and other control characters keep the value as a `BitString`, preserving the original bytes for encoding.
 
 ### Simple

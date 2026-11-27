@@ -6,7 +6,7 @@ import { runtimeBy, TLBDataError } from './index';
 const byte = (n: number) => beginCell().storeUint(n, 8).endCell();
 
 it('rejects unsolved equalities and tries the next constructor', () => {
-    const r = runtimeBy('b$_ x:(## 8) = Parity; a$_ x:(## 8) { y:# } { 2 * y = x } = Parity;');
+    const r = runtimeBy('a$_ x:(## 8) { y:# } { 2 * y = x } = Parity; b$_ x:(## 8) = Parity;');
     expect(r.decodeCell(byte(4))).toMatchObject({ kind: 'Parity_a', y: 2 });
     expect(r.decodeCell(byte(5))).toEqual({ kind: 'Parity_b', x: 5 });
     const only = runtimeBy('_ x:(## 8) { y:# } { 2 * y = x } = Foo;');

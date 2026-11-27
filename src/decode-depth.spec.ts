@@ -1,4 +1,4 @@
-import { beginCell, Dictionary, serializeTuple } from '@ton/core';
+import { beginCell, Cell, Dictionary, serializeTuple, TupleItem } from '@ton/core';
 
 import { parseTLB, runtimeBy } from './index';
 import { TLBTVMReflection } from './tesdata';
@@ -53,4 +53,32 @@ it.each([parseTLB, runtimeBy])('reads 300 nested dictionaries with %p', (compile
     let node = runtime.decodeCell(wire, { rootType: 'D' });
     for (let i = 0; i < depth; i++) node = node.d.get(1)!;
     expect(node.d.size).toBe(0);
+});
+
+it('preserves the fields after an inline VmStack for every TON Core stack item', () => {
+    const runtime = runtimeBy<{ stack: TupleItem[]; marker: number; end: Cell }>(
+        TLBTVMReflection + '_ stack:VmStack marker:uint8 end:^Cell = Box;',
+    );
+    const marker = beginCell().storeUint(3, 2).endCell();
+    const unit: TupleItem = { type: 'null' };
+    const cases: TupleItem[][] = [
+        [],
+        [unit],
+        [{ type: 'int', value: -8n }],
+        [{ type: 'int', value: 1n << 80n }],
+        [{ type: 'nan' }],
+        ...(['cell', 'slice', 'builder'] as const).map((type) => [{ type, cell: marker }]),
+        ...[[], [unit], [unit, unit]].map((items) => [{ type: 'tuple' as const, items }]),
+    ];
+    for (const stack of cases) {
+        const wire = beginCell()
+            .storeSlice(serializeTuple(stack).beginParse())
+            .storeUint(71, 8)
+            .storeRef(marker)
+            .endCell();
+        const data = runtime.decodeCell(wire, { rootType: 'Box' });
+        expect(data.marker).toBe(71);
+        expect(data.end.equals(marker)).toBe(true);
+        expect(serializeTuple(data.stack).equals(serializeTuple(stack))).toBe(true);
+    }
 });

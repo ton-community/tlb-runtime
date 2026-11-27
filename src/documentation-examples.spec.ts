@@ -19,7 +19,7 @@ function definitions(names: RegExp) {
 }
 
 function check(schema: string, cell: Cell, rootType = 'Example') {
-    const runtime = unwrap(TLBRuntime.from(schema, { autoText: false }));
+    const runtime = unwrap(TLBRuntime.compile(schema, { autoText: false }));
     const data = runtime.decodeCell(cell, { rootType });
     expect(runtime.encodeCell(data).toBoc()).toEqual(cell.toBoc());
     return data;
@@ -81,7 +81,7 @@ describe('TON documentation examples', () => {
         const cell = bits('1')
             .storeRef(bits('00').storeRef(branch).storeRef(bits('1011100000000000001100001001').endCell()).endCell())
             .endCell();
-        const runtime = unwrap(TLBRuntime.from(TLBLib.HashmapE + '_ v:(HashmapE 8 uint16) = Example;'));
+        const runtime = unwrap(TLBRuntime.compile(TLBLib.HashmapE + '_ v:(HashmapE 8 uint16) = Example;'));
         const data = runtime.decodeCell(cell, { rootType: 'Example' });
         const entries = [
             [1, 777],
@@ -95,7 +95,7 @@ describe('TON documentation examples', () => {
     });
 
     it('rejects the spare bit patterns in a bounded natural', () => {
-        const runtime = unwrap(TLBRuntime.from('_ x:(#<= 4) = Example;'));
+        const runtime = unwrap(TLBRuntime.compile('_ x:(#<= 4) = Example;'));
         for (const x of [5, 6, 7]) {
             expect(() => runtime.decodeCell(beginCell().storeUint(x, 3).endCell(), { rootType: 'Example' })).toThrow();
             expect(() => runtime.encodeCell({ kind: 'Example', x })).toThrow();
@@ -104,7 +104,7 @@ describe('TON documentation examples', () => {
 
     it('rejects the issue vector missing augmented root and fork extras', () => {
         const runtime = unwrap(
-            TLBRuntime.from(
+            TLBRuntime.compile(
                 TLBLib.Grams +
                     TLBLib.HashmapAugE +
                     'fip$_ y:(## 5) = FixedIntParam; _$_ x:(HashmapAugE 16 Grams FixedIntParam) = Example;',
@@ -211,7 +211,7 @@ describe('TON documentation examples', () => {
         TLBLib.MsgAddress +
         definitions(/^(proto_|cap_list_|cap_is_wallet|dns_(next_resolver|storage_address|smc_address|adnl_address))/);
     it('preserves the DNS ADNL sample address as 256 raw bits with autoText enabled', () => {
-        const runtime = unwrap(TLBRuntime.from(dns, { autoText: true }));
+        const runtime = unwrap(TLBRuntime.compile(dns, { autoText: true }));
         const cell = Cell.fromBase64('te6cckEBAQEAKAAAS60BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHsBpCogujAahw==');
         const data = runtime.decodeCell(cell, { rootType: 'DNSRecord' });
         expect(data.adnl_addr).toBeInstanceOf(BitString);
@@ -225,7 +225,7 @@ describe('TON documentation examples', () => {
         ['invalid UTF-8', Buffer.from([0xc0, 0xaf]), null],
         ['control character', Buffer.from([0x61, 0x7f]), null],
     ] as const)('round-trips %s in an unaligned length-prefixed field', (_, bytes, text) => {
-        const runtime = unwrap(TLBRuntime.from('_ len:(## 7) text:(bits (len * 8)) = Message;'));
+        const runtime = unwrap(TLBRuntime.compile('_ len:(## 7) text:(bits (len * 8)) = Message;'));
         const cell = beginCell().storeUint(bytes.length, 7).storeBuffer(bytes).endCell();
         const data = runtime.decodeCell(cell, { rootType: 'Message' });
         if (text === null) {

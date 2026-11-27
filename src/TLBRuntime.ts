@@ -4,7 +4,7 @@ import {
     Cell,
     beginCell,
     Dictionary,
-    parseTupleItem,
+    parseTuple,
     serializeTuple,
     BitString,
     Address,
@@ -268,12 +268,16 @@ export class TLBRuntime<T = ParsedCell> {
     }
 
     static from<T = ParsedCell>(schema: string, config: Partial<TLBRuntimeConfig> = {}): Result<TLBRuntime<T>> {
+        return TLBRuntime.create(schema, config, compileLegacySchema);
+    }
+
+    static compile<T = TypedCell>(schema: string, config: Partial<TLBRuntimeConfig> = {}): Result<TLBRuntime<T>> {
         return TLBRuntime.create(schema, config);
     }
 
     /** @deprecated Use runtimeBy for schemas supported by the current parser. */
     static parseTLB<T = ParsedCell>(schema: string): TLBRuntime<T> {
-        const result = TLBRuntime.create<T>(schema, {}, compileLegacySchema);
+        const result = TLBRuntime.from<T>(schema);
         if (!result.success) throw new TLBSchemaError('Bad Schema', result.error);
         return result.value;
     }
@@ -536,14 +540,11 @@ export class TLBRuntime<T = ParsedCell> {
             }
         }
 
-        // Prefer the last declaration for tagless types; tagged constructors retain schema order.
-        const hasTagless = type.constructors.some((c) => c.tag.bitLen === 0);
-        const constructorsToTry = hasTagless
-            ? [
-                  ...type.constructors.filter((c) => c.tag.bitLen > 0),
-                  ...type.constructors.filter((c) => !c.tag.bitLen).reverse(),
-              ]
-            : type.constructors;
+        // A matching tag takes priority. Within each group, try declarations in schema order.
+        const constructorsToTry = [
+            ...type.constructors.filter((c) => c.tag.bitLen > 0),
+            ...type.constructors.filter((c) => !c.tag.bitLen),
+        ];
         const matchTags = type.constructors.length > 1;
 
         let lastError: Error | undefined;
@@ -2481,16 +2482,15 @@ export class TLBRuntime<T = ParsedCell> {
         return value;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private extractNumericProperty(obj: any, name: string): number | undefined {
-        if (!obj || typeof obj !== 'object') return undefined;
-        if (typeof obj[name] === 'number') return obj[name] as number;
-        for (const key of Object.keys(obj)) {
-            const v = (obj as Record<string, unknown>)[key];
-            if (v && typeof v === 'object') {
-                const r = this.extractNumericProperty(v, name);
-                if (typeof r === 'number') return r;
-            }
+    private extractNumericProperty(value: unknown, name: string): number | undefined {
+        if (!value || typeof value !== 'object') return undefined;
+        const proto = Object.getPrototypeOf(value);
+        if (proto !== Object.prototype && proto !== null && !Array.isArray(value)) return undefined;
+        const record = value as Record<string, unknown>;
+        if (typeof record[name] === 'number') return record[name];
+        for (const child of Object.values(record)) {
+            const found = this.extractNumericProperty(child, name);
+            if (found !== undefined) return found;
         }
         return undefined;
     }
@@ -3204,15 +3204,35 @@ export class TLBRuntime<T = ParsedCell> {
             }
 
             case 'TLBTupleType': {
-                const depth = slice.loadUint(24);
-                let list = slice;
-                const items = [];
-                for (let i = 0; i < depth; i++) {
-                    const tail = list.loadRef();
-                    items.push(parseTupleItem(list));
-                    list = tail.beginParse();
+                const items = parseTuple(slice.asCell());
+                slice.skip(24);
+                const top = items.at(-1);
+                if (!top) return items;
+
+                // The tail is referenced. Only the top stack item shares the enclosing slice.
+                slice.loadRef();
+                const tag = slice.loadUint(8);
+                switch (top.type) {
+                    case 'int':
+                        slice.skip(tag === 1 ? 64 : 7 + 257);
+                        break;
+                    case 'nan':
+                        slice.skip(8);
+                        break;
+                    case 'slice':
+                        slice.skip(26);
+                        slice.loadRef();
+                        break;
+                    case 'cell':
+                    case 'builder':
+                        slice.loadRef();
+                        break;
+                    case 'tuple':
+                        slice.skip(16);
+                        for (let i = 0; i < Math.min(2, top.items.length); i++) slice.loadRef();
+                        break;
                 }
-                return items.reverse();
+                return items;
             }
 
             default:
@@ -4742,11 +4762,11 @@ export class TLBRuntime<T = ParsedCell> {
 
 // Export a simple API for users
 export function runtimeBySchema<T = TypedCell>(schema: string): TLBRuntime<T> {
-    return unwrap(TLBRuntime.from(schema));
+    return unwrap(TLBRuntime.compile(schema));
 }
 
 export function runtimeBy<T = TypedCell>(schema: string | Cell, config?: Partial<TLBRuntimeConfig>): TLBRuntime<T> {
-    if (typeof schema === 'string') return unwrap(TLBRuntime.from<T>(schema, config));
+    if (typeof schema === 'string') return unwrap(TLBRuntime.compile<T>(schema, config));
     throw new TLBSchemaError('Not implemented');
 }
 

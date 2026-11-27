@@ -5,6 +5,7 @@ import {
     encodeCell,
     parseCell,
     ParsedCell,
+    runtimeBy,
     parseTLB,
     TLBDataError,
     TLBRuntime,
@@ -100,12 +101,14 @@ describe('public encoding of alpha.4 records', () => {
         const cell = beginCell().storeUint(15, 8).endCell();
         const parsed = parseCell(schema, cell);
         expect(parsed).toEqual({ kind: 'Foo', const0: 15 });
-        for (const record of [parsed, { kind: 'Foo', const0: 15 }, decodeCell(schema, cell)]) {
+        for (const record of [parsed, { kind: 'Foo', const0: 15 }]) {
             expect(encodeCell(schema, record).equals(cell)).toBe(true);
         }
         const both = '_ const:uint8 const0:uint8 = Foo;';
         const pair = beginCell().storeUint(2, 8).storeUint(3, 8).endCell();
-        expect(encodeCell(both, decodeCell(both, pair)).equals(pair)).toBe(true);
+        expect(encodeCell(both, parseCell(both, pair)).equals(pair)).toBe(true);
+        expect(runtimeBy(both).encodeCell(decodeCell(both, pair)).equals(pair)).toBe(true);
+        expect(() => encodeCell(schema, { kind: 'Foo', const: 15 })).toThrow();
         expect(() => encodeCell(both, { kind: 'Foo', const0: 3 })).toThrow();
     });
 });
@@ -199,6 +202,12 @@ describe.each(Object.entries(groupCorpusFlat))('legacy public helpers over %s', 
         }
         const data = parseCell(schema, wire);
         const encoded = encodeCell(schema, data);
+        if (kind === 'ParamConst_d') {
+            // Both a and d are tagless. Without root arguments a matches the first field.
+            expect(data).toEqual({ kind: 'ParamConst_a', n: 1 });
+            expect(encoded.equals(beginCell().storeUint(1, 32).endCell())).toBe(true);
+            return;
+        }
         // These fixtures lose root selection or dictionary extras during legacy decoding.
         if (['HashmapAugEUser', 'ParamConst_b', 'ParamConst_c', 'ParamDifNames_c', 'ParamDifNames_d'].includes(kind)) {
             expect(encoded.equals(parseTLB(schema).encodeCell(data))).toBe(true);
@@ -235,4 +244,21 @@ it('uses the legacy VarInteger length prefix in both free helpers', () => {
     const wire = beginCell().storeVarInt(-6, 5).endCell();
     expect(encodeCell(schema, { kind: 'A', v: -6 }).equals(wire)).toBe(true);
     expect(parseCell(schema, wire)).toEqual({ kind: 'A', v: -6n });
+    const current = runtimeBy(schema);
+    const currentWire = beginCell().storeVarInt(-6, 3).endCell();
+    expect(current.encodeCell({ kind: 'A', v: -6 }).equals(currentWire)).toBe(true);
+    expect(decodeCell(schema, currentWire)).toEqual({ kind: 'A', v: -6n });
+});
+
+it('preserves alpha.4 field names and signed length prefixes through TLBRuntime.from', () => {
+    const runtime = unwrap(TLBRuntime.from('_ const:uint8 = C;'));
+    expect(runtime.decodeCell(beginCell().storeUint(9, 8).endCell())).toEqual({ kind: 'C', const0: 9 });
+    const changed = unwrap(runtime.changeSchema(TLBStd.VarInteger + '_ v:(VarInteger 5) = A;'));
+    expect(changed.decodeCell(beginCell().storeVarInt(-6, 5).endCell())).toEqual({ kind: 'A', v: -6n });
+});
+
+it('treats native cells as opaque when looking for a numeric parameter', () => {
+    const child = beginCell().storeUint(9, 8).endCell();
+    const wire = beginCell().storeRef(child).endCell();
+    expect(parseCell('_ {type:#} c:^Cell = T type;', wire)).toEqual({ kind: 'T', c: child });
 });

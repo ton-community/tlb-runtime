@@ -1,6 +1,6 @@
 import { Cell, beginCell, Address, ExternalAddress, Dictionary, Builder } from '@ton/core';
 
-import { decodeCell, encodeCell, replacer } from './parser';
+import { decodeCell, encodeCell, parseCell, replacer } from './parser';
 import { groupCorpusFlat, TLBStd, TLBLib } from './tesdata';
 import { TLBRuntime, runtimeBy, TLBRuntimeError, TypedCell, TypeCell } from './TLBRuntime';
 import { TLBDataError, TLBSchemaError } from './errors';
@@ -135,7 +135,7 @@ describe('TLBRuntime', () => {
 
         it('create runtime for invalid schema', () => {
             const invalidSchema = '_';
-            const result = TLBRuntime.from(invalidSchema) as Failure;
+            const result = TLBRuntime.compile(invalidSchema) as Failure;
             expect(result.success).toBe(false);
             expect(result.error).toBeInstanceOf(TLBSchemaError);
             expect(result.error.message).toEqual(
@@ -561,17 +561,11 @@ describe('TLBRuntime', () => {
                 expect(dict.get(7)).toEqual(9);
             });
 
-            it('deserializes types with tagless constructors in reverse order', () => {
-                // Test that tagless constructors are tried in reverse order (last declared first)
-                const schema = 'a$_ x:(## 8) = TaglessType; b$_ y:(## 16) = TaglessType; c$_ z:(## 32) = TaglessType;';
-                // Create data for constructor 'c' (32 bits)
-                const builder = beginCell();
-                builder.storeUint(0x12345678, 32);
-                const boc = builder.endCell().toBoc().toString('base64');
-                const result = decodeCell(schema, boc);
-                // Should match constructor 'c' first (last declared)
-                expect(result.kind).toEqual('TaglessType_c');
-                expect(result.z).toEqual(0x12345678);
+            it.each([parseCell, decodeCell])('tries tagless constructors in declaration order', (read) => {
+                const schema = 'full$_ op:uint32 query_id:uint64 = Msg; short$_ op:uint32 = Msg;';
+                const wire = beginCell().storeUint(42, 32).storeUint(7, 64).endCell();
+                expect(read(schema, wire)).toEqual({ kind: 'Msg_full', op: 42, query_id: 7n });
+                expect(read(schema, beginCell().storeUint(42, 32).endCell())).toEqual({ kind: 'Msg_short', op: 42 });
             });
 
             it('serializes HashmapOptionType with empty dictionary (hme_empty$0)', () => {
@@ -963,7 +957,7 @@ describe('TLBRuntime', () => {
                 it('handles Type parameter correctly in schema', () => {
                     // Container expects X as parameter
                     const schema = 'a$_ {X:Type} value:X = Container X;';
-                    const runtimeResult = TLBRuntime.from(schema);
+                    const runtimeResult = TLBRuntime.compile(schema);
                     // Schema parsing should succeed
                     expect(runtimeResult.success).toBe(true);
                     if (runtimeResult.success) {

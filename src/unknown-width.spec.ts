@@ -4,7 +4,7 @@ import { runtimeBy, TLBRuntime, TLBSchemaError } from './index';
 
 it('rejects unknown width names at compilation and identifies the field', () => {
     const schema = '_ v:(uint typo) end:uint8 = Ex;';
-    expect(TLBRuntime.from(schema)).toMatchObject({ success: false, error: expect.any(TLBSchemaError) });
+    expect(TLBRuntime.compile(schema)).toMatchObject({ success: false, error: expect.any(TLBSchemaError) });
     expect(() => runtimeBy(schema)).toThrow(/field v in Ex.*typo/);
 });
 
