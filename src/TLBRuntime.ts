@@ -746,7 +746,7 @@ export class TLBRuntime<T = ParsedCell> {
                 if (!directBindings.has(name)) variables.delete(name);
             }
         }
-        this.bindResultArguments(resultArguments, variables, type.name);
+        this.bindResultArguments(resultArguments, variables, type.name, false);
         for (const [name, value] of variables) {
             if (typeof value === 'number') childContext.setNat(name, value);
         }
@@ -1756,6 +1756,14 @@ export class TLBRuntime<T = ParsedCell> {
                 computedImplicitValues.set(name, n);
                 childContext.setNat(name, n);
             });
+        const bindOutput = (name: string, n: number) => {
+            const previous = variables.get(name);
+            if (previous !== undefined && BigInt(previous) !== BigInt(n))
+                throw new TLBDataError(`Conflicting output parameter ${name}`);
+            variables.set(name, n);
+            childContext.setNat(name, n);
+        };
+        solveConstraints();
         const finishField = (field: TLBField, fieldName: string) => {
             // A reference changes the wire location but preserves the result arguments of its type.
             let resultType = field.fieldType;
@@ -1780,8 +1788,7 @@ export class TLBRuntime<T = ParsedCell> {
                         }
 
                         if (arg.kind === 'TLBNegatedType') {
-                            variables.set(arg.variableName, resVal);
-                            childContext.setNat(arg.variableName, resVal);
+                            bindOutput(arg.variableName, resVal);
                         }
                         if (expr) {
                             // Handle simple variable binding: ~var or var
@@ -1805,14 +1812,14 @@ export class TLBRuntime<T = ParsedCell> {
                                         actualVarName = constructor.variables[idx - 1].name;
                                     }
                                 }
-                                variables.set(actualVarName, resVal);
-                                childContext.setNat(actualVarName, resVal);
+                                bindOutput(actualVarName, resVal);
                             }
                         }
                     }
                 }
             }
 
+            if (resultArguments.length) this.bindResultArguments(resultArguments, variables, type.name, false);
             // Phase 3: Interleave constraint evaluation after each field
             // This allows computed values to be available for subsequent field arguments
             solveConstraints();
@@ -2039,6 +2046,7 @@ export class TLBRuntime<T = ParsedCell> {
         // Check constraints and compute implicit values
         const evaluator = new MathExprEvaluator(variables);
         solveConstraints();
+        this.bindResultArguments(resultArguments, variables, type.name);
         for (const constraint of constructor.constraints) {
             try {
                 const result = evaluator.evaluate(constraint);
@@ -2444,7 +2452,7 @@ export class TLBRuntime<T = ParsedCell> {
         }
 
         // Try to propagate parameter values from nested typed values if present (e.g., x: (Unary ~n) gives n)
-        if (value && typeof value === 'object') {
+        if (!ctxConstructor.resultParameters && value && typeof value === 'object') {
             for (const param of ctxConstructor.parameters) {
                 if (
                     param.variable?.type === '#' &&
@@ -2666,7 +2674,9 @@ export class TLBRuntime<T = ParsedCell> {
                         ? ctxArgs[ctxConstructor.parameters.indexOf(parameter)]
                         : undefined);
                 // A concrete argument can have the same name as the formal parameter.
-                if (argument && !(argument.kind === 'TLBNamedType' && argument.name === fieldType.name)) {
+                if (argument?.kind === 'TLBNamedType' && argument.name === fieldType.name) {
+                    fieldType = argument;
+                } else if (argument) {
                     return yield* this.deserializeFieldType(
                         argument,
                         slice,
@@ -3396,6 +3406,7 @@ export class TLBRuntime<T = ParsedCell> {
                 this.solveConstraints(constructor.constraints, variables);
             }
         };
+        this.solveConstraints(constructor.constraints, variables);
         writeFields(constructor.fields, builder);
 
         // Handle case where codegen doesn't generate fields but declaration has them
@@ -4066,9 +4077,8 @@ export class TLBRuntime<T = ParsedCell> {
         }
 
         // Check constraints
+        this.solveConstraints(constructor.constraints, variables);
         for (const constraint of constructor.constraints) {
-            const solved = this.solveEquality(constraint, variables, evaluator);
-            if (solved) variables.set(solved.name, solved.value);
             if (evaluator.evaluate(constraint) !== 1) {
                 throw new TLBDataError(`Constraint failed for type ${type.name}, constructor ${constructor.name}`);
             }
@@ -4590,6 +4600,7 @@ export class TLBRuntime<T = ParsedCell> {
         resultArguments: { expression: _TLBMathExpr; expected: number }[],
         variables: Map<string, number | bigint>,
         typeName: string,
+        final = true,
     ): void {
         const evaluator = new MathExprEvaluator(variables);
         let solvedArgument: boolean;
@@ -4613,7 +4624,10 @@ export class TLBRuntime<T = ParsedCell> {
             }
         } while (solvedArgument);
         for (const { expression, expected } of resultArguments) {
-            const unknown = [...this.extractVariablesFromExpr(expression)].find((name) => !variables.has(name));
+            const unknown = [...this.extractVariablesFromExpr(expression)].find(
+                (name) => variables.get(name) === undefined,
+            );
+            if (unknown && !final) continue;
             if (unknown) throw new TLBDataError(`Cannot infer parameter ${unknown} for ${typeName}`);
             const actual = evaluator.evaluate(expression);
             if (actual !== expected) {

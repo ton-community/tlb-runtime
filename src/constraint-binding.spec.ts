@@ -54,3 +54,49 @@ it.each([
     expect(data).toMatchObject(generic ? { w: record } : record);
     expect(r.encodeCell(data).equals(wire)).toBe(true);
 });
+
+const unary = 'zero$0 = Unary ~0; succ$1 {n:#} x:(Unary ~n) = Unary ~(n + 1);';
+
+it('checks a concrete output argument against the decoded Unary length', () => {
+    const r = runtimeBy(unary + '_ u:(Unary 2) = Box;');
+    const read = (n: number, bits: number) =>
+        r.decodeCell(beginCell().storeUint(n, bits).endCell(), { rootType: 'Box' });
+    expect(read(6, 3)).toMatchObject({ kind: 'Box' });
+    expect(() => read(2, 2)).toThrow(TLBDataError);
+});
+
+it('requires both children to agree on the same output variable', () => {
+    const r = runtimeBy(unary + '_ {n:#} a:(Unary ~n) b:(Unary ~n) = Same;');
+    const read = (b: number, bits: number) =>
+        r.decodeCell(beginCell().storeUint(6, 3).storeUint(b, bits).endCell(), { rootType: 'Same' });
+    expect(read(6, 3)).toMatchObject({ n: 2 });
+    expect(() => read(2, 2)).toThrow(/Conflicting output parameter/);
+});
+
+it('derives the width of the first wire field from an argument', () => {
+    const r = runtimeBy('_ {n:#} {m:#} { m = n + 1 } x:(uint m) = Box n; _ b:(Box 3) = Root;');
+    const wire = beginCell().storeUint(13, 4).endCell();
+    expect(r.decodeCell(wire)).toMatchObject({ b: { m: 4, x: 13 } });
+    expect(r.encodeCell({ kind: 'Root', b: { x: 13 } }).equals(wire)).toBe(true);
+});
+
+it('solves chained equalities when the constructor has no wire fields', () => {
+    const r = runtimeBy('_ {k:#} {n:#} {m:#} { n = m + 1 } { m = k + 1 } = Foo k; _ f:(Foo 5) = Bar;');
+    const wire = beginCell().endCell();
+    expect(r.decodeCell(wire)).toMatchObject({ f: { k: 5, m: 6, n: 7 } });
+    expect(r.encodeCell({ kind: 'Bar', f: { kind: 'Foo' } }).equals(wire)).toBe(true);
+});
+
+it('keeps numeric arguments on a type sharing its formal parameter name', () => {
+    const r = runtimeBy('_ {n:#} v:(uint n) = X n; _ {X:Type} a:X = Wrap X; _ w:(Wrap (X 4)) tail:uint8 = Root;');
+    const wire = beginCell().storeUint(13, 4).storeUint(85, 8).endCell();
+    const data = r.decodeCell(wire, { rootType: 'Root' });
+    expect(data).toMatchObject({ w: { a: { n: 4, v: 13 } }, tail: 85 });
+    expect(r.encodeCell(data).equals(wire)).toBe(true);
+});
+
+it('validates a compound result after reading both wire operands', () => {
+    const r = runtimeBy('_ x:(## 4) y:(## 4) = Sum (x + y); _ s:(Sum 7) = Box;');
+    expect(r.decodeCell(byte(0x34), { rootType: 'Box' })).toMatchObject({ s: { x: 3, y: 4 } });
+    expect(() => r.decodeCell(byte(0x35), { rootType: 'Box' })).toThrow(TLBDataError);
+});
