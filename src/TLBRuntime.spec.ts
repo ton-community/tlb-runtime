@@ -973,7 +973,13 @@ describe('TLBRuntime', () => {
 it.each([parseCell, decodeCell])('keeps a read failure on the inferred root', (read) => {
     const byte = beginCell().storeUint(7, 8).endCell();
     expect(() => read('unit$_ = Unit; _ x:uint32 = Root;', byte)).toThrow(TLBDataError);
-    expect(() => read('unit$_ = Unit; _ x:uint8 ref:^Cell = Root;', byte)).toThrow(TLBDataError);
-    expect(() => read('unit$_ = Unit; root#0700 = Root;', byte)).toThrow(TLBDataError);
+    expect(read('unit$_ = Unit; _ x:uint8 ref:^Cell = Root;', byte)).toEqual({ kind: 'Unit' });
+    expect(() => read('unit$_ = Unit; root#07 ref:^Cell = Root;', byte)).toThrow(TLBDataError);
+    expect(read('a$10 = A; b$1010 = B;', beginCell().storeUint(2, 2).endCell())).toEqual({ kind: 'A' });
+    const empty = beginCell().endCell();
+    expect(read('_ a:^Cell = Inner; _ i:^Inner = Outer;', beginCell().storeRef(empty).endCell())).toEqual({
+        kind: 'Inner',
+        a: empty,
+    });
     expect(read('unit$_ = Unit; root#ff = Root;', byte)).toEqual({ kind: 'Unit' });
 });

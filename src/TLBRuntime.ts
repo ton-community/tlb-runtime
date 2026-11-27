@@ -146,6 +146,7 @@ function canUseLegacyAnon0(leaf: TLBField, fields: TLBField[]): boolean {
     });
 }
 
+class ConstructorMismatch extends TLBDataError {}
 class UnsupportedAddressError extends TLBDataError {}
 
 function readAddress(slice: Slice, name = 'MsgAddress') {
@@ -398,12 +399,13 @@ export class TLBRuntime<T = ParsedCell> {
             if (!type || type.isAnon) continue;
             const result = this.runDecode(this.deserializeType(type, slice.clone(), []));
             if (result.success) return result;
-            // Only an incompatible root tag rules this type out. A matching prefix may be truncated.
-            const compatible = type.constructors.some(({ tag }) => {
-                const bits = Math.min(slice.remainingBits, tag.bitLen);
-                return bits === 0 || slice.preloadUintBig(bits) === BigInt(tag.binary) >> BigInt(tag.bitLen - bits);
-            });
-            if (compatible) {
+            const tagged = type.constructors.some(
+                ({ tag }) =>
+                    tag.bitLen > 0 &&
+                    slice.remainingBits >= tag.bitLen &&
+                    slice.preloadUintBig(tag.bitLen) === BigInt(tag.binary),
+            );
+            if (tagged || !(result.error instanceof ConstructorMismatch)) {
                 if (result.error instanceof TLBDataError) return result;
                 return {
                     success: false,
@@ -588,13 +590,13 @@ export class TLBRuntime<T = ParsedCell> {
                     return result;
                 }
                 if (!result.success && result.error) {
-                    lastError = result.error;
+                    if (!(result.error instanceof ConstructorMismatch) || !lastError) lastError = result.error;
                 }
             } catch (e) {
                 if (e instanceof DecodeDepthError || e instanceof RangeError) throw e;
                 // Try next constructor on failure
                 if (e instanceof Error) {
-                    lastError = e;
+                    if (!(e instanceof ConstructorMismatch) || !lastError) lastError = e;
                 }
             }
         }
@@ -602,7 +604,8 @@ export class TLBRuntime<T = ParsedCell> {
         return {
             success: false,
             error:
-                lastError ?? new TLBDataError(`Failed to deserialize type ${type.name}: no matching constructor found`),
+                lastError ??
+                new ConstructorMismatch(`Failed to deserialize type ${type.name}: no matching constructor found`),
         };
     }
 
@@ -634,7 +637,7 @@ export class TLBRuntime<T = ParsedCell> {
             if (slice.remainingBits < len) {
                 return {
                     success: false,
-                    error: new TLBDataError(`Not enough bits to read tag for ${kind}`),
+                    error: new ConstructorMismatch(`Not enough bits to read tag for ${kind}`),
                 };
             }
             // Read tag bits from slice (consume them now since we're committed to this constructor)
@@ -643,7 +646,7 @@ export class TLBRuntime<T = ParsedCell> {
             if (tagValue !== expectedTagValue) {
                 return {
                     success: false,
-                    error: new TLBDataError(
+                    error: new ConstructorMismatch(
                         `Failed to deserialize type ${kind}: tag mismatch (got ${tagValue}, expected ${expectedTagValue})`,
                     ),
                 };
@@ -1641,7 +1644,7 @@ export class TLBRuntime<T = ParsedCell> {
                 if (slice.remainingRefs === 0) {
                     return {
                         success: false,
-                        error: new TLBDataError(`No more references available for field ${fieldName}`),
+                        error: new ConstructorMismatch(`No more references available for field ${fieldName}`),
                     };
                 }
 
@@ -1670,7 +1673,7 @@ export class TLBRuntime<T = ParsedCell> {
                 if (slice.remainingRefs === 0) {
                     return {
                         success: false,
-                        error: new TLBDataError(`No more references available for field ${fieldName}`),
+                        error: new ConstructorMismatch(`No more references available for field ${fieldName}`),
                     };
                 }
 
@@ -1879,7 +1882,7 @@ export class TLBRuntime<T = ParsedCell> {
                 if (slice.remainingRefs === 0) {
                     return {
                         success: false,
-                        error: new TLBDataError(`No more references available for field ${fieldName}`),
+                        error: new ConstructorMismatch(`No more references available for field ${fieldName}`),
                     };
                 }
                 const ref = slice.loadRef();
@@ -2352,7 +2355,9 @@ export class TLBRuntime<T = ParsedCell> {
                 if (slice.remainingRefs === 0) {
                     return {
                         success: false,
-                        error: new TLBDataError(`No more references available for inline cell field ${fieldName}`),
+                        error: new ConstructorMismatch(
+                            `No more references available for inline cell field ${fieldName}`,
+                        ),
                     };
                 }
 
@@ -3016,7 +3021,11 @@ export class TLBRuntime<T = ParsedCell> {
                           : nestedContext,
                 );
                 if (!typeResult.success) {
-                    if (typeResult.error instanceof UnsupportedAddressError) throw typeResult.error;
+                    if (
+                        typeResult.error instanceof ConstructorMismatch ||
+                        typeResult.error instanceof UnsupportedAddressError
+                    )
+                        throw typeResult.error;
                     // Log useful context for debugging
                     const argsDebug = forwardedArgs
                         .map((arg) => {
@@ -3109,7 +3118,7 @@ export class TLBRuntime<T = ParsedCell> {
 
             case 'TLBCellInsideType': {
                 if (slice.remainingRefs === 0) {
-                    throw new TLBDataError('No more references available for TLBCellInsideType');
+                    throw new ConstructorMismatch('No more references available for TLBCellInsideType');
                 }
                 const ref = slice.loadRef();
                 if (fieldType.value.kind === 'TLBCellType') {
@@ -3129,7 +3138,7 @@ export class TLBRuntime<T = ParsedCell> {
             case 'TLBRefType': {
                 // Cell reference: ^Type (where Type can be Cell or a user type name)
                 if (slice.remainingRefs === 0) {
-                    throw new TLBDataError('No more references available for TLBRefType');
+                    throw new ConstructorMismatch('No more references available for TLBRefType');
                 }
                 const ref = slice.loadRef();
 

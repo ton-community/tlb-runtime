@@ -117,3 +117,10 @@ it.each([
     expect(compile).toThrow(TLBSchemaError);
     expect(compile).toThrow(new RegExp('Invalid constraint in A.*Unknown numeric identifier ' + name));
 });
+
+it.each(['n:(## Bar)', 'b:(bits Bar)', 'n:(## 8) { n = Bar }', 'd:(HashmapE Bar uint8)'])(
+    'rejects a declared type in the numeric position of %s',
+    (field) => {
+        expect(() => unwrap(Schema.from(`_ x:uint8 = Bar; _ ${field} = A;`))).toThrow(/Cannot use Bar as a number/);
+    },
+);

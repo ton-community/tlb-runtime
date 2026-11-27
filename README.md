@@ -16,7 +16,7 @@ Pair the deprecated free `encodeCell(schema, data)` with `parseCell(schema, cell
 
 For a factory that returns a `Result`, use `TLBRuntime.compile(schema, config)` with the current compiler. `TLBRuntime.from(schema, config)` retains the alpha.4 compiler, including normalized field names such as `const0` and the original length prefix for declared `VarInteger` fields.
 
-When the inferred root has a compatible tag, a failed read reports an error. Pass `{ rootType }` to `runtime.decodeCell` to read a different declaration explicitly, including an earlier tagless root.
+Root inference tries earlier declarations after an incomplete tag or a missing reference in a tagless candidate. A failed payload read or a fully matched tag with invalid data reports an error. Pass `{ rootType }` to `runtime.decodeCell` to read a different declaration explicitly, including an earlier tagless root.
 
 With `autoText` enabled (the default), `bits` fields with a whole number of bytes decode as strings when their bytes form valid UTF-8 text. Tabs and line breaks are allowed. Invalid UTF-8 and other control characters keep the value as a `BitString`, preserving the original bytes for encoding.
 

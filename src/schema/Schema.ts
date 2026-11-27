@@ -2101,7 +2101,7 @@ export class Schema {
                             operation = '!=';
                             break;
                         default:
-                            return { kind: 'TLBNumberExpr', n: 0 };
+                            throw new Error(`Cannot use ${typeName} as a number`);
                     }
 
                     return {
@@ -2111,7 +2111,7 @@ export class Schema {
                         right: right,
                     };
                 }
-                return { kind: 'TLBNumberExpr', n: 0 };
+                break;
             }
             case TypeExprType.MulConst: {
                 if (expr.args.length >= 2) {
@@ -2133,7 +2133,7 @@ export class Schema {
                         right: right,
                     };
                 }
-                return { kind: 'TLBNumberExpr', n: 0 };
+                break;
             }
             case TypeExprType.GetBit: {
                 if (expr.args.length > 0) {
@@ -2145,12 +2145,11 @@ export class Schema {
                         right: { kind: 'TLBNumberExpr', n: expr.value },
                     };
                 }
-                return { kind: 'TLBNumberExpr', n: 0 };
+                break;
             }
             case TypeExprType.Type:
                 throw new Error('Unknown numeric identifier ' + (this.symbols.getName(expr.value) || '?'));
-            default:
-                return { kind: 'TLBNumberExpr', n: 0 };
         }
+        throw new Error(`Cannot use ${expr.typeApplied?.name ?? TypeExprType[expr.tp]} as a number`);
     }
 }

@@ -201,7 +201,7 @@ describe.each(Object.entries(groupCorpusFlat))('legacy public helpers over %s', 
             return;
         }
         // These fixtures encode an earlier root. The inferred last root fails to read them.
-        if (['ParamCell', 'LimitNat', 'VarUIntegerUser'].includes(kind)) {
+        if (['LimitNat', 'VarUIntegerUser'].includes(kind)) {
             expect(() => parseCell(schema, wire)).toThrow(TLBDataError);
             const data = parseTLB(schema).decodeCell(wire, { rootType: kind });
             expect(encodeCell(schema, data).equals(wire)).toBe(true);
