@@ -218,3 +218,21 @@ it.each([
     const wire = beginCell().storeUint(value, bits).endCell();
     expect(encodeCell(schema, parseCell(schema, wire)).equals(wire)).toBe(true);
 });
+
+it.each([
+    ['e$0 = E;', 'E', 'E'],
+    [TLBStd.Maybe, '(Maybe uint8)', 'Maybe_nothing'],
+])('reads only the fields of a fieldless %s constructor on a shared line', (declaration, type, kind) => {
+    const schema = `_ x:uint8 = Foo; ${declaration.trim()} _ e:${type} y:uint8 = Root;`;
+    const data = { kind: 'Root', e: { kind }, y: 171 };
+    const prefix = () => beginCell().storeBit(0).storeUint(171, 8);
+    expect(parseCell(schema, prefix().storeUint(205, 8).endCell())).toEqual(data);
+    expect(encodeCell(schema, data).equals(prefix().endCell())).toBe(true);
+});
+
+it('uses the legacy VarInteger length prefix in both free helpers', () => {
+    const schema = TLBStd.VarInteger + '_ v:(VarInteger 5) = A;';
+    const wire = beginCell().storeVarInt(-6, 5).endCell();
+    expect(encodeCell(schema, { kind: 'A', v: -6 }).equals(wire)).toBe(true);
+    expect(parseCell(schema, wire)).toEqual({ kind: 'A', v: -6n });
+});

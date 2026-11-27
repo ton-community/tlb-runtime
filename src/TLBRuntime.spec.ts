@@ -755,7 +755,7 @@ describe('TLBRuntime', () => {
             it('serializes VarIntegerUser with VarInteger 5 (signed)', () => {
                 const schema = `${TLBStd.VarInteger} _ v:(VarInteger 5) = VarIntegerUser;`;
                 const data = { kind: 'VarIntegerUser', v: -6n };
-                const boc = encodeCell(schema, data).toBoc().toString('hex');
+                const boc = runtimeBy(schema).encodeCell(data).toBoc().toString('hex');
                 expect(boc).toBe('b5ee9c724101010100040000033f501731a547');
             });
 
@@ -795,7 +795,7 @@ describe('TLBRuntime', () => {
 
         describe.each(Object.keys(groupCorpusFlat))('serialize %s', (group) => {
             it.each(groupCorpusFlat[group])('serialize %s', (schema, data, expected) => {
-                const actual = encodeCell(schema, data).toBoc().toString('hex');
+                const actual = runtimeBy(schema).encodeCell(data).toBoc().toString('hex');
                 expect(actual).toEqual(expected);
             });
         });

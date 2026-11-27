@@ -1,5 +1,6 @@
 import { beginCell } from '@ton/core';
 
+import { TLBHmLabel } from './tesdata';
 import { runtimeBy, TLBDataError } from './index';
 
 const byte = (n: number) => beginCell().storeUint(n, 8).endCell();
@@ -99,4 +100,20 @@ it('validates a compound result after reading both wire operands', () => {
     const r = runtimeBy('_ x:(## 4) y:(## 4) = Sum (x + y); _ s:(Sum 7) = Box;');
     expect(r.decodeCell(byte(0x34), { rootType: 'Box' })).toMatchObject({ s: { x: 3, y: 4 } });
     expect(() => r.decodeCell(byte(0x35), { rootType: 'Box' })).toThrow(TLBDataError);
+});
+
+it.each(['x', '~x'])('checks the decoded wire field against concrete result %s', (result) => {
+    const r = runtimeBy(`foo$0 x:(## 8) = Bar ${result}; _ b:(Bar 5) = Box;`);
+    const read = (x: number) => r.decodeCell(beginCell().storeBit(0).storeUint(x, 8).endCell(), { rootType: 'Box' });
+    expect(read(5)).toMatchObject({ b: { x: 5 } });
+    expect(() => read(99)).toThrow(TLBDataError);
+    expect(() => r.encodeCell({ kind: 'Box', b: { x: 99 } })).toThrow(TLBDataError);
+});
+
+it('checks the output length of a long HmLabel against its concrete argument', () => {
+    const r = runtimeBy(TLBHmLabel + '_ label:(HmLabel 2 4) = Box;');
+    const wire = (n: number) => beginCell().storeUint(2, 2).storeUint(n, 3).storeUint(0, n).endCell();
+    const data = r.decodeCell(wire(2), { rootType: 'Box' });
+    expect(r.encodeCell(data).equals(wire(2))).toBe(true);
+    expect(() => r.decodeCell(wire(3), { rootType: 'Box' })).toThrow(TLBDataError);
 });
