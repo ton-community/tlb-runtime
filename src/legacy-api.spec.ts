@@ -200,6 +200,18 @@ describe.each(Object.entries(groupCorpusFlat))('legacy public helpers over %s', 
             expect(() => parseCell(schema, wire)).toThrow(TLBDataError);
             return;
         }
+        // These fixtures encode an earlier root. The inferred last root fails to read them.
+        if (['ParamCell', 'LimitNat', 'VarUIntegerUser'].includes(kind)) {
+            expect(() => parseCell(schema, wire)).toThrow(TLBDataError);
+            const data = parseTLB(schema).decodeCell(wire, { rootType: kind });
+            expect(encodeCell(schema, data).equals(wire)).toBe(true);
+            return;
+        }
+        // The corpus uses the current layout for these two roots.
+        if (kind === 'HashmapAugEUser' || kind === 'VarIntegerUser') {
+            expect(() => parseCell(schema, wire)).toThrow(TLBDataError);
+            return;
+        }
         const data = parseCell(schema, wire);
         const encoded = encodeCell(schema, data);
         if (kind === 'ParamConst_d') {
@@ -208,8 +220,8 @@ describe.each(Object.entries(groupCorpusFlat))('legacy public helpers over %s', 
             expect(encoded.equals(beginCell().storeUint(1, 32).endCell())).toBe(true);
             return;
         }
-        // These fixtures lose root selection or dictionary extras during legacy decoding.
-        if (['HashmapAugEUser', 'ParamConst_b', 'ParamConst_c', 'ParamDifNames_c', 'ParamDifNames_d'].includes(kind)) {
+        // These fixtures lose root selection during legacy decoding.
+        if (['ParamConst_b', 'ParamConst_c', 'ParamDifNames_c', 'ParamDifNames_d'].includes(kind)) {
             expect(encoded.equals(parseTLB(schema).encodeCell(data))).toBe(true);
         } else {
             expect(encoded.equals(wire)).toBe(true);

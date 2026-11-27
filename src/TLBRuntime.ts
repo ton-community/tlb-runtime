@@ -397,8 +397,19 @@ export class TLBRuntime<T = ParsedCell> {
             const type = this.typeMap.get(name);
             if (!type || type.isAnon) continue;
             const result = this.runDecode(this.deserializeType(type, slice.clone(), []));
-            if (result.success || (name === this.lastTypeName && result.error instanceof UnsupportedAddressError))
-                return result;
+            if (result.success) return result;
+            // Only an incompatible root tag rules this type out. A matching prefix may be truncated.
+            const compatible = type.constructors.some(({ tag }) => {
+                const bits = Math.min(slice.remainingBits, tag.bitLen);
+                return bits === 0 || slice.preloadUintBig(bits) === BigInt(tag.binary) >> BigInt(tag.bitLen - bits);
+            });
+            if (compatible) {
+                if (result.error instanceof TLBDataError) return result;
+                return {
+                    success: false,
+                    error: new TLBDataError(`Cannot decode ${name}: ${result.error.message}`, result.error),
+                };
+            }
         }
         return {
             success: false,

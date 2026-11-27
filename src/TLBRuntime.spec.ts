@@ -969,3 +969,11 @@ describe('TLBRuntime', () => {
         });
     });
 });
+
+it.each([parseCell, decodeCell])('keeps a read failure on the inferred root', (read) => {
+    const byte = beginCell().storeUint(7, 8).endCell();
+    expect(() => read('unit$_ = Unit; _ x:uint32 = Root;', byte)).toThrow(TLBDataError);
+    expect(() => read('unit$_ = Unit; _ x:uint8 ref:^Cell = Root;', byte)).toThrow(TLBDataError);
+    expect(() => read('unit$_ = Unit; root#0700 = Root;', byte)).toThrow(TLBDataError);
+    expect(read('unit$_ = Unit; root#ff = Root;', byte)).toEqual({ kind: 'Unit' });
+});

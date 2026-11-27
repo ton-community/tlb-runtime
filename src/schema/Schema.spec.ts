@@ -108,3 +108,12 @@ it('isolates symbol IDs and names across schema compilations', () => {
     expect(first.getTLBTypes().get('First')!.constructors[0].fields[0].name).toBe('left');
     expect(second.getTLBTypes().get('Second')!.constructors[0].fields[0].name).toBe('right');
 });
+
+it.each([
+    ['_ n:(## 8) { N <= 5 } = A;', 'N'],
+    ['_ { n <= 5 } n:(## 8) = A;', 'n'],
+])('rejects an unresolved constraint in %s', (code, name) => {
+    const compile = () => unwrap(Schema.from(code));
+    expect(compile).toThrow(TLBSchemaError);
+    expect(compile).toThrow(new RegExp('Invalid constraint in A.*Unknown numeric identifier ' + name));
+});

@@ -1607,7 +1607,10 @@ export class Schema {
                             const constraintExpr = this.typeExprToTLBMathExpr(field.type, paramNameMap);
                             constraints.push(constraintExpr);
                         } catch (error) {
-                            void error;
+                            const reason = error instanceof Error ? error.message : String(error);
+                            throw new TLBSchemaError(
+                                `Invalid constraint in ${type.name} at ${field.loc.line}:${field.loc.column}: ${reason}`,
+                            );
                         }
                     } else {
                         const fieldName = field.name === 0 ? undefined : this.symbols.getName(field.name);
