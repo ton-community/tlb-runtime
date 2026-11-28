@@ -128,3 +128,21 @@ it('keeps anonymous records portable across unrelated schema declarations', () =
     expect(extended.encodeCell(original).equals(wire)).toBe(true);
     expect(extended.encodeCell({ kind: 'C', r: { kind: 'TYPE_1553', y: 2 } }).equals(wire)).toBe(true);
 });
+
+it('keeps numeric outputs aligned after a concrete type argument', () => {
+    const r = runtimeBy(
+        unary +
+            'pair$_ {m:#} {n:#} v:uint8 a:(Unary ~m) b:(Unary ~n) = Pair uint8 ~m ~n; _ {m:#} {n:#} p:(Pair uint8 ~m ~n) x:(uint m) = Box;',
+    );
+    const wire = beginCell().storeUint(9, 8).storeUint(2, 2).storeUint(14, 4).storeBit(1).endCell();
+    const data = r.decodeCell(wire);
+    expect(data).toMatchObject({ p: { v: 9, m: 1, n: 3 }, m: 1, n: 3, x: 1 });
+    expect(r.encodeCell(data).equals(wire)).toBe(true);
+});
+
+it('requires repeated result arguments to agree when the parameter is inferred', () => {
+    const runtime = (n: number) => runtimeBy(`_ {n:#} x:(uint n) = Diag n n; _ d:(Diag 4 ${n}) = Box;`);
+    const record = { kind: 'Box', d: { kind: 'Diag', x: 1 } };
+    expect(runtime(4).encodeCell(record).equals(beginCell().storeUint(1, 4).endCell())).toBe(true);
+    expect(() => runtime(5).encodeCell(record)).toThrow(TLBDataError);
+});

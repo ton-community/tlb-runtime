@@ -1629,15 +1629,6 @@ export class Schema {
                     }
                 }
 
-                const resultParameters: import('../types').TLBMathExpr[] = [];
-                for (const pExpr of constructor.params) {
-                    try {
-                        resultParameters.push(this.typeExprToTLBMathExpr(pExpr, paramNameMap));
-                    } catch {
-                        /* skip non-math params */
-                    }
-                }
-
                 const tlbConstructor: import('../types').TLBConstructor = {
                     name: isAnonymous && anonymousCount > 0 ? `_${anonymousCount}` : constructorName,
                     tag: {
@@ -1652,7 +1643,7 @@ export class Schema {
                     variables: variables,
                     variablesMap: variablesMap,
                     tlbType: type.name,
-                    resultParameters: resultParameters,
+                    resultParameters: parameters.map((p) => (p.variable.type === '#' ? p.paramExpr : undefined)),
                 };
 
                 tlbType.constructors.push(tlbConstructor);

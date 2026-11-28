@@ -983,3 +983,20 @@ it.each([parseCell, decodeCell])('keeps a read failure on the inferred root', (r
     });
     expect(read('unit$_ = Unit; root#ff = Root;', byte)).toEqual({ kind: 'Unit' });
 });
+
+it('recovers from a missing reference inside an anonymous group', () => {
+    const schema = 'unit$_ = Unit; _ ^[ ^[ a:uint8 ] ] = Outer;';
+    const missing = beginCell().storeRef(beginCell()).endCell();
+    const runtime = runtimeBy(schema);
+    expect(runtime.decodeCell(missing)).toEqual({ kind: 'Unit' });
+    expect(() => runtime.decodeCell(missing, { rootType: 'Outer' })).toThrow(TLBDataError);
+});
+
+it('uses the canonical implicit tag for a strict greater-than constraint', () => {
+    const wire = beginCell().storeUint(0xf0625053, 32).storeUint(6, 8).endCell();
+    for (const comparison of ['a > 5', '5 < a']) {
+        const runtime = runtimeBy(`sample a:(## 8) { ${comparison} } = Test;`);
+        expect(runtime.decodeCell(wire)).toEqual({ kind: 'Test', a: 6 });
+        expect(runtime.encodeCell({ kind: 'Test', a: 6 }).equals(wire)).toBe(true);
+    }
+});

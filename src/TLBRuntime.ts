@@ -1859,6 +1859,8 @@ export class TLBRuntime<T = ParsedCell> {
             for (const field of fields) {
                 if (field.implicit) continue;
                 if (field.subFields.length) {
+                    if (!source.remainingRefs)
+                        throw new ConstructorMismatch('Missing reference for nested field group');
                     yield* readReferencedFields(field.subFields, source.loadRef().beginParse());
                 } else {
                     const name = field.name || `anon${anonFieldIndex++}`;
@@ -2158,7 +2160,7 @@ export class TLBRuntime<T = ParsedCell> {
         if (constructor.resultParameters) {
             const resultArgs = constructor.resultParameters.map((expr) => {
                 try {
-                    return evaluator.evaluate(expr);
+                    return expr && evaluator.evaluate(expr);
                 } catch {
                     return undefined;
                 }
@@ -3331,17 +3333,21 @@ export class TLBRuntime<T = ParsedCell> {
                           : undefined;
                 if (!expression) continue;
                 const n = new MathExprEvaluator(callerVariables).evaluate(expression);
-                if (param.argName) variables.set(param.argName, n);
                 const result = param.paramExpr ?? constructor.resultParameters?.[i];
                 if (result?.kind === 'TLBVarExpr') {
                     const name = result.x;
                     if (data[name] !== undefined && data[name] !== n) {
                         throw new TLBDataError(`Conflicting parameter ${name}: expected ${n}, got ${data[name]}`);
                     }
+                    const bound = variables.get(name);
+                    if (bound !== undefined && BigInt(bound) !== BigInt(n)) {
+                        throw new TLBDataError(`Conflicting parameter ${name}: already bound to ${bound}, got ${n}`);
+                    }
                     variables.set(name, n);
                 } else if (result) {
                     resultArguments.push({ expression: result, expected: n });
                 }
+                if (param.argName) variables.set(param.argName, n);
             }
         }
 

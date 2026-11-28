@@ -201,7 +201,7 @@ export interface TLBConstructor {
     variables: TLBVariable[];
     variablesMap: Map<string, TLBVariable>;
     tlbType: string;
-    resultParameters?: TLBMathExpr[];
+    resultParameters?: (TLBMathExpr | undefined)[];
 }
 
 // Type definition (contains multiple constructors)

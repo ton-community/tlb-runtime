@@ -19,8 +19,8 @@ function group(field: tlb.FieldAnonExpr | tlb.FieldAnonymousDef): string {
 
 function expression(e: tlb.Expression): string {
     if (e instanceof tlb.CompareExpr) {
-        if (e.op === '>=') {
-            return ['<=', expression(e.right), expression(e.left)].join(' ');
+        if (e.op === '>=' || e.op === '>') {
+            return [e.op === '>' ? '<' : '<=', expression(e.right), expression(e.left)].join(' ');
         }
         return [e.op, expression(e.left), expression(e.right)].join(' ');
     }
